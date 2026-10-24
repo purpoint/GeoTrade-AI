@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { use, useState } from "react";
 import { EventChip } from "@/components/EventChip";
+import { SpikeBadge } from "@/components/Extras";
 import { NewsFeed } from "@/components/NewsFeed";
 import { PriceSentimentChart } from "@/components/PriceSentimentChart";
 import { SentimentBadge } from "@/components/SentimentBadge";
@@ -47,6 +48,7 @@ export default function StockPage({ params }: { params: Promise<{ ticker: string
               </Link>
               {s.group_name ? ` · ${s.group_name} group` : ""}
             </p>
+            <SpikeBadge spike={s.coverage_spike} />
           </div>
           <div className="flex items-center gap-4">
             <div className="text-right">

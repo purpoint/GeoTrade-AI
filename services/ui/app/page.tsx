@@ -1,12 +1,13 @@
 "use client";
 
 import Link from "next/link";
+import { SpikeList } from "@/components/Extras";
 import { Gauge } from "@/components/Gauge";
 import { NewsCard } from "@/components/NewsCard";
 import { SentimentBadge } from "@/components/SentimentBadge";
 import { ErrorState, SkeletonList, StaleNote } from "@/components/states";
 import type { StockSummary } from "@/lib/api/client";
-import { useOverview } from "@/lib/api/hooks";
+import { useOverview, useSpikes } from "@/lib/api/hooks";
 import { fmtIndex, timeAgo, tone } from "@/lib/format";
 import { useLive } from "@/lib/sse/live";
 
@@ -38,6 +39,7 @@ function MoverList({ title, stocks }: { title: string; stocks: StockSummary[] })
 export default function OverviewPage() {
   const { data, error, refetch } = useOverview();
   const { newItems } = useLive();
+  const spikes = useSpikes();
   if (error) return <ErrorState error={error} onRetry={() => refetch()} />;
   if (!data) return <SkeletonList rows={6} />;
   const stale = data.freshness.last_article_at && Date.now() - new Date(data.freshness.last_article_at).getTime() > 6 * 3600_000;
@@ -55,6 +57,7 @@ export default function OverviewPage() {
         <MoverList title="Rising sentiment (24h)" stocks={data.movers.positive} />
         <MoverList title="Falling sentiment (24h)" stocks={data.movers.negative} />
       </div>
+      <SpikeList spikes={spikes.data ?? []} />
       <section>
         <div className="mb-2 flex items-baseline justify-between">
           <h2 className="text-sm font-semibold">Sectors</h2>

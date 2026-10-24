@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { NewsItem } from "@/lib/api/client";
 import { fmtIst, timeAgo } from "@/lib/format";
 import { EventChip } from "./EventChip";
+import { CredibilityChip } from "./Extras";
 import { SentimentBadge } from "./SentimentBadge";
 import { TickerChip } from "./TickerChip";
 
@@ -30,6 +31,7 @@ export function NewsCard({ item, fresh = false }: { item: NewsItem; fresh?: bool
       <div className="mt-2 flex flex-wrap items-center gap-1.5">
         {item.sentiment ? <SentimentBadge label={item.sentiment.label} /> : null}
         {item.event ? <EventChip type={item.event.type} severity={item.event.severity} hedged={item.event.hedged} /> : null}
+        <CredibilityChip credibility={item.credibility} />
         {item.tickers.slice(0, 4).map((t) => (
           <TickerChip key={t.ticker} ticker={t.ticker} primary={t.is_primary} />
         ))}

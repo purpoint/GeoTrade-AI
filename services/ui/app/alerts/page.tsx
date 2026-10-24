@@ -6,6 +6,7 @@ import { useState } from "react";
 import { RequireAuth } from "@/components/RequireAuth";
 import { EmptyState, ErrorState, SkeletonList } from "@/components/states";
 import { post, type AlertOut, type Me, type RuleOut } from "@/lib/api/client";
+import { PlainRules } from "@/components/PlainRules";
 import { useAlertRules, useAlerts } from "@/lib/api/hooks";
 import { useMe } from "@/lib/auth/session";
 import { fmtIst } from "@/lib/format";
@@ -14,6 +15,7 @@ const RULE_TITLE: Record<string, string> = {
   severe_event: "Severe negative news",
   negative_shift: "Sharp fall in news sentiment",
   concentration: "Concentration",
+  coverage_spike: "Unusual news coverage (news spike)",
 };
 
 function Inbox() {
@@ -156,6 +158,7 @@ function Alerts() {
           {(rules.data ?? []).map((r) => (
             <RuleCard key={r.kind} rule={r} />
           ))}
+          <PlainRules />
           {me ? <QuietHours me={me} /> : null}
         </div>
       )}

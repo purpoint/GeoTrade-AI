@@ -4,6 +4,7 @@ const LINKS = [
   ["/admin", "Pipeline health"],
   ["/admin/demo", "Demo panel"],
   ["/admin/dead-letters", "Dead letters"],
+  ["/admin/digest", "Daily Pulse"],
 ] as const;
 
 export function AdminNav({ current }: { current: string }) {

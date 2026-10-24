@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, screen } from "@testing-library/react";
+import { SpikeBadge } from "@/components/Extras";
 import { Gauge } from "@/components/Gauge";
 import { NewsCard } from "@/components/NewsCard";
 import { SentimentBadge } from "@/components/SentimentBadge";
@@ -62,5 +63,20 @@ describe("Gauge and format", () => {
     expect(fmtIndex(-0.3)).toBe("0");
     expect(tone(-6)).toBe("negative");
     expect(timeAgo(new Date(Date.now() - 7200_000).toISOString())).toBe("2h ago");
+  });
+});
+
+describe("Phase 3 extras", () => {
+  it("flags single-source hedged stories and leaves others alone", () => {
+    wrap(<NewsCard item={{ ...item, credibility: { score: 0.25, hedge_score: 0.7, unconfirmed: true } }} />);
+    expect(screen.getByText("single source, unconfirmed")).toBeInTheDocument();
+  });
+  it("shows no chip for confirmed stories", () => {
+    wrap(<NewsCard item={item} />);
+    expect(screen.queryByText("single source, unconfirmed")).toBeNull();
+  });
+  it("labels a news spike in words", () => {
+    render(<SpikeBadge spike={{ ticker: "INFY", detected_at: "2026-10-22T10:00:00Z", z_score: 4.2, n_stories: 9, baseline_mean: 1.5 }} />);
+    expect(screen.getByText("news spike")).toBeInTheDocument();
   });
 });
