@@ -499,6 +499,51 @@
         "title": "Credentials",
         "type": "object"
       },
+      "DeadLetterOut": {
+        "properties": {
+          "article_id": {
+            "format": "uuid",
+            "title": "Article Id",
+            "type": "string"
+          },
+          "attempts": {
+            "title": "Attempts",
+            "type": "integer"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "error": {
+            "title": "Error",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "stage": {
+            "title": "Stage",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "article_id",
+          "title",
+          "stage",
+          "error",
+          "attempts",
+          "created_at"
+        ],
+        "title": "DeadLetterOut",
+        "type": "object"
+      },
       "DeleteRequest": {
         "properties": {
           "confirm": {
@@ -1525,6 +1570,87 @@
         "title": "PasswordChange",
         "type": "object"
       },
+      "PipelineStats": {
+        "properties": {
+          "backlog": {
+            "title": "Backlog",
+            "type": "integer"
+          },
+          "coverage": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "title": "Coverage",
+            "type": "object"
+          },
+          "dead_letters_open": {
+            "title": "Dead Letters Open",
+            "type": "integer"
+          },
+          "errors_1h": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "title": "Errors 1H",
+            "type": "object"
+          },
+          "latency_seconds": {
+            "additionalProperties": true,
+            "title": "Latency Seconds",
+            "type": "object"
+          },
+          "llm_requests_today": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "title": "Llm Requests Today",
+            "type": "object"
+          },
+          "recent_errors": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Recent Errors",
+            "type": "array"
+          },
+          "sources": {
+            "items": {
+              "$ref": "#/components/schemas/SourceStatus"
+            },
+            "title": "Sources",
+            "type": "array"
+          },
+          "statuses": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "title": "Statuses",
+            "type": "object"
+          },
+          "throughput_1h": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "title": "Throughput 1H",
+            "type": "object"
+          }
+        },
+        "required": [
+          "statuses",
+          "backlog",
+          "throughput_1h",
+          "errors_1h",
+          "latency_seconds",
+          "recent_errors",
+          "llm_requests_today",
+          "dead_letters_open",
+          "sources",
+          "coverage"
+        ],
+        "title": "PipelineStats",
+        "type": "object"
+      },
       "PortfolioOut": {
         "properties": {
           "contributors": {
@@ -1890,6 +2016,36 @@
           "disclaimer"
         ],
         "title": "RelatedPage",
+        "type": "object"
+      },
+      "ReplayOut": {
+        "properties": {
+          "article_ids": {
+            "items": {
+              "format": "uuid",
+              "type": "string"
+            },
+            "title": "Article Ids",
+            "type": "array"
+          }
+        },
+        "required": [
+          "article_ids"
+        ],
+        "title": "ReplayOut",
+        "type": "object"
+      },
+      "ResetOut": {
+        "properties": {
+          "deleted": {
+            "title": "Deleted",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "deleted"
+        ],
+        "title": "ResetOut",
         "type": "object"
       },
       "RuleOut": {
@@ -2650,6 +2806,123 @@
   },
   "openapi": "3.1.0",
   "paths": {
+    "/api/v1/admin/dead-letters": {
+      "get": {
+        "operationId": "dead_letters_api_v1_admin_dead_letters_get",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-operator-token",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Operator-Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/DeadLetterOut"
+                  },
+                  "title": "Response Dead Letters Api V1 Admin Dead Letters Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Dead Letters",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/api/v1/admin/dead-letters/{dead_letter_id}/{action}": {
+      "post": {
+        "operationId": "dead_letter_action_api_v1_admin_dead_letters__dead_letter_id___action__post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "dead_letter_id",
+            "required": true,
+            "schema": {
+              "title": "Dead Letter Id",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "path",
+            "name": "action",
+            "required": true,
+            "schema": {
+              "enum": [
+                "retry",
+                "discard"
+              ],
+              "title": "Action",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-operator-token",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Operator-Token"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Dead Letter Action",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
     "/api/v1/admin/demo/inject": {
       "post": {
         "operationId": "inject_api_v1_admin_demo_inject_post",
@@ -2709,6 +2982,106 @@
         ]
       }
     },
+    "/api/v1/admin/demo/replay": {
+      "post": {
+        "description": "Inject the scripted demo headlines in one go.",
+        "operationId": "replay_api_v1_admin_demo_replay_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-operator-token",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Operator-Token"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReplayOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Replay",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/api/v1/admin/demo/reset": {
+      "post": {
+        "description": "Delete injected headlines and recompute the buckets they touched.",
+        "operationId": "reset_api_v1_admin_demo_reset_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-operator-token",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Operator-Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResetOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Reset",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
     "/api/v1/admin/demo/trace/{article_id}": {
       "get": {
         "operationId": "trace_api_v1_admin_demo_trace__article_id__get",
@@ -2763,6 +3136,127 @@
           }
         },
         "summary": "Trace",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/api/v1/admin/pipeline/stats": {
+      "get": {
+        "operationId": "pipeline_stats_api_v1_admin_pipeline_stats_get",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-operator-token",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Operator-Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PipelineStats"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Pipeline Stats",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/api/v1/admin/sources/{source_id}/{action}": {
+      "post": {
+        "operationId": "source_action_api_v1_admin_sources__source_id___action__post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "source_id",
+            "required": true,
+            "schema": {
+              "title": "Source Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "action",
+            "required": true,
+            "schema": {
+              "enum": [
+                "pause",
+                "resume",
+                "refresh"
+              ],
+              "title": "Action",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-operator-token",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Operator-Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SourceStatus"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Source Action",
         "tags": [
           "admin"
         ]
@@ -3766,6 +4260,21 @@
             "schema": {
               "anyOf": [
                 {
+                  "enum": [
+                    "earnings",
+                    "guidance",
+                    "deal",
+                    "order_win",
+                    "regulatory",
+                    "legal",
+                    "management",
+                    "rating",
+                    "dividend",
+                    "capital",
+                    "macro",
+                    "operations",
+                    "other"
+                  ],
                   "type": "string"
                 },
                 {

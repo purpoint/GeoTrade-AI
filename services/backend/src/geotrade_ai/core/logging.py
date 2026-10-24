@@ -9,6 +9,21 @@ article_id_var: ContextVar[str | None] = ContextVar("article_id", default=None)
 stage_var: ContextVar[str | None] = ContextVar("stage", default=None)
 run_id_var: ContextVar[str | None] = ContextVar("run_id", default=None)
 
+# never logged, even if a caller passes them in `extra` (holdings and credentials are private)
+SENSITIVE_KEYS = frozenset(
+    {
+        "password",
+        "token",
+        "access_token",
+        "refresh_token",
+        "holdings",
+        "quantity",
+        "avg_price",
+        "email",
+        "cookie",
+    }
+)
+
 _CONTEXT = {
     "request_id": request_id_var,
     "article_id": article_id_var,
@@ -30,7 +45,7 @@ class JsonFormatter(logging.Formatter):
                 out[key] = value
         extra = getattr(record, "extra", None)
         if isinstance(extra, dict):
-            out.update(extra)
+            out.update({k: ("[redacted]" if k in SENSITIVE_KEYS else v) for k, v in extra.items()})
         if record.exc_info:
             out["exc"] = self.formatException(record.exc_info)
         return json.dumps(out, default=str)

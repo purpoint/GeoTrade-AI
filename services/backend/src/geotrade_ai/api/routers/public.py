@@ -16,6 +16,10 @@ from geotrade_ai.repos import read
 router = APIRouter()
 Bucket = Literal["5m", "1h", "1d"]
 Label = Literal["positive", "neutral", "negative"]
+EventName = Literal[
+    "earnings", "guidance", "deal", "order_win", "regulatory", "legal", "management",
+    "rating", "dividend", "capital", "macro", "operations", "other",
+]  # fmt: skip
 
 
 def _now() -> datetime:
@@ -194,7 +198,7 @@ def news(
     ticker: str | None = None,
     sector: str | None = None,
     sentiment: Label | None = None,
-    event: str | None = None,
+    event: EventName | None = None,
     source: str | None = None,
     q: str | None = Query(None, max_length=100),
     since: Annotated[datetime | None, Query(alias="from")] = None,

@@ -114,3 +114,12 @@ def test_hub_topics_and_replay() -> None:
         assert '"version": 1' in second.encode() and second.encode().startswith(f"id: {second.id}\n")
 
     asyncio.run(run())
+
+
+def test_event_type_literal_matches_model() -> None:
+    from typing import get_args
+
+    from geotrade_ai.api.routers.public import EventName
+    from geotrade_ai.models import EVENT_TYPES
+
+    assert get_args(EventName) == EVENT_TYPES

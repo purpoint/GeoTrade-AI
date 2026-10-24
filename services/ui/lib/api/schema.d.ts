@@ -4,6 +4,40 @@
  */
 
 export interface paths {
+    "/api/v1/admin/dead-letters": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Dead Letters */
+        get: operations["dead_letters_api_v1_admin_dead_letters_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/dead-letters/{dead_letter_id}/{action}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Dead Letter Action */
+        post: operations["dead_letter_action_api_v1_admin_dead_letters__dead_letter_id___action__post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/admin/demo/inject": {
         parameters: {
             query?: never;
@@ -21,6 +55,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/admin/demo/replay": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Replay
+         * @description Inject the scripted demo headlines in one go.
+         */
+        post: operations["replay_api_v1_admin_demo_replay_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/demo/reset": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reset
+         * @description Delete injected headlines and recompute the buckets they touched.
+         */
+        post: operations["reset_api_v1_admin_demo_reset_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/admin/demo/trace/{article_id}": {
         parameters: {
             query?: never;
@@ -32,6 +106,40 @@ export interface paths {
         get: operations["trace_api_v1_admin_demo_trace__article_id__get"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/pipeline/stats": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Pipeline Stats */
+        get: operations["pipeline_stats_api_v1_admin_pipeline_stats_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/sources/{source_id}/{action}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Source Action */
+        post: operations["source_action_api_v1_admin_sources__source_id___action__post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1094,6 +1202,29 @@ export interface components {
             /** Password */
             password: string;
         };
+        /** DeadLetterOut */
+        DeadLetterOut: {
+            /**
+             * Article Id
+             * Format: uuid
+             */
+            article_id: string;
+            /** Attempts */
+            attempts: number;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Error */
+            error: string;
+            /** Id */
+            id: number;
+            /** Stage */
+            stage: string;
+            /** Title */
+            title: string;
+        };
         /** DeleteRequest */
         DeleteRequest: {
             /** Confirm */
@@ -1439,6 +1570,43 @@ export interface components {
             /** New Password */
             new_password: string;
         };
+        /** PipelineStats */
+        PipelineStats: {
+            /** Backlog */
+            backlog: number;
+            /** Coverage */
+            coverage: {
+                [key: string]: number;
+            };
+            /** Dead Letters Open */
+            dead_letters_open: number;
+            /** Errors 1H */
+            errors_1h: {
+                [key: string]: number;
+            };
+            /** Latency Seconds */
+            latency_seconds: {
+                [key: string]: unknown;
+            };
+            /** Llm Requests Today */
+            llm_requests_today: {
+                [key: string]: number;
+            };
+            /** Recent Errors */
+            recent_errors: {
+                [key: string]: unknown;
+            }[];
+            /** Sources */
+            sources: components["schemas"]["SourceStatus"][];
+            /** Statuses */
+            statuses: {
+                [key: string]: number;
+            };
+            /** Throughput 1H */
+            throughput_1h: {
+                [key: string]: number;
+            };
+        };
         /** PortfolioOut */
         PortfolioOut: {
             /** Contributors */
@@ -1548,6 +1716,16 @@ export interface components {
             disclaimer: string;
             /** Items */
             items: components["schemas"]["RelatedOut"][];
+        };
+        /** ReplayOut */
+        ReplayOut: {
+            /** Article Ids */
+            article_ids: string[];
+        };
+        /** ResetOut */
+        ResetOut: {
+            /** Deleted */
+            deleted: number;
         };
         /** RuleOut */
         RuleOut: {
@@ -1796,6 +1974,69 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    dead_letters_api_v1_admin_dead_letters_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                "x-operator-token"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DeadLetterOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    dead_letter_action_api_v1_admin_dead_letters__dead_letter_id___action__post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "x-operator-token"?: string | null;
+            };
+            path: {
+                dead_letter_id: number;
+                action: "retry" | "discard";
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     inject_api_v1_admin_demo_inject_post: {
         parameters: {
             query?: never;
@@ -1831,6 +2072,68 @@ export interface operations {
             };
         };
     };
+    replay_api_v1_admin_demo_replay_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "x-operator-token"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReplayOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reset_api_v1_admin_demo_reset_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "x-operator-token"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResetOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     trace_api_v1_admin_demo_trace__article_id__get: {
         parameters: {
             query?: never;
@@ -1851,6 +2154,71 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Trace"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    pipeline_stats_api_v1_admin_pipeline_stats_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                "x-operator-token"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PipelineStats"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    source_action_api_v1_admin_sources__source_id___action__post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "x-operator-token"?: string | null;
+            };
+            path: {
+                source_id: string;
+                action: "pause" | "resume" | "refresh";
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SourceStatus"];
                 };
             };
             /** @description Validation Error */
@@ -2582,7 +2950,7 @@ export interface operations {
                 ticker?: string | null;
                 sector?: string | null;
                 sentiment?: ("positive" | "neutral" | "negative") | null;
-                event?: string | null;
+                event?: ("earnings" | "guidance" | "deal" | "order_win" | "regulatory" | "legal" | "management" | "rating" | "dividend" | "capital" | "macro" | "operations" | "other") | null;
                 source?: string | null;
                 q?: string | null;
                 from?: string | null;

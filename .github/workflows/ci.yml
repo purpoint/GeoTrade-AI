@@ -29,6 +29,8 @@ jobs:
           uv run lint-imports
       - name: Tests (unit, fixtures, pipeline and API against Postgres, migration drift)
         run: uv run pytest
+      - name: Contract tests (Schemathesis, every operation, no server errors)
+        run: uv run pytest -m contract
       - name: OpenAPI contract is committed
         run: uv run backend openapi --out ../../packages/shared/openapi.json && git diff --exit-code ../../packages/shared/openapi.json
       - name: Golden set report

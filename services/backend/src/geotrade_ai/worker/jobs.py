@@ -4,15 +4,16 @@ import logging
 import random
 from datetime import UTC, datetime, timedelta
 
-from sqlalchemy import select
+from sqlalchemy import delete, or_, select
 from sqlalchemy.orm import Session, sessionmaker
 
 from geotrade_ai import normalize as norm
 from geotrade_ai import reference
+from geotrade_ai.aggregation import recompute
 from geotrade_ai.core.ids import uuid7
-from geotrade_ai.models import Article, ArticleEntity, ArticleScore
+from geotrade_ai.models import Article, ArticleEntity, ArticleScore, RefreshToken
+from geotrade_ai.repos import portfolio as portfolio_repo
 from geotrade_ai.worker import pipeline, prices
-from geotrade_ai.worker.aggregate import recompute
 from geotrade_ai.worker.nlp.llm import get_qwen_scorer
 from geotrade_ai.worker.scoring import score_articles
 
@@ -105,3 +106,14 @@ def seed_history(factory: sessionmaker[Session], days: int = 7, per_day: int = 2
     pipeline.run_all(factory, max_rounds=200)
     log.info("history seeded", extra={"extra": {"articles": len(rows), "candles": n}})
     return len(rows)
+
+
+def housekeeping(session: Session) -> dict[str, int]:
+    """Privacy upkeep: import previews expire after 30 minutes; dead refresh tokens go after 30 days."""
+    previews = portfolio_repo.purge_expired_previews(session)
+    cutoff = datetime.now(UTC) - timedelta(days=30)
+    result = session.execute(
+        delete(RefreshToken).where(or_(RefreshToken.expires_at < cutoff, RefreshToken.revoked_at < cutoff))
+    )
+    session.commit()
+    return {"previews": previews, "tokens": int(getattr(result, "rowcount", 0) or 0)}

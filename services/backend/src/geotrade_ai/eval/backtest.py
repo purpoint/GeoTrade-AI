@@ -10,9 +10,9 @@ from typing import Any
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from geotrade_ai.aggregation import impact
 from geotrade_ai.market_calendar import session_date
 from geotrade_ai.models import Article, ArticleEntity, ArticleScore, PriceCandle
-from geotrade_ai.worker.aggregate import impact
 
 MIN_SAMPLES = 30
 THRESHOLD = 0.1  # |signal| below this counts as "no signal"

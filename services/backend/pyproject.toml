@@ -67,7 +67,8 @@ strict = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = "-q"
+addopts = "-q -m 'not contract'"
+markers = ["contract: slow generated-request contract tests (run with -m contract)"]
 filterwarnings = ["ignore::DeprecationWarning:fastapi.testclient", "ignore::DeprecationWarning:starlette"]
 
 [tool.importlinter]
