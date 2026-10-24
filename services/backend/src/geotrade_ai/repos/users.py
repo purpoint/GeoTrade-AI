@@ -10,6 +10,7 @@ from geotrade_ai.core import security
 from geotrade_ai.core.config import get_settings
 from geotrade_ai.core.ids import uuid7
 from geotrade_ai.models import Portfolio, RefreshToken, User
+from geotrade_ai.repos import alerts as alerts_repo
 
 
 class RefreshReuse(Exception):
@@ -42,6 +43,7 @@ def create_user(
     session.flush()  # no ORM relationship, so insert the user before its portfolio explicitly
     session.add(Portfolio(id=uuid7(), user_id=user.id))
     session.flush()
+    alerts_repo.ensure_default_rules(session, user.id)
     return user
 
 

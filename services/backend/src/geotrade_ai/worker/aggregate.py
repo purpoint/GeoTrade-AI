@@ -26,6 +26,7 @@ from geotrade_ai.models import (
     SentimentBucket,
 )
 from geotrade_ai.signals import LOOKBACK, SIZES, decay, squash
+from geotrade_ai.worker import alerts
 
 SECONDARY_WEIGHT = 0.5
 IST_OFFSET = timedelta(hours=5, minutes=30)
@@ -212,4 +213,5 @@ def aggregate_batch(session: Session, articles: list[Article], now: datetime | N
             # an item published before our previous poll could not have been seen earlier than that poll
             seen = max(a.published_at, a.fetched_at - timedelta(seconds=60))
             INGEST_TO_VISIBLE.observe(max((now - seen).total_seconds(), 0))
+    alerts.on_articles(session, articles, now)
     return {str(a.id): "aggregated" for a in articles}

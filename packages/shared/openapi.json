@@ -1,6 +1,119 @@
 {
   "components": {
     "schemas": {
+      "AlertOut": {
+        "properties": {
+          "article_ids": {
+            "items": {
+              "format": "uuid",
+              "type": "string"
+            },
+            "title": "Article Ids",
+            "type": "array"
+          },
+          "body": {
+            "title": "Body",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "merged_count": {
+            "title": "Merged Count",
+            "type": "integer"
+          },
+          "read_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Read At"
+          },
+          "severity": {
+            "title": "Severity",
+            "type": "number"
+          },
+          "ticker": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ticker"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "ticker",
+          "title",
+          "body",
+          "severity",
+          "article_ids",
+          "merged_count",
+          "created_at",
+          "read_at"
+        ],
+        "title": "AlertOut",
+        "type": "object"
+      },
+      "AlertPage": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/AlertOut"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "next_before": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Before"
+          },
+          "unread_count": {
+            "title": "Unread Count",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "unread_count",
+          "next_before"
+        ],
+        "title": "AlertPage",
+        "type": "object"
+      },
       "ArticleEvent": {
         "properties": {
           "hedged": {
@@ -1475,6 +1588,130 @@
         "title": "QuietHours",
         "type": "object"
       },
+      "RuleOut": {
+        "properties": {
+          "enabled": {
+            "title": "Enabled",
+            "type": "boolean"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "params": {
+            "additionalProperties": true,
+            "title": "Params",
+            "type": "object"
+          }
+        },
+        "required": [
+          "kind",
+          "enabled",
+          "params"
+        ],
+        "title": "RuleOut",
+        "type": "object"
+      },
+      "RuleParams": {
+        "properties": {
+          "min_severity": {
+            "anyOf": [
+              {
+                "maximum": 1.0,
+                "minimum": 0.3,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Min Severity"
+          },
+          "scope": {
+            "anyOf": [
+              {
+                "enum": [
+                  "holdings",
+                  "both"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scope"
+          },
+          "sector": {
+            "anyOf": [
+              {
+                "maximum": 0.95,
+                "minimum": 0.1,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sector"
+          },
+          "stock": {
+            "anyOf": [
+              {
+                "maximum": 0.9,
+                "minimum": 0.05,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stock"
+          },
+          "threshold": {
+            "anyOf": [
+              {
+                "maximum": 80.0,
+                "minimum": 5.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Threshold"
+          }
+        },
+        "title": "RuleParams",
+        "type": "object"
+      },
+      "RuleUpdate": {
+        "properties": {
+          "enabled": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Enabled"
+          },
+          "params": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RuleParams"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "title": "RuleUpdate",
+        "type": "object"
+      },
       "SectorDetail": {
         "properties": {
           "articles_24h": {
@@ -2224,6 +2461,210 @@
         "summary": "Trace",
         "tags": [
           "admin"
+        ]
+      }
+    },
+    "/api/v1/alert-rules": {
+      "get": {
+        "operationId": "list_rules_api_v1_alert_rules_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/RuleOut"
+                  },
+                  "title": "Response List Rules Api V1 Alert Rules Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "List Rules",
+        "tags": [
+          "alerts"
+        ]
+      }
+    },
+    "/api/v1/alert-rules/{kind}": {
+      "put": {
+        "operationId": "update_rule_api_v1_alert_rules__kind__put",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "kind",
+            "required": true,
+            "schema": {
+              "enum": [
+                "negative_shift",
+                "severe_event",
+                "concentration"
+              ],
+              "title": "Kind",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RuleUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RuleOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Update Rule",
+        "tags": [
+          "alerts"
+        ]
+      }
+    },
+    "/api/v1/alerts": {
+      "get": {
+        "operationId": "list_alerts_api_v1_alerts_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "unread_only",
+            "required": false,
+            "schema": {
+              "default": false,
+              "title": "Unread Only",
+              "type": "boolean"
+            }
+          },
+          {
+            "in": "query",
+            "name": "before",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Before"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AlertPage"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Alerts",
+        "tags": [
+          "alerts"
+        ]
+      }
+    },
+    "/api/v1/alerts/read-all": {
+      "post": {
+        "operationId": "read_all_api_v1_alerts_read_all_post",
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Read All",
+        "tags": [
+          "alerts"
+        ]
+      }
+    },
+    "/api/v1/alerts/{alert_id}/read": {
+      "post": {
+        "operationId": "read_one_api_v1_alerts__alert_id__read_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "alert_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Alert Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Read One",
+        "tags": [
+          "alerts"
         ]
       }
     },
@@ -3924,13 +4365,13 @@
         "operationId": "stream_api_v1_stream_get",
         "parameters": [
           {
-            "description": "comma-separated: news, market, stock:INFY. Empty means all.",
+            "description": "comma-separated: news, market, stock:INFY. Empty means all public.",
             "in": "query",
             "name": "topics",
             "required": false,
             "schema": {
               "default": "",
-              "description": "comma-separated: news, market, stock:INFY. Empty means all.",
+              "description": "comma-separated: news, market, stock:INFY. Empty means all public.",
               "title": "Topics",
               "type": "string"
             }

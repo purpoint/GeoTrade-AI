@@ -11,7 +11,7 @@ from geotrade_ai.core.config import get_settings
 from geotrade_ai.core.db import get_sessionmaker
 from geotrade_ai.market_calendar import is_market_open, is_trading_day
 from geotrade_ai.normalize import IST
-from geotrade_ai.worker import jobs, pipeline, prices
+from geotrade_ai.worker import alerts, jobs, pipeline, prices
 from geotrade_ai.worker.http import Fetcher
 from geotrade_ai.worker.ingest import poll_due_sources
 
@@ -44,6 +44,10 @@ def main() -> None:
             with factory() as session:
                 prices.sync(session, "1d", "5d")
 
+    def alert_sweep() -> None:
+        with factory() as session:
+            alerts.sweep(session)
+
     def rescore() -> None:
         with factory() as session:
             jobs.rescore_fallbacks(session)
@@ -60,6 +64,7 @@ def main() -> None:
     )
     sched.add_job(sync_eod, "cron", day_of_week="mon-fri", hour=16, minute=0, jitter=60, id="sync_prices_eod")
     sched.add_job(rescore, "cron", hour=2, minute=0, id="rescore_fallbacks")
+    sched.add_job(alert_sweep, "interval", seconds=60, jitter=5, id="alert_sweep")
     if s.enable_prices:  # fill candles on start so charts are not empty
         sched.add_job(sync_eod, id="sync_prices_startup")
 

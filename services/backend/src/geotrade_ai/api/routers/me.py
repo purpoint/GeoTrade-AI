@@ -14,6 +14,7 @@ from geotrade_ai.api.routers.auth import Me, clear_session, start_session
 from geotrade_ai.core import security
 from geotrade_ai.core.errors import ApiError
 from geotrade_ai.models import Holding, Portfolio, User, WatchlistItem
+from geotrade_ai.repos import alerts as alerts_repo
 from geotrade_ai.repos import users as users_repo
 
 router = APIRouter(prefix="/me", tags=["me"])
@@ -135,5 +136,11 @@ def export(db: DbSession, user: CurrentUser) -> Response:
 
 
 def export_extras(db: DbSession, user: User) -> list[tuple[str, list[list[object]]]]:
-    """Sections added by later features (alerts, alert rules)."""
-    return []
+    rules: list[list[object]] = [["kind", "enabled", "params"]]
+    rules += [[r.kind, r.enabled, r.params] for r in alerts_repo.rules(db, user.id)]
+    alerts: list[list[object]] = [["created_at", "kind", "ticker", "title", "read_at"]]
+    alerts += [
+        [a.created_at, a.kind, a.ticker or "", a.title, a.read_at or ""]
+        for a in alerts_repo.page(db, user.id, False, 1000, None)
+    ]
+    return [("alert_rules", rules), ("alerts", alerts)]

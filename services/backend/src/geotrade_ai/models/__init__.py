@@ -19,7 +19,7 @@ from sqlalchemy import (
     Text,
     func,
 )
-from sqlalchemy.dialects.postgresql import CITEXT, JSONB, UUID
+from sqlalchemy.dialects.postgresql import ARRAY, CITEXT, JSONB, UUID
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 ARTICLE_STATUSES = (
@@ -377,3 +377,36 @@ class WatchlistItem(Base):
     user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), primary_key=True)
     ticker: Mapped[str] = mapped_column(ForeignKey("companies.ticker"), primary_key=True)
     created_at: Mapped[datetime] = _created()
+
+
+# ---------- alerts (0006) ----------
+
+
+class AlertRule(Base):
+    __tablename__ = "alert_rules"
+    id: Mapped[uuid.UUID] = mapped_column(UUID, primary_key=True)
+    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
+    kind: Mapped[str] = mapped_column(Text)
+    params: Mapped[dict[str, Any]] = mapped_column(JSONB, server_default="{}")
+    enabled: Mapped[bool] = mapped_column(Boolean, server_default="true")
+    created_at: Mapped[datetime] = _created()
+    updated_at: Mapped[datetime] = _updated()
+
+
+class Alert(Base):
+    __tablename__ = "alerts"
+    id: Mapped[uuid.UUID] = mapped_column(UUID, primary_key=True)
+    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
+    rule_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("alert_rules.id", ondelete="SET NULL"))
+    kind: Mapped[str] = mapped_column(Text)
+    ticker: Mapped[str | None] = mapped_column(Text)
+    title: Mapped[str] = mapped_column(Text)
+    body: Mapped[str] = mapped_column(Text)
+    severity: Mapped[float] = mapped_column(REAL, server_default="0.5")
+    article_ids: Mapped[list[uuid.UUID]] = mapped_column(ARRAY(UUID), server_default="{}")
+    merged_count: Mapped[int] = mapped_column(Integer, server_default="0")
+    dedupe_key: Mapped[str] = mapped_column(Text)
+    held: Mapped[bool] = mapped_column(Boolean, server_default="false")
+    notified: Mapped[bool] = mapped_column(Boolean, server_default="false")
+    created_at: Mapped[datetime] = _created()
+    read_at: Mapped[datetime | None] = mapped_column(TS)
