@@ -7,10 +7,10 @@ from datetime import UTC, datetime, timedelta
 from sqlalchemy import select
 from sqlalchemy.orm import Session, sessionmaker
 
+from geotrade_ai import normalize as norm
 from geotrade_ai import reference
 from geotrade_ai.core.ids import uuid7
 from geotrade_ai.models import Article, ArticleEntity, ArticleScore
-from geotrade_ai.worker import normalize as norm
 from geotrade_ai.worker import pipeline, prices
 from geotrade_ai.worker.aggregate import recompute
 from geotrade_ai.worker.nlp.llm import get_qwen_scorer

@@ -6,13 +6,13 @@ from typing import Any
 
 from sqlalchemy.orm import Session
 
+from geotrade_ai import normalize as norm
 from geotrade_ai.core.config import get_settings
 from geotrade_ai.core.ids import uuid7
 from geotrade_ai.core.metrics import ARTICLES_FETCHED, ARTICLES_SKIPPED, SOURCE_FETCHES
 from geotrade_ai.models import Source, SourceHealth
 from geotrade_ai.repos import articles as articles_repo
 from geotrade_ai.repos import sources as sources_repo
-from geotrade_ai.worker import normalize as norm
 from geotrade_ai.worker.http import Fetcher, FetchError, circuit_minutes
 from geotrade_ai.worker.sources import ADAPTERS, RawItem
 

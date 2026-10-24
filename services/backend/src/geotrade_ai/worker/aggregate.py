@@ -5,7 +5,6 @@
 Only buckets an article touches are recomputed: its own, later existing ones and the current one.
 Sector and market indices are market-cap-weighted averages of the latest stock indices."""
 
-import math
 import uuid
 from collections import defaultdict
 from dataclasses import dataclass
@@ -17,6 +16,7 @@ from sqlalchemy.orm import Session
 
 from geotrade_ai import reference
 from geotrade_ai.core.metrics import INGEST_TO_VISIBLE
+from geotrade_ai.market_calendar import session_date, session_start_utc
 from geotrade_ai.models import (
     Article,
     ArticleEntity,
@@ -25,13 +25,9 @@ from geotrade_ai.models import (
     SectorSentimentBucket,
     SentimentBucket,
 )
-from geotrade_ai.worker.market import session_date, session_start_utc
+from geotrade_ai.signals import LOOKBACK, SIZES, decay, squash
 
-HALF_LIFE_H = 12.0
-LOOKBACK = timedelta(hours=72)
-SQUASH = 1.5
 SECONDARY_WEIGHT = 0.5
-SIZES = {"5m": timedelta(minutes=5), "1h": timedelta(hours=1), "1d": timedelta(days=1)}
 IST_OFFSET = timedelta(hours=5, minutes=30)
 
 
@@ -44,14 +40,6 @@ class Impact:
 
 def impact(score: float, severity: float, confidence: float, primary: bool) -> float:
     return score * severity * confidence * (1.0 if primary else SECONDARY_WEIGHT)
-
-
-def decay(age: timedelta) -> float:
-    return float(0.5 ** (max(age.total_seconds(), 0) / 3600 / HALF_LIFE_H))
-
-
-def squash(raw: float) -> float:
-    return round(100 * math.tanh(raw / SQUASH), 2)
 
 
 def bucket_start(ts: datetime, size: str) -> datetime:

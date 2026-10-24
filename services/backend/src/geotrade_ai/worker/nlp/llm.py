@@ -19,8 +19,8 @@ from sqlalchemy.orm import Session
 from geotrade_ai.core.config import get_settings
 from geotrade_ai.core.metrics import LLM_REQUESTS
 from geotrade_ai.models import EVENT_TYPES, LlmCache, LlmUsage
+from geotrade_ai.normalize import IST
 from geotrade_ai.worker.nlp.keyword import Sentiment
-from geotrade_ai.worker.normalize import IST
 
 log = logging.getLogger(__name__)
 

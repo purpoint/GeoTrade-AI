@@ -5,6 +5,7 @@ import pytest
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
+from geotrade_ai.market_calendar import is_market_open, next_trading_day, session_date
 from geotrade_ai.models import (
     Article,
     MarketSentimentBucket,
@@ -13,9 +14,9 @@ from geotrade_ai.models import (
     SentimentBucket,
 )
 from geotrade_ai.repos.reference import seed_reference
+from geotrade_ai.signals import decay, squash
 from geotrade_ai.worker import prices
-from geotrade_ai.worker.aggregate import Impact, bucket_start, compute_bucket, decay, impact, squash
-from geotrade_ai.worker.market import is_market_open, next_trading_day, session_date
+from geotrade_ai.worker.aggregate import Impact, bucket_start, compute_bucket, impact
 from tests.test_pipeline import add, drain
 
 IST_DAY = datetime(2026, 10, 23, tzinfo=UTC)  # Friday

@@ -3,7 +3,7 @@
 from datetime import UTC, date, datetime, time, timedelta
 
 from geotrade_ai import reference
-from geotrade_ai.worker.normalize import IST
+from geotrade_ai.normalize import IST
 
 MARKET_OPEN = time(9, 15)
 MARKET_CLOSE = time(15, 30)

@@ -9,11 +9,11 @@ from prometheus_client import start_http_server
 
 from geotrade_ai.core.config import get_settings
 from geotrade_ai.core.db import get_sessionmaker
+from geotrade_ai.market_calendar import is_market_open, is_trading_day
+from geotrade_ai.normalize import IST
 from geotrade_ai.worker import jobs, pipeline, prices
 from geotrade_ai.worker.http import Fetcher
 from geotrade_ai.worker.ingest import poll_due_sources
-from geotrade_ai.worker.market import is_market_open, is_trading_day
-from geotrade_ai.worker.normalize import IST
 
 log = logging.getLogger(__name__)
 

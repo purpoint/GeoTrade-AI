@@ -6,7 +6,7 @@ from dataclasses import dataclass
 
 import feedparser
 
-from geotrade_ai.worker.normalize import clean_title, strip_html
+from geotrade_ai.normalize import clean_title, strip_html
 
 
 @dataclass

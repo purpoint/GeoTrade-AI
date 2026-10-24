@@ -8,9 +8,9 @@ from hypothesis import strategies as st
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
+from geotrade_ai import normalize as norm
 from geotrade_ai.models import Article, Source, SourceHealth
 from geotrade_ai.repos.reference import seed_reference
-from geotrade_ai.worker import normalize as norm
 from geotrade_ai.worker.http import Fetcher, FetchError, circuit_minutes
 from geotrade_ai.worker.ingest import build_rows, poll_source
 from geotrade_ai.worker.sources import ADAPTERS
