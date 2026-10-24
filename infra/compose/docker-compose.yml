@@ -1,0 +1,33 @@
+name: geotrade-ai
+
+services:
+  database:
+    build: ../../services/database
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-geotrade}
+      POSTGRES_USER: ${POSTGRES_USER:-geotrade}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-geotrade-dev}
+      PGUSER: ${POSTGRES_USER:-geotrade}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ../../backups:/backups
+    ports: ["5432:5432"]
+    healthcheck:
+      test: ["CMD", "pg_isready", "-d", "${POSTGRES_DB:-geotrade}"]
+      interval: 5s
+      retries: 20
+
+  # nightly pg_dump into ./backups (P1-DB-10)
+  database-backup:
+    build: ../../services/database
+    entrypoint: ["sh", "-c", "while true; do sleep 86400; /usr/local/bin/geotrade/backup.sh; done"]
+    environment:
+      PGHOST: database
+      PGUSER: ${POSTGRES_USER:-geotrade}
+      PGPASSWORD: ${POSTGRES_PASSWORD:-geotrade-dev}
+      POSTGRES_DB: ${POSTGRES_DB:-geotrade}
+    volumes: ["../../backups:/backups"]
+    depends_on: { database: { condition: service_healthy } }
+
+volumes:
+  pgdata:
