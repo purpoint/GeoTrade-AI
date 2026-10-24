@@ -10,6 +10,7 @@ import { FreshnessPill } from "./FreshnessPill";
 import { Sidebar } from "./Sidebar";
 import { ThemeToggle, useTheme } from "./ThemeToggle";
 import { TickerTape } from "./TickerTape";
+import { UserMenu } from "./UserMenu";
 
 const typing = (el: EventTarget | null) =>
   el instanceof HTMLElement && (el.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(el.tagName));
@@ -54,6 +55,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <div className="ml-auto flex items-center gap-2">
               <FreshnessPill status={status} lastArticleAt={overview?.freshness.last_article_at} />
               <ThemeToggle theme={theme} toggle={toggle} />
+              <UserMenu />
             </div>
           </div>
           <TickerTape />
