@@ -4,14 +4,25 @@ import logging
 import random
 from datetime import UTC, datetime, timedelta
 
-from sqlalchemy import delete, or_, select
+from sqlalchemy import delete, or_, select, text, update
 from sqlalchemy.orm import Session, sessionmaker
 
 from geotrade_ai import normalize as norm
 from geotrade_ai import reference
 from geotrade_ai.aggregation import recompute
 from geotrade_ai.core.ids import uuid7
-from geotrade_ai.models import Article, ArticleEntity, ArticleScore, RefreshToken
+from geotrade_ai.models import (
+    Article,
+    ArticleEntity,
+    ArticleScore,
+    CoverageSpike,
+    DigestDelivery,
+    LlmCache,
+    PipelineEvent,
+    PriceCandle,
+    RefreshToken,
+    SentimentBucket,
+)
 from geotrade_ai.repos import portfolio as portfolio_repo
 from geotrade_ai.worker import pipeline, prices
 from geotrade_ai.worker.nlp.llm import get_qwen_scorer
@@ -117,3 +128,35 @@ def housekeeping(session: Session) -> dict[str, int]:
     )
     session.commit()
     return {"previews": previews, "tokens": int(getattr(result, "rowcount", 0) or 0)}
+
+
+# (what, age in days) - P3-DB-03
+RETENTION_DAYS = {"candles_5m": 90, "buckets_5m": 30, "pipeline_events": 14, "llm_cache": 30, "digest": 30}
+
+
+def retention(session: Session, now: datetime | None = None) -> dict[str, int]:
+    """Nightly: drop fine-grained history nobody reads. Digest rows stay (idempotency), minus payload."""
+    now = now or datetime.now(UTC)
+
+    def ago(key: str) -> datetime:
+        return now - timedelta(days=RETENTION_DAYS[key])
+
+    stmts = {
+        "candles_5m": delete(PriceCandle).where(
+            PriceCandle.interval == "5m", PriceCandle.ts < ago("candles_5m")
+        ),
+        "buckets_5m": delete(SentimentBucket).where(
+            SentimentBucket.bucket_size == "5m", SentimentBucket.bucket_start < ago("buckets_5m")
+        ),
+        "pipeline_events": delete(PipelineEvent).where(PipelineEvent.created_at < ago("pipeline_events")),
+        "llm_cache": delete(LlmCache).where(LlmCache.created_at < ago("llm_cache")),
+        "spikes": delete(CoverageSpike).where(CoverageSpike.bucket_start < ago("buckets_5m")),
+        "digest_payloads": update(DigestDelivery)
+        .where(DigestDelivery.created_at < ago("digest"), DigestDelivery.snapshot.is_not(None))
+        .values(snapshot=None),
+    }
+    out = {k: int(getattr(session.execute(stmt), "rowcount", 0) or 0) for k, stmt in stmts.items()}
+    session.execute(text("ANALYZE price_candles, sentiment_buckets, pipeline_events"))
+    session.commit()
+    log.info("retention", extra={"extra": out})
+    return out

@@ -54,6 +54,10 @@ def main() -> None:
         with factory() as session:
             jobs.housekeeping(session)
 
+    def retention() -> None:
+        with factory() as session:
+            jobs.retention(session)
+
     def refresh_views() -> None:
         with factory() as session:
             stats.refresh_views(session)
@@ -80,6 +84,7 @@ def main() -> None:
     sched.add_job(rescore, "cron", hour=2, minute=0, id="rescore_fallbacks")
     sched.add_job(co_mentions, "cron", hour=1, minute=30, id="co_mentions")
     sched.add_job(refresh_views, "interval", minutes=5, jitter=20, id="refresh_views")
+    sched.add_job(retention, "cron", hour=3, minute=15, id="retention")
     sched.add_job(housekeeping, "interval", minutes=10, jitter=30, id="housekeeping")
     sched.add_job(alert_sweep, "interval", seconds=60, jitter=5, id="alert_sweep")
     if s.enable_prices:  # fill candles on start so charts are not empty

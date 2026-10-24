@@ -50,7 +50,8 @@ def db_url() -> Iterator[str]:
 MUTABLE_TABLES = (
     "articles, story_clusters, article_entities, article_scores, pipeline_events, dead_letters, "
     "llm_cache, llm_usage, price_candles, sentiment_buckets, sector_sentiment_buckets, "
-    "market_sentiment_buckets, users, co_mentions, eval_runs, backtest_runs, golden_examples"
+    "market_sentiment_buckets, users, co_mentions, eval_runs, backtest_runs, golden_examples, "
+    "digest_runs, email_suppressions, coverage_spikes"
 )
 
 

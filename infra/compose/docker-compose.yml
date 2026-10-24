@@ -53,6 +53,9 @@ services:
   backend-api:
     <<: *backend
     command: ["api", "--workers", "1"]
+    environment:
+      <<: *backend-env
+      DB_POOL_SIZE: 10  # P3-DB-04: api 10, worker 5
     ports: ["8000:8000"]
     depends_on: { backend-migrate: { condition: service_completed_successfully } }
     healthcheck:
@@ -67,6 +70,7 @@ services:
       <<: *backend-env
       LLM_PROVIDER: groq
       LLM_MODEL: ${LLM_MODEL:-qwen/qwen3.8-27b}
+      DB_POOL_SIZE: 5
     depends_on: { backend-migrate: { condition: service_completed_successfully } }
 
   ui:

@@ -25,7 +25,7 @@ def ensure_default_rules(session: Session, user_id: uuid.UUID) -> None:
         session.execute(
             insert(AlertRule)
             .values(id=uuid7(), user_id=user_id, kind=kind, params=params, enabled=True)
-            .on_conflict_do_nothing(index_elements=["user_id", "kind"])
+            .on_conflict_do_nothing(index_elements=["user_id", "kind"], index_where=text("kind <> 'custom'"))
         )
 
 

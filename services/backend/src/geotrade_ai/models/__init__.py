@@ -1,7 +1,7 @@
 """SQLAlchemy models shared by both roles. Must match migrations/ (tests/test_migrations.py checks drift)."""
 
 import uuid
-from datetime import date, datetime
+from datetime import date, datetime, time
 from decimal import Decimal
 from typing import Any
 
@@ -17,6 +17,7 @@ from sqlalchemy import (
     Numeric,
     SmallInteger,
     Text,
+    Time,
     func,
 )
 from sqlalchemy.dialects.postgresql import ARRAY, CITEXT, JSONB, UUID
@@ -220,6 +221,8 @@ class ArticleScore(Base):
     explanation: Mapped[str] = mapped_column(Text)
     explanation_source: Mapped[str] = mapped_column(ExplanationSource, server_default="template")
     is_fallback: Mapped[bool] = mapped_column(Boolean, server_default="false")
+    hedge_score: Mapped[float] = mapped_column(REAL, server_default="0")
+    credibility: Mapped[float] = mapped_column(REAL, server_default="1")
     scored_at: Mapped[datetime] = mapped_column(TS, server_default=func.now())
     updated_at: Mapped[datetime] = _updated()
 
@@ -389,6 +392,7 @@ class AlertRule(Base):
     kind: Mapped[str] = mapped_column(Text)
     params: Mapped[dict[str, Any]] = mapped_column(JSONB, server_default="{}")
     enabled: Mapped[bool] = mapped_column(Boolean, server_default="true")
+    source_text: Mapped[str | None] = mapped_column(Text)  # the user's words, for 'custom' rules
     created_at: Mapped[datetime] = _created()
     updated_at: Mapped[datetime] = _updated()
 
@@ -453,4 +457,74 @@ class BacktestRun(Base):
     id: Mapped[uuid.UUID] = mapped_column(UUID, primary_key=True)
     params: Mapped[Any] = mapped_column(JSONB)
     results: Mapped[Any] = mapped_column(JSONB)
+    created_at: Mapped[datetime] = _created()
+
+
+# ---------- digest (0009) ----------
+
+
+class EmailPreferences(Base):
+    __tablename__ = "email_preferences"
+    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), primary_key=True)
+    daily_digest_enabled: Mapped[bool] = mapped_column(Boolean, server_default="false")
+    send_time_ist: Mapped[time] = mapped_column(Time, server_default="17:00")
+    include_watch_ideas: Mapped[bool] = mapped_column(Boolean, server_default="true")
+    include_watchlist: Mapped[bool] = mapped_column(Boolean, server_default="true")
+    include_market: Mapped[bool] = mapped_column(Boolean, server_default="true")
+    consent_text_version: Mapped[str | None] = mapped_column(Text)
+    consented_at: Mapped[datetime | None] = mapped_column(TS)
+    unsubscribed_at: Mapped[datetime | None] = mapped_column(TS)
+    updated_at: Mapped[datetime] = _updated()
+
+
+class DigestRun(Base):
+    __tablename__ = "digest_runs"
+    id: Mapped[uuid.UUID] = mapped_column(UUID, primary_key=True)
+    kind: Mapped[str] = mapped_column(Text, server_default="daily")
+    session_date: Mapped[date] = mapped_column(Date)
+    status: Mapped[str] = mapped_column(Text)
+    started_at: Mapped[datetime] = mapped_column(TS, server_default=func.now())
+    finished_at: Mapped[datetime | None] = mapped_column(TS)
+    stats: Mapped[dict[str, Any]] = mapped_column(JSONB, server_default="{}")
+
+
+class DigestDelivery(Base):
+    __tablename__ = "digest_deliveries"
+    id: Mapped[uuid.UUID] = mapped_column(UUID, primary_key=True)
+    run_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("digest_runs.id", ondelete="CASCADE"))
+    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
+    kind: Mapped[str] = mapped_column(Text, server_default="daily")
+    session_date: Mapped[date] = mapped_column(Date)
+    status: Mapped[str] = mapped_column(Text)
+    skip_reason: Mapped[str | None] = mapped_column(Text)
+    send_after: Mapped[datetime] = mapped_column(TS)
+    snapshot: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
+    narrative_source: Mapped[str | None] = mapped_column(Text)
+    subject: Mapped[str | None] = mapped_column(Text)
+    provider: Mapped[str | None] = mapped_column(Text)
+    provider_message_id: Mapped[str | None] = mapped_column(Text)
+    attempts: Mapped[int] = mapped_column(SmallInteger, server_default="0")
+    last_error: Mapped[str | None] = mapped_column(Text)
+    sent_at: Mapped[datetime | None] = mapped_column(TS)
+    created_at: Mapped[datetime] = _created()
+
+
+class EmailSuppression(Base):
+    __tablename__ = "email_suppressions"
+    email: Mapped[str] = mapped_column(CITEXT, primary_key=True)
+    reason: Mapped[str] = mapped_column(Text)
+    created_at: Mapped[datetime] = _created()
+
+
+# ---------- extras (0010) ----------
+
+
+class CoverageSpike(Base):
+    __tablename__ = "coverage_spikes"
+    ticker: Mapped[str] = mapped_column(ForeignKey("companies.ticker"), primary_key=True)
+    bucket_start: Mapped[datetime] = mapped_column(TS, primary_key=True)
+    z_score: Mapped[float] = mapped_column(REAL)
+    n_stories: Mapped[int] = mapped_column(Integer)
+    baseline_mean: Mapped[float] = mapped_column(REAL)
+    baseline_std: Mapped[float] = mapped_column(REAL)
     created_at: Mapped[datetime] = _created()
