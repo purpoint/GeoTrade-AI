@@ -53,11 +53,28 @@ class Settings(BaseSettings):
     operator_email: str = ""
     operator_password: str = ""
 
+    # Daily Pulse digest (Phase 3). EMAIL_PROVIDER: log (nothing sent), smtp (Mailpit in dev) or brevo.
+    public_web_url: str = "http://localhost:3000"
+    enable_digest: bool = True
+    enable_weekly_digest: bool = True
+    digest_build_time_ist: str = "16:30"
+    digest_default_send_time_ist: str = "17:00"
+    weekly_digest_time_ist: str = "09:00"
+    email_provider: str = "log"
+    email_from: str = "samvam0821@gmail.com"
+    email_from_name: str = "GeoTrade-AI Daily Pulse"
+    email_daily_quota: int = 300
+    brevo_api_key: str = ""
+    smtp_host: str = "localhost"
+    smtp_port: int = 1025
+    unsubscribe_token_secret: str = "dev-only-change-me-unsubscribe-secret!!"
+    email_webhook_secret: str = ""
+
     # api
     cache_ttl_seconds: float = 20.0
     sse_heartbeat_seconds: float = 15.0
 
-    @field_validator("jwt_secret", "refresh_token_pepper", mode="before")
+    @field_validator("jwt_secret", "refresh_token_pepper", "unsubscribe_token_secret", mode="before")
     @classmethod
     def _strong_secret(cls, v: str, info: ValidationInfo) -> str:
         if not v:  # unset: keep the development default (never deploy without setting it)

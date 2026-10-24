@@ -2,7 +2,7 @@
 
 import json
 import uuid
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, datetime
 from typing import Annotated, Literal
 
 from fastapi import APIRouter, File, Form, Response, UploadFile
@@ -120,16 +120,7 @@ class HoldingPatch(BaseModel):
 def build_exposure(db: Session, user: User, ctx: StockContext | None = None) -> ex.Exposure:
     now = datetime.now(UTC)
     ctx = ctx or StockContext(db, now)
-    rows = repo.holdings(db, user.id)
-    tickers = [h.ticker for h in rows if h.ticker]
-    companies = {c["ticker"]: (c["name"], c["sector_id"]) for c in reference.companies()}
-    return ex.compute(
-        [ex.HoldingIn(h.id, h.symbol, h.ticker, float(h.quantity), float(h.avg_price)) for h in rows],
-        ctx.prices,
-        ctx.signals,
-        read.severe_negative_events(db, tickers, now - timedelta(hours=48)),
-        companies,
-    )
+    return ex.for_user(db, user.id, now, ctx.prices, ctx.signals)
 
 
 @router.get("/portfolio", response_model=PortfolioOut)

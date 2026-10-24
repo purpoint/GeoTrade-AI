@@ -21,6 +21,7 @@ from geotrade_ai.models import (
     CoverageSpike,
     PipelineEvent,
     Sector,
+    SentimentBucket,
     Source,
     StoryCluster,
 )
@@ -479,3 +480,28 @@ def active_spikes(session: Session, now: datetime, hours: int = 24) -> dict[str,
     for r in rows:
         out.setdefault(r.ticker, r)
     return out
+
+
+def daily_index(session: Session, tickers: list[str], since: date) -> dict[str, dict[date, float]]:
+    """Closed daily (1d bucket) index per stock and session date."""
+    out: dict[str, dict[date, float]] = defaultdict(dict)
+    for t, d, v in session.execute(
+        select(SentimentBucket.ticker, SentimentBucket.session_date, SentimentBucket.index_value).where(
+            SentimentBucket.bucket_size == "1d",
+            SentimentBucket.ticker.in_(tickers),
+            SentimentBucket.session_date >= since,
+        )
+    ):
+        out[t][d] = float(v)
+    return out
+
+
+def coverage(session: Session, since: datetime) -> dict[str, tuple[int, int]]:
+    """Visible stories and distinct sources per stock since `since`."""
+    rows = session.execute(
+        select(ArticleEntity.entity_id, func.count(), func.count(func.distinct(Article.source_id)))
+        .join(Article, Article.id == ArticleEntity.article_id)
+        .where(ArticleEntity.entity_type == "stock", Article.status == VISIBLE, Article.published_at >= since)
+        .group_by(ArticleEntity.entity_id)
+    ).all()
+    return {t: (int(n), int(src)) for t, n, src in rows}

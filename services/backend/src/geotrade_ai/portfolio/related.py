@@ -22,15 +22,10 @@ class Candidate:
     score: float = 0.0
 
 
-def rank(
-    held: list[str],
-    companies: dict[str, dict[str, str]],
-    co_mentions: list[tuple[str, str, float, int]],
-    signals: dict[str, tuple[float, float]],
-    stories_3d: dict[str, int],
-    limit: int = 5,
-) -> list[Candidate]:
-    """companies: ticker -> {name, sector_id, group_name}; signals: ticker -> (index, delta_24h)."""
+def candidates(
+    held: list[str], companies: dict[str, dict[str, str]], co_mentions: list[tuple[str, str, float, int]]
+) -> dict[str, Candidate]:
+    """Stocks not held that relate to a holding, with relatedness and the reasons."""
     held_set = set(held)
     cands: dict[str, Candidate] = {}
 
@@ -54,9 +49,20 @@ def rank(
     for h, peer, rate, n in co_mentions:
         if n >= 2:
             relate(peer, min(0.4 + rate, 0.9), f"Often in the news with {h} ({n} shared stories)")
+    return cands
 
+
+def rank(
+    held: list[str],
+    companies: dict[str, dict[str, str]],
+    co_mentions: list[tuple[str, str, float, int]],
+    signals: dict[str, tuple[float, float]],
+    stories_3d: dict[str, int],
+    limit: int = 5,
+) -> list[Candidate]:
+    """companies: ticker -> {name, sector_id, group_name}; signals: ticker -> (index, delta_24h)."""
     out = []
-    for c in cands.values():
+    for c in candidates(held, companies, co_mentions).values():
         c.index, c.delta_24h = signals.get(c.ticker, (0.0, 0.0))
         c.stories_3d = stories_3d.get(c.ticker, 0)
         if c.index <= 0 or c.delta_24h <= 0 or c.stories_3d < MIN_STORIES_3D:

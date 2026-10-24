@@ -1,8 +1,15 @@
 """Exposure, concentration and risk flags (P2-BE-05). Pure functions over prices and signals so the API,
 the alert engine and (Phase 3) the digest all agree."""
 
+import uuid
 from dataclasses import dataclass, field
+from datetime import datetime, timedelta
 
+from sqlalchemy.orm import Session
+
+from geotrade_ai import reference
+from geotrade_ai.repos import portfolio as portfolio_repo
+from geotrade_ai.repos import read
 from geotrade_ai.repos.read import PriceNow, StockSignal
 
 STOCK_LIMIT = 0.25
@@ -141,4 +148,24 @@ def compute(
         delta_24h=round(sum(r.value * (r.delta_24h or 0) for r in matched) / mtotal, 2),
         sectors=dict(sorted(sectors.items(), key=lambda kv: -kv[1])),
         contributors=contributors,
+    )
+
+
+def for_user(
+    session: Session,
+    user_id: uuid.UUID,
+    now: datetime,
+    prices: dict[str, PriceNow],
+    signals: dict[str, StockSignal],
+) -> Exposure:
+    """One user's exposure from their stored holdings (the dashboard, the alert engine and the digest)."""
+    rows = portfolio_repo.holdings(session, user_id)
+    tickers = [h.ticker for h in rows if h.ticker]
+    companies = {c["ticker"]: (c["name"], c["sector_id"]) for c in reference.companies()}
+    return compute(
+        [HoldingIn(h.id, h.symbol, h.ticker, float(h.quantity), float(h.avg_price)) for h in rows],
+        prices,
+        signals,
+        read.severe_negative_events(session, tickers, now - timedelta(hours=48)),
+        companies,
     )
