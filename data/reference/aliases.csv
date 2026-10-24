@@ -1,0 +1,171 @@
+ticker,alias,case_sensitive,is_ambiguous
+ADANIENT,Adani Enterprises,false,false
+ADANIENT,Adani Ent,false,false
+ADANIENT,ADANIENT,true,false
+ADANIENT,Adani Group,false,true
+ADANIENT,Gautam Adani,false,true
+ADANIPORTS,Adani Ports,false,false
+ADANIPORTS,Adani Ports and SEZ,false,false
+ADANIPORTS,Adani Ports & SEZ,false,false
+ADANIPORTS,APSEZ,true,false
+ADANIPORTS,ADANIPORTS,true,false
+APOLLOHOSP,Apollo Hospitals,false,false
+APOLLOHOSP,Apollo Hospitals Enterprise,false,false
+APOLLOHOSP,APOLLOHOSP,true,false
+APOLLOHOSP,Apollo Hospital,false,false
+ASIANPAINT,Asian Paints,false,false
+ASIANPAINT,ASIANPAINT,true,false
+ASIANPAINT,Asian Paint,false,false
+AXISBANK,Axis Bank,false,false
+AXISBANK,AXISBANK,true,false
+AXISBANK,Axis,true,true
+BAJAJ-AUTO,Bajaj Auto,false,false
+BAJAJ-AUTO,BAJAJ-AUTO,true,false
+BAJAJ-AUTO,Bajaj Motorcycles,false,false
+BAJAJFINSV,Bajaj Finserv,false,false
+BAJAJFINSV,BAJAJFINSV,true,false
+BAJFINANCE,Bajaj Finance,false,false
+BAJFINANCE,BAJFINANCE,true,false
+BAJFINANCE,Bajaj Fin,false,false
+BEL,Bharat Electronics,false,false
+BEL,BEL,true,false
+BHARTIARTL,Bharti Airtel,false,false
+BHARTIARTL,Airtel,false,false
+BHARTIARTL,BHARTIARTL,true,false
+BHARTIARTL,Bharti,false,true
+CIPLA,Cipla,false,false
+CIPLA,CIPLA,true,false
+COALINDIA,Coal India,false,false
+COALINDIA,COALINDIA,true,false
+COALINDIA,CIL,true,true
+DRREDDY,Dr Reddy's,false,false
+DRREDDY,Dr. Reddy's,false,false
+DRREDDY,Dr Reddys,false,false
+DRREDDY,Dr Reddy's Laboratories,false,false
+DRREDDY,DRREDDY,true,false
+EICHERMOT,Eicher Motors,false,false
+EICHERMOT,Eicher,false,false
+EICHERMOT,Royal Enfield,false,false
+EICHERMOT,EICHERMOT,true,false
+ETERNAL,Eternal,true,false
+ETERNAL,Zomato,false,false
+ETERNAL,Blinkit,false,false
+ETERNAL,ETERNAL,true,false
+GRASIM,Grasim,false,false
+GRASIM,Grasim Industries,false,false
+GRASIM,GRASIM,true,false
+GRASIM,Birla Opus,false,false
+HCLTECH,HCL Tech,false,false
+HCLTECH,HCLTech,false,false
+HCLTECH,HCL Technologies,false,false
+HCLTECH,HCLTECH,true,false
+HDFCBANK,HDFC Bank,false,false
+HDFCBANK,HDFCBANK,true,false
+HDFCBANK,HDFC,true,true
+HDFCLIFE,HDFC Life,false,false
+HDFCLIFE,HDFC Life Insurance,false,false
+HDFCLIFE,HDFCLIFE,true,false
+HINDALCO,Hindalco,false,false
+HINDALCO,Hindalco Industries,false,false
+HINDALCO,Novelis,false,false
+HINDALCO,HINDALCO,true,false
+HINDUNILVR,Hindustan Unilever,false,false
+HINDUNILVR,HUL,true,false
+HINDUNILVR,HINDUNILVR,true,false
+ICICIBANK,ICICI Bank,false,false
+ICICIBANK,ICICIBANK,true,false
+ICICIBANK,ICICI,true,true
+INDIGO,IndiGo,true,false
+INDIGO,InterGlobe Aviation,false,false
+INDIGO,InterGlobe,false,false
+INDIGO,INDIGO,true,false
+INFY,Infosys,false,false
+INFY,INFY,true,false
+ITC,ITC,true,false
+ITC,ITC Ltd,false,false
+JIOFIN,Jio Financial,false,false
+JIOFIN,Jio Financial Services,false,false
+JIOFIN,Jio Finance,false,false
+JIOFIN,JFSL,true,false
+JIOFIN,JIOFIN,true,false
+JSWSTEEL,JSW Steel,false,false
+JSWSTEEL,JSWSTEEL,true,false
+KOTAKBANK,Kotak Mahindra Bank,false,false
+KOTAKBANK,Kotak Bank,false,false
+KOTAKBANK,KOTAKBANK,true,false
+KOTAKBANK,Kotak,false,true
+LT,Larsen & Toubro,false,false
+LT,Larsen and Toubro,false,false
+LT,L&T,true,false
+LT,Larsen,false,false
+M&M,Mahindra & Mahindra,false,false
+M&M,Mahindra and Mahindra,false,false
+M&M,M&M,true,false
+M&M,Mahindra,true,true
+MARUTI,Maruti Suzuki,false,false
+MARUTI,Maruti,false,false
+MARUTI,MARUTI,true,false
+MAXHEALTH,Max Healthcare,false,false
+MAXHEALTH,MAXHEALTH,true,false
+NESTLEIND,Nestle India,false,false
+NESTLEIND,NESTLEIND,true,false
+NESTLEIND,Nestle,false,true
+NTPC,NTPC,true,false
+NTPC,NTPC Green,false,true
+ONGC,ONGC,true,false
+ONGC,Oil and Natural Gas Corporation,false,false
+ONGC,Oil & Natural Gas Corp,false,false
+POWERGRID,Power Grid,false,false
+POWERGRID,Power Grid Corporation,false,false
+POWERGRID,POWERGRID,true,false
+POWERGRID,PowerGrid,false,false
+RELIANCE,Reliance Industries,false,false
+RELIANCE,RIL,true,false
+RELIANCE,Reliance Jio,false,false
+RELIANCE,Jio Platforms,false,false
+RELIANCE,Reliance Retail,false,false
+RELIANCE,Mukesh Ambani,false,true
+RELIANCE,Reliance,true,true
+RELIANCE,RELIANCE,true,false
+SBILIFE,SBI Life,false,false
+SBILIFE,SBI Life Insurance,false,false
+SBILIFE,SBILIFE,true,false
+SBIN,State Bank of India,false,false
+SBIN,SBI,true,false
+SBIN,SBIN,true,false
+SHRIRAMFIN,Shriram Finance,false,false
+SHRIRAMFIN,SHRIRAMFIN,true,false
+SUNPHARMA,Sun Pharma,false,false
+SUNPHARMA,Sun Pharmaceutical,false,false
+SUNPHARMA,SUNPHARMA,true,false
+TATACONSUM,Tata Consumer,false,false
+TATACONSUM,Tata Consumer Products,false,false
+TATACONSUM,TATACONSUM,true,false
+TATAMOTORS,Tata Motors,false,false
+TATAMOTORS,TMPV,true,false
+TATAMOTORS,Tata Motors Passenger Vehicles,false,false
+TATAMOTORS,Jaguar Land Rover,false,false
+TATAMOTORS,JLR,true,false
+TATAMOTORS,TATAMOTORS,true,false
+TATASTEEL,Tata Steel,false,false
+TATASTEEL,TATASTEEL,true,false
+TCS,TCS,true,false
+TCS,Tata Consultancy Services,false,false
+TCS,Tata Consultancy,false,false
+TECHM,Tech Mahindra,false,false
+TECHM,TechM,false,false
+TECHM,TECHM,true,false
+TITAN,Titan Company,false,false
+TITAN,Titan,true,true
+TITAN,Tanishq,false,false
+TITAN,TITAN,true,false
+TRENT,Trent,true,false
+TRENT,Zudio,false,false
+TRENT,Westside,true,true
+TRENT,TRENT,true,false
+ULTRACEMCO,UltraTech Cement,false,false
+ULTRACEMCO,UltraTech,false,false
+ULTRACEMCO,Ultratech,false,false
+ULTRACEMCO,ULTRACEMCO,true,false
+WIPRO,Wipro,false,false
+WIPRO,WIPRO,true,false

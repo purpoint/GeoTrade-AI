@@ -1,0 +1,6 @@
+id,name,adapter,url,domain,poll_interval_s,priority,enabled
+et,Economic Times Markets,et,https://economictimes.indiatimes.com/markets/rssfeeds/1977021501.cms,economictimes.indiatimes.com,60,80,true
+moneycontrol,Moneycontrol,moneycontrol,https://www.moneycontrol.com/rss/business.xml,moneycontrol.com,120,70,true
+mint,Mint Markets,mint,https://www.livemint.com/rss/markets,livemint.com,60,75,true
+business_standard,Business Standard Markets,business_standard,https://www.business-standard.com/rss/markets-106.rss,business-standard.com,60,75,true
+demo,Demo injection,demo,https://geotrade.local/demo,geotrade.local,0,10,false

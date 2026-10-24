@@ -29,6 +29,16 @@ def cmd_migrate(args: argparse.Namespace) -> None:
     command.upgrade(Config(str(Path(__file__).resolve().parents[2] / "alembic.ini")), args.revision)
 
 
+def cmd_seed(args: argparse.Namespace) -> None:
+    import logging
+
+    from geotrade_ai.core.db import get_sessionmaker
+    from geotrade_ai.repos.reference import seed_reference
+
+    with get_sessionmaker()() as session:
+        logging.getLogger("seed").info("reference seeded", extra={"extra": seed_reference(session)})
+
+
 def cmd_openapi(args: argparse.Namespace) -> None:
     from geotrade_ai.api.app import create_app
 
@@ -53,6 +63,10 @@ def main(argv: list[str] | None = None) -> None:
     p = sub.add_parser("migrate", help="apply Alembic migrations")
     p.add_argument("revision", nargs="?", default="head")
     p.set_defaults(fn=cmd_migrate)
+
+    p = sub.add_parser("seed", help="load reference data (idempotent)")
+    p.add_argument("--reference", action="store_true", default=True)
+    p.set_defaults(fn=cmd_seed)
 
     p = sub.add_parser("openapi", help="export the OpenAPI document")
     p.add_argument("--out", default="-")

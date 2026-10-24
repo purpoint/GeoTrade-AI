@@ -1,0 +1,51 @@
+ticker,name,sector_id,yf_symbol,market_cap_cr,group_name
+ADANIENT,Adani Enterprises,capital_goods,ADANIENT.NS,280000,Adani
+ADANIPORTS,Adani Ports and SEZ,capital_goods,ADANIPORTS.NS,300000,Adani
+APOLLOHOSP,Apollo Hospitals,healthcare,APOLLOHOSP.NS,105000,
+ASIANPAINT,Asian Paints,consumer,ASIANPAINT.NS,230000,
+AXISBANK,Axis Bank,banking,AXISBANK.NS,360000,
+BAJAJ-AUTO,Bajaj Auto,auto,BAJAJ-AUTO.NS,250000,Bajaj
+BAJAJFINSV,Bajaj Finserv,financial_services,BAJAJFINSV.NS,320000,Bajaj
+BAJFINANCE,Bajaj Finance,financial_services,BAJFINANCE.NS,600000,Bajaj
+BEL,Bharat Electronics,capital_goods,BEL.NS,290000,
+BHARTIARTL,Bharti Airtel,telecom,BHARTIARTL.NS,1150000,
+CIPLA,Cipla,healthcare,CIPLA.NS,120000,
+COALINDIA,Coal India,energy,COALINDIA.NS,240000,
+DRREDDY,Dr. Reddy's Laboratories,healthcare,DRREDDY.NS,105000,
+EICHERMOT,Eicher Motors,auto,EICHERMOT.NS,190000,
+ETERNAL,Eternal (Zomato),consumer,ETERNAL.NS,310000,
+GRASIM,Grasim Industries,cement,GRASIM.NS,180000,Aditya Birla
+HCLTECH,HCL Technologies,it,HCLTECH.NS,420000,
+HDFCBANK,HDFC Bank,banking,HDFCBANK.NS,1500000,HDFC
+HDFCLIFE,HDFC Life Insurance,financial_services,HDFCLIFE.NS,160000,HDFC
+HINDALCO,Hindalco Industries,metals,HINDALCO.NS,170000,Aditya Birla
+HINDUNILVR,Hindustan Unilever,fmcg,HINDUNILVR.NS,570000,
+ICICIBANK,ICICI Bank,banking,ICICIBANK.NS,980000,ICICI
+INDIGO,InterGlobe Aviation (IndiGo),services,INDIGO.NS,220000,
+INFY,Infosys,it,INFY.NS,620000,
+ITC,ITC,fmcg,ITC.NS,520000,
+JIOFIN,Jio Financial Services,financial_services,JIOFIN.NS,190000,Reliance
+JSWSTEEL,JSW Steel,metals,JSWSTEEL.NS,280000,JSW
+KOTAKBANK,Kotak Mahindra Bank,banking,KOTAKBANK.NS,420000,
+LT,Larsen & Toubro,capital_goods,LT.NS,520000,
+M&M,Mahindra & Mahindra,auto,M&M.NS,430000,Mahindra
+MARUTI,Maruti Suzuki India,auto,MARUTI.NS,500000,
+MAXHEALTH,Max Healthcare Institute,healthcare,MAXHEALTH.NS,110000,
+NESTLEIND,Nestle India,fmcg,NESTLEIND.NS,230000,
+NTPC,NTPC,energy,NTPC.NS,330000,
+ONGC,Oil and Natural Gas Corporation,energy,ONGC.NS,300000,
+POWERGRID,Power Grid Corporation of India,energy,POWERGRID.NS,270000,
+RELIANCE,Reliance Industries,energy,RELIANCE.NS,1900000,Reliance
+SBILIFE,SBI Life Insurance,financial_services,SBILIFE.NS,180000,SBI
+SBIN,State Bank of India,banking,SBIN.NS,800000,SBI
+SHRIRAMFIN,Shriram Finance,financial_services,SHRIRAMFIN.NS,130000,
+SUNPHARMA,Sun Pharmaceutical Industries,healthcare,SUNPHARMA.NS,400000,
+TATACONSUM,Tata Consumer Products,fmcg,TATACONSUM.NS,110000,Tata
+TATAMOTORS,Tata Motors Passenger Vehicles,auto,TMPV.NS,150000,Tata
+TATASTEEL,Tata Steel,metals,TATASTEEL.NS,210000,Tata
+TCS,Tata Consultancy Services,it,TCS.NS,1100000,Tata
+TECHM,Tech Mahindra,it,TECHM.NS,150000,Mahindra
+TITAN,Titan Company,consumer,TITAN.NS,330000,Tata
+TRENT,Trent,consumer,TRENT.NS,170000,Tata
+ULTRACEMCO,UltraTech Cement,cement,ULTRACEMCO.NS,360000,Aditya Birla
+WIPRO,Wipro,it,WIPRO.NS,260000,
