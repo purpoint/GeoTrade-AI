@@ -99,6 +99,16 @@ def cmd_backtest(args: argparse.Namespace) -> None:
     print(json.dumps(results, indent=2))
 
 
+def cmd_backfill(args: argparse.Namespace) -> None:
+    from geotrade_ai.core.db import get_sessionmaker
+    from geotrade_ai.repos.reference import seed_reference
+    from geotrade_ai.worker.backfill import backfill
+
+    with get_sessionmaker()() as session:
+        seed_reference(session)  # makes sure the google_news source row exists
+    print(json.dumps(backfill(get_sessionmaker(), args.days)))
+
+
 def cmd_openapi(args: argparse.Namespace) -> None:
     from geotrade_ai.api.app import create_app
 
@@ -144,6 +154,10 @@ def main(argv: list[str] | None = None) -> None:
     p = sub.add_parser("evaluate", help="score the golden set and write a JSON report")
     p.add_argument("--golden", default="golden-v1")
     p.set_defaults(fn=cmd_evaluate)
+
+    p = sub.add_parser("backfill", help="load N days of real headlines (Google News search) for the backtest")
+    p.add_argument("--days", type=int, default=60)
+    p.set_defaults(fn=cmd_backfill)
 
     p = sub.add_parser("backtest", help="news signal vs next-session return; saved for the evaluation page")
     p.set_defaults(fn=cmd_backtest)

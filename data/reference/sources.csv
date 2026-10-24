@@ -4,3 +4,4 @@ moneycontrol,Moneycontrol,moneycontrol,https://www.moneycontrol.com/rss/business
 mint,Mint Markets,mint,https://www.livemint.com/rss/markets,livemint.com,60,75,true
 business_standard,Business Standard Markets,business_standard,https://www.business-standard.com/rss/markets-106.rss,business-standard.com,60,75,true
 demo,Demo injection,demo,https://geotrade.local/demo,geotrade.local,0,10,false
+google_news,Google News (backfill),google_news,https://news.google.com/rss/search,news.google.com,0,40,false

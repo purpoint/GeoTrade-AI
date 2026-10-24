@@ -13,7 +13,7 @@ export default function MethodologyPage() {
         <li><strong>Fetch</strong>: RSS feeds from Economic Times, Mint, Business Standard and Moneycontrol, polled about every minute.</li>
         <li><strong>Deduplicate</strong>: identical links, identical normalised titles within 48 hours, and near-identical titles about the same company within 6 hours are grouped into one story.</li>
         <li><strong>Link</strong>: company names and aliases are matched with rules for ambiguous names (for example “Reliance Power” is not Reliance Industries). At most three companies are primary per story.</li>
-        <li><strong>Score</strong>: Qwen3-32B (via Groq) labels tone when enabled; a keyword model is the fallback and the baseline. Rules assign an event type and severity, discounted for hedged headlines (“may”, “reportedly”).</li>
+        <li><strong>Score</strong>: Qwen 3.8 27B (via Groq) labels tone when enabled; a keyword model is the fallback and the baseline. Rules assign an event type and severity, discounted for hedged headlines (“may”, “reportedly”).</li>
         <li><strong>Aggregate</strong>: each story’s impact is tone × severity × link confidence, decayed with a 12-hour half-life and squashed to -100..100 with tanh. Sector and market indices are market-cap weighted.</li>
       </ol>
       <h2 className="text-base font-semibold">Limits</h2>

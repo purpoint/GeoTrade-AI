@@ -66,7 +66,7 @@ services:
     environment:
       <<: *backend-env
       LLM_PROVIDER: groq
-      LLM_MODEL: qwen/qwen3-32b
+      LLM_MODEL: ${LLM_MODEL:-qwen/qwen3.8-27b}
     depends_on: { backend-migrate: { condition: service_completed_successfully } }
 
   ui:

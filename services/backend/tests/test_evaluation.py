@@ -85,3 +85,12 @@ def test_evaluation_endpoints_and_views(session: Session, tmp_path: Path) -> Non
     stats.refresh_views(session)
     cov = client.get("/api/v1/evaluation/coverage").json()
     assert cov["stocks_with_news_24h"] >= 1
+
+
+def test_external_benchmark_keyword_only() -> None:
+    from geotrade_ai.eval.golden import external_benchmark
+
+    out = external_benchmark()
+    assert out["n"] == 300 and "SEntFiN" in out["dataset"]
+    kw = out["models"]["keyword-v1"]
+    assert 0 < kw["accuracy"] < 1 and -1 <= kw["cohen_kappa_vs_humans"] <= 1

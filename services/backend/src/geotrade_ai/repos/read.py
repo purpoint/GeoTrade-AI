@@ -368,7 +368,7 @@ def sources_with_health(session: Session) -> list[Any]:
                 "SELECT s.id, s.name, s.url, s.enabled, h.state, h.consecutive_failures, h.last_success_at, "
                 "h.last_failure_at, h.last_error, h.last_item_count, h.fetched_total "
                 "FROM sources s JOIN source_health h ON h.source_id = s.id "
-                "WHERE s.adapter <> 'demo' ORDER BY s.name"
+                "WHERE s.enabled ORDER BY s.name"  # demo and backfill-only sources are disabled
             )
         ).all()
     )

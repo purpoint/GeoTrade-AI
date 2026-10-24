@@ -10,6 +10,10 @@ from sqlalchemy.orm import Session
 
 from geotrade_ai.core import config, db
 
+# tests never call a real LLM, whatever a developer's .env says
+os.environ["ENABLE_LLM"] = "false"
+os.environ["GROQ_API_KEY"] = ""
+
 TEST_DB_URL = os.environ.get(
     "TEST_DATABASE_URL", "postgresql+psycopg://geotrade:geotrade-dev@localhost:5432/geotrade_test"
 )

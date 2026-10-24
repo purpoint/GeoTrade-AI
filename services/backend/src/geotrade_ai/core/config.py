@@ -1,6 +1,7 @@
 from functools import lru_cache
 from pathlib import Path
 
+from pydantic import ValidationInfo, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 # services/backend/src/geotrade_ai/core/config.py -> repo root
@@ -18,14 +19,14 @@ class Settings(BaseSettings):
     operator_token: str = ""
     data_dir: Path = REPO_ROOT / "data"
 
-    # LLM (Qwen3-32B on Groq); keyword scorer is the fallback
+    # LLM (Qwen 3.8 27B on Groq); keyword scorer is the fallback
     enable_llm: bool = False
     llm_provider: str = "groq"
-    llm_model: str = "qwen/qwen3-32b"
+    llm_model: str = "qwen/qwen3.8-27b"
     llm_base_url: str = "https://api.groq.com/openai/v1"
     groq_api_key: str = ""
     llm_daily_budget: int = 150
-    llm_per_minute: int = 30
+    llm_per_minute: int = 5  # Groq free tier: 8K tokens/min is about 5 batches of 10 headlines
     llm_batch_size: int = 10
     llm_timeout_s: float = 20.0
 
@@ -55,6 +56,15 @@ class Settings(BaseSettings):
     # api
     cache_ttl_seconds: float = 20.0
     sse_heartbeat_seconds: float = 15.0
+
+    @field_validator("jwt_secret", "refresh_token_pepper", mode="before")
+    @classmethod
+    def _strong_secret(cls, v: str, info: ValidationInfo) -> str:
+        if not v:  # unset: keep the development default (never deploy without setting it)
+            return str(cls.model_fields[info.field_name or ""].default)
+        if len(v) < 32:
+            raise ValueError(f"{(info.field_name or '').upper()} must be at least 32 characters")
+        return v
 
     @property
     def cors_origin_list(self) -> list[str]:

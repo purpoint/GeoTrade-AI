@@ -144,3 +144,14 @@ def test_poll_source_stores_once_and_opens_circuit(session: Session) -> None:
     health = session.get_one(SourceHealth, "et")
     assert health.consecutive_failures == 1 and health.state == "degraded"
     assert health.circuit_open_until == now + timedelta(minutes=1)
+
+
+def test_google_news_adapter_strips_publisher() -> None:
+    items = ADAPTERS["google_news"]((FIXTURES / "google_news.xml").read_bytes())
+    assert len(items) >= 50
+    assert all(i.summary == "" and not i.title.endswith(" - Reuters") for i in items)
+    from geotrade_ai.worker.backfill import search_url
+
+    assert search_url("Eternal (Zomato)", 60).endswith("q=%22Eternal%22+when%3A60d&hl=en-IN&gl=IN&ceid=IN:en")
+    rows = build_rows("google_news", items, RECORDED_AT + timedelta(days=1), timedelta(days=60))
+    assert len(rows) > 50  # weeks-old stories survive the backfill age limit

@@ -128,7 +128,7 @@ def test_groq_outage_falls_back_to_keyword(session: Session) -> None:
     score_articles(session, [article], scorer=QwenScorer(groq(good), Budget(10, 10)))  # later re-score
     session.commit()
     session.refresh(s)
-    assert (s.model_version_id, s.is_fallback) == ("qwen3-32b-groq-v1", False)
+    assert (s.model_version_id, s.is_fallback) == ("qwen3.8-27b-groq-v1", False)
 
 
 def test_score_stage_without_llm(session: Session) -> None:

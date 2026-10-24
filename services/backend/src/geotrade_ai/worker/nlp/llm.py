@@ -1,9 +1,10 @@
-"""LlmClient over Groq's OpenAI-compatible API (P1-BE-13). Qwen3-32B, thinking off, temperature 0.
+"""LlmClient over Groq's OpenAI-compatible API (P1-BE-13). Qwen 3.8 27B, thinking off, temperature 0.
 Every caller must handle LlmUnavailable by falling back to the keyword scorer."""
 
 import hashlib
 import json
 import logging
+import re
 import threading
 import time
 from collections import deque
@@ -24,7 +25,7 @@ from geotrade_ai.worker.nlp.keyword import Sentiment
 
 log = logging.getLogger(__name__)
 
-MODEL_ID = "qwen3-32b-groq-v1"
+MODEL_ID = "qwen3.8-27b-groq-v1"
 PROMPT_VERSION = "score-v1"
 SYSTEM_PROMPT = f"""You label Indian stock-market news headlines for a research dashboard.
 For each item decide the tone of the headline for shareholders of the named company (or for the
@@ -36,6 +37,32 @@ Reply with JSON only: {{"results": [{{"id": <id>, "label": "positive"|"neutral"|
 
 class LlmUnavailable(Exception):
     pass
+
+
+class LlmRateLimited(LlmUnavailable):
+    """Provider said slow down; retry_after is how long until the limit resets."""
+
+    def __init__(self, message: str, retry_after: float) -> None:
+        super().__init__(message)
+        self.retry_after = retry_after
+
+
+_DURATION = re.compile(r"(?:(\d+)m)?(\d+(?:\.\d+)?)s")
+
+
+def retry_after_seconds(headers: httpx.Headers) -> float:
+    """Retry-After, else the longer of Groq's request and token reset times (e.g. '4m19.2s')."""
+    if headers.get("retry-after"):
+        try:
+            return float(headers["retry-after"])
+        except ValueError:
+            pass
+    waits = []
+    for key in ("x-ratelimit-reset-tokens", "x-ratelimit-reset-requests"):
+        m = _DURATION.fullmatch(headers.get(key, ""))
+        if m:
+            waits.append(int(m.group(1) or 0) * 60 + float(m.group(2)))
+    return max(waits, default=60.0)
 
 
 class LlmClient(Protocol):
@@ -68,7 +95,7 @@ class GroqClient:
         except httpx.HTTPError as exc:
             raise LlmUnavailable(f"transport: {exc}") from exc
         if resp.status_code == 429:
-            raise LlmUnavailable("rate limited by provider")
+            raise LlmRateLimited("rate limited by provider", retry_after_seconds(resp.headers))
         if resp.status_code >= 400:
             raise LlmUnavailable(f"HTTP {resp.status_code}: {resp.text[:200]}")
         content = resp.json()["choices"][0]["message"]["content"]
@@ -132,7 +159,8 @@ class Budget:
             while self._recent and now - self._recent[0] > 60:
                 self._recent.popleft()
             if len(self._recent) >= self.per_minute:
-                raise LlmUnavailable("per-minute budget used")
+                wait = 60 - (now - self._recent[0]) if self._recent else 60.0
+                raise LlmRateLimited("per-minute budget used", wait)
             day = datetime.now(IST).date()
             used = session.scalar(
                 select(LlmUsage.requests).where(LlmUsage.day == day, LlmUsage.purpose == purpose)

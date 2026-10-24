@@ -75,7 +75,7 @@ export default function EvaluationPage() {
       <div className="card border-warn/40 bg-warn/5 p-3 text-sm">
         <p className="font-medium">Read these numbers with care</p>
         <ul className="ml-4 list-disc text-muted">
-          <li>The golden set is small and was labelled by the project team; a second annotator is still pending, so scores are optimistic.</li>
+          <li>The golden set is small and was labelled by the project team, so its scores are optimistic; the independent SEntFiN check below uses human labels from outside the project.</li>
           <li>News sentiment usually has weak predictive power for returns. Past behaviour is not a guide, and nothing here is advice.</li>
           <li>Anyone can reproduce these numbers with <code className="num">backend evaluate</code> and <code className="num">backend backtest</code>.</li>
         </ul>
@@ -97,10 +97,10 @@ export default function EvaluationPage() {
             <Card label="Annotator agreement" value={r.agreement?.status === "done" ? `κ ${r.agreement.cohen_kappa}` : "pending"} hint={r.agreement?.status === "done" ? `${r.agreement.n} shared items` : "second annotator not done yet"} />
           </div>
           {models.length < 2 ? (
-            <p className="text-sm text-muted">Only the keyword baseline was evaluated. Qwen3-32B appears here once the evaluation runs with a Groq key.</p>
+            <p className="text-sm text-muted">Only the keyword baseline was evaluated. Qwen appears here once the evaluation runs with a Groq key.</p>
           ) : (
             <p className="text-sm">
-              Qwen vs keyword baseline (macro F1): <span className="num">{pct(r.sentiment["qwen3-32b-groq-v1"]?.macro_f1)}</span> vs{" "}
+              Qwen vs keyword baseline (macro F1): <span className="num">{pct(r.sentiment[models.find((k) => k.startsWith("qwen")) ?? ""]?.macro_f1)}</span> vs{" "}
               <span className="num">{pct(r.sentiment["keyword-v1"]?.macro_f1)}</span>
             </p>
           )}
@@ -138,6 +138,35 @@ export default function EvaluationPage() {
                   </tbody>
                 </table>
               </div>
+            </section>
+          ) : null}
+          {r.external?.models ? (
+            <section className="card space-y-2 p-4 text-sm">
+              <h2 className="font-semibold">Independent check: {r.external.dataset}</h2>
+              <p className="text-xs text-muted">
+                {r.external.n} Economic Times headlines labelled by three MBA annotators with expert curation, not by this project. Cohen&apos;s κ measures agreement with
+                those human labels beyond chance (0 = chance, 1 = perfect).
+              </p>
+              <table className="num text-xs">
+                <thead className="text-muted">
+                  <tr>
+                    <th className="p-1 text-left font-normal">model</th>
+                    <th className="p-1 font-normal">accuracy</th>
+                    <th className="p-1 font-normal">macro F1</th>
+                    <th className="p-1 font-normal">κ vs humans</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {Object.entries(r.external.models as Record<string, { accuracy: number; macro_f1: number; cohen_kappa_vs_humans: number }>).map(([k, v]) => (
+                    <tr key={k} className="border-t border-line">
+                      <td className="p-1">{k}</td>
+                      <td className="p-1 text-right">{pct(v.accuracy)}</td>
+                      <td className="p-1 text-right">{pct(v.macro_f1)}</td>
+                      <td className="p-1 text-right">{v.cohen_kappa_vs_humans.toFixed(2)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </section>
           ) : null}
           <section className="card p-4 text-sm">

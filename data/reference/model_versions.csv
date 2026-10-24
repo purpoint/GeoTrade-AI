@@ -1,3 +1,4 @@
 id,kind,provider,description
-qwen3-32b-groq-v1,llm,groq,"Qwen3-32B via Groq, thinking off, temperature 0, prompt v1"
+qwen3-32b-groq-v1,llm,groq,"Qwen3-32B via Groq, thinking off, temperature 0, prompt v1 (retired: Groq shut the model down on 2026-07-17)"
+qwen3.8-27b-groq-v1,llm,groq,"Qwen 3.8 27B via Groq, reasoning_effort none, temperature 0, JSON mode, prompt v1"
 keyword-v1,keyword,local,Lexicon and rule scorer for Indian finance headlines (fallback and baseline)

@@ -45,10 +45,27 @@ def moneycontrol(content: bytes) -> list[RawItem]:
     return items
 
 
+def google_news(content: bytes) -> list[RawItem]:
+    """Search feed used for history backfill: titles end with ' - Publisher' and the description is only
+    a link list, so drop both; the publisher comes from the item's <source> element."""
+    feed = feedparser.parse(content)
+    items = []
+    for entry in feed.entries:
+        publisher = (entry.get("source") or {}).get("title", "")
+        title = clean_title(entry.get("title", ""))
+        if publisher and title.endswith(f" - {publisher}"):
+            title = title[: -len(publisher) - 3].strip()
+        url = (entry.get("link") or "").strip()
+        if title and url.startswith("http"):
+            items.append(RawItem(title=title, url=url, summary="", published_raw=entry.get("published")))
+    return items
+
+
 ADAPTERS: dict[str, Callable[[bytes], list[RawItem]]] = {
     "rss_generic": rss_generic,
     "et": rss_generic,
     "mint": rss_generic,
     "business_standard": rss_generic,
     "moneycontrol": moneycontrol,
+    "google_news": google_news,
 }

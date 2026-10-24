@@ -19,8 +19,10 @@ from geotrade_ai.worker.sources import ADAPTERS, RawItem
 log = logging.getLogger(__name__)
 
 
-def build_rows(source_id: str, items: list[RawItem], now: datetime) -> list[dict[str, Any]]:
-    max_age = timedelta(hours=get_settings().article_max_age_hours)
+def build_rows(
+    source_id: str, items: list[RawItem], now: datetime, max_age: timedelta | None = None
+) -> list[dict[str, Any]]:
+    max_age = max_age or timedelta(hours=get_settings().article_max_age_hours)
     rows: dict[str, dict[str, Any]] = {}
     for item in items:
         published, estimated = norm.parse_published(item.published_raw, now)

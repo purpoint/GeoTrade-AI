@@ -14,6 +14,7 @@ from geotrade_ai.normalize import normalize_title, title_hash
 from geotrade_ai.worker.dedupe import is_near_duplicate
 from geotrade_ai.worker.linker import get_linker
 from geotrade_ai.worker.nlp import events, keyword
+from geotrade_ai.worker.nlp.llm import MODEL_ID as LLM_MODEL_ID
 
 log = logging.getLogger(__name__)
 LABELS = ("positive", "neutral", "negative")
@@ -134,28 +135,71 @@ def dedupe_metrics() -> dict[str, Any]:
 
 def qwen_labels(rows: list[dict[str, Any]]) -> list[str] | None:
     from geotrade_ai import reference
-    from geotrade_ai.core.db import get_sessionmaker
-    from geotrade_ai.worker.nlp.llm import LlmUnavailable, get_qwen_scorer
 
-    scorer = get_qwen_scorer()
-    if scorer is None:
-        return None
     names = {c["ticker"]: c["name"] for c in reference.companies()}
     items = [
         (r["headline"], f"{r['tickers'][0]} ({names[r['tickers'][0]]})" if r["tickers"] else None)
         for r in rows
     ]
+    return label_items(items)
+
+
+def label_items(items: list[tuple[str, str | None]]) -> list[str] | None:
+    """Qwen labels for (headline, company) pairs, waiting out free-tier rate limits. None if unavailable."""
+    import time
+
+    from geotrade_ai.core.db import get_sessionmaker
+    from geotrade_ai.worker.nlp.llm import LlmRateLimited, LlmUnavailable, get_qwen_scorer
+
+    scorer = get_qwen_scorer()
+    if scorer is None:
+        return None
     out: list[str] = []
     size = get_settings().llm_batch_size
     with get_sessionmaker()() as session:
         for i in range(0, len(items), size):
-            try:
-                scored = scorer.score(session, items[i : i + size])
-            except LlmUnavailable as exc:
-                log.warning("qwen evaluation stopped", extra={"extra": {"reason": str(exc)}})
+            for _attempt in range(6):  # free-tier limits are per minute: wait them out
+                try:
+                    scored = scorer.score(session, items[i : i + size])
+                    break
+                except LlmRateLimited as exc:
+                    session.rollback()
+                    wait = min(exc.retry_after + 1, 90)
+                    log.info("rate limited, waiting", extra={"extra": {"seconds": wait, "batch": i // size}})
+                    time.sleep(wait)
+                except LlmUnavailable as exc:
+                    log.warning("qwen evaluation stopped", extra={"extra": {"reason": str(exc)}})
+                    return None
+            else:
+                log.warning("qwen evaluation stopped: still rate limited")
                 return None
             session.commit()
             out += [s.label if s else "neutral" for s in scored]
+    return out
+
+
+def external_benchmark() -> dict[str, Any]:
+    """Agreement with independent human labels (SEntFiN 1.0 sample, see data/external/README.md)."""
+    path = get_settings().data_dir / "external" / "sentfin-v1-sample.csv"
+    if not path.exists():
+        return {"status": "no external set"}
+    with path.open(newline="", encoding="utf-8") as f:
+        rows = list(csv.DictReader(f))
+    human = [r["label"] for r in rows]
+    preds = {"keyword-v1": [keyword.score(r["headline"]).label for r in rows]}
+    qwen = label_items([(r["headline"], r["entity"]) for r in rows])
+    if qwen is not None:
+        preds[LLM_MODEL_ID] = qwen
+    out: dict[str, Any] = {"dataset": "SEntFiN 1.0 (Sinha et al., 2022)", "n": len(rows), "models": {}}
+    for model, pred in preds.items():
+        m = classification(human, pred)
+        out["models"][model] = {
+            "accuracy": m["accuracy"],
+            "macro_f1": m["macro_f1"],
+            "cohen_kappa_vs_humans": cohen_kappa(human, pred),
+            "per_class": m["per_class"],
+            "confusion": m["confusion"],
+        }
     return out
 
 
@@ -180,16 +224,16 @@ def evaluate(name: str = "golden-v1", out_dir: Path | None = None, save: bool = 
         "events": {"accuracy": round(event_hits / len(rows), 4)},
         "dedupe": dedupe_metrics(),
         "agreement": agreement(name, rows),
+        "external": external_benchmark(),
         "label_distribution": dict(Counter(gold)),
         "errors": {"keyword-v1": errors_sample(rows, kw)},
     }
     qwen = qwen_labels(rows)
     if qwen is not None:
-        report["sentiment"]["qwen3-32b-groq-v1"] = classification(gold, qwen)
-        report["errors"]["qwen3-32b-groq-v1"] = errors_sample(rows, qwen)
+        report["sentiment"][LLM_MODEL_ID] = classification(gold, qwen)
+        report["errors"][LLM_MODEL_ID] = errors_sample(rows, qwen)
         report["qwen_beats_baseline"] = (
-            report["sentiment"]["qwen3-32b-groq-v1"]["macro_f1"]
-            > report["sentiment"]["keyword-v1"]["macro_f1"]
+            report["sentiment"][LLM_MODEL_ID]["macro_f1"] > report["sentiment"]["keyword-v1"]["macro_f1"]
         )
     else:
         report["sentiment_note"] = "Qwen not evaluated: set ENABLE_LLM=true and GROQ_API_KEY to include it."

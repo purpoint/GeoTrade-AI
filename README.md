@@ -63,6 +63,7 @@ uv run backend api --port 8000      # and, in another shell: uv run backend work
 TEST_DATABASE_URL=postgresql+psycopg://geotrade:geotrade-dev@localhost:5433/geotrade_test uv run pytest
 uv run backend seed --demo          # demo investor + operator (OPERATOR_EMAIL / OPERATOR_PASSWORD)
 uv run backend evaluate             # golden-v1 report into data/golden/reports/ and the evaluation page
+uv run backend backfill --days 60   # real headlines from Google News search, one query per company (for the backtest)
 uv run backend backtest             # news signal vs next-session return
 uv run pytest -m contract           # Schemathesis: every operation, no server errors (slow)
 
@@ -79,7 +80,7 @@ After changing an API schema: `uv run backend openapi --out ../../packages/share
 
 ## Scoring and indices
 
-- **Sentiment**: Qwen3-32B on Groq when `ENABLE_LLM=true` (batched, cached, daily budget in `llm_usage`); otherwise, or when Groq fails, the keyword scorer. Fallback scores are re-scored nightly.
+- **Sentiment**: Qwen 3.8 27B on Groq (Groq shut down Qwen3-32B on 17 July 2026) when `ENABLE_LLM=true` (batched, cached, daily budget in `llm_usage`); otherwise, or when Groq fails, the keyword scorer. Fallback scores are re-scored nightly.
 - **Events**: priority-ordered rules; severity is discounted for hedged headlines and raised for large moves.
 - **Index**: impact = score × severity × link confidence (secondary links at half weight), decayed with a 12-hour half-life over 72 hours, squashed with `100·tanh(x/1.5)`. Sector and market indices are market-cap weighted.
 
@@ -107,7 +108,7 @@ On golden-v1 (300 headlines): linking P 1.00 / R 0.99, keyword sentiment macro F
 
 Known limits:
 - Annotator agreement is pending until someone fills `data/golden/golden-v1-annotator2.csv`; until then scores are optimistic.
-- The backtest needs real history: it reports "insufficient data" until at least 30 stock-sessions have both real news and a next-session price (sample history is excluded on purpose).
+- The backtest uses real news only. On a fresh database it reports "insufficient data" until about 30 stock-sessions have news and a next-session price; `backend backfill` loads about 60 days of real headlines to get there. Google News often gives only a date, so a story can land one session off.
 - Rate limits, the response cache and SSE connection caps are per API process (one replica). Redis is the documented upgrade if the API scales out.
 - `X-Forwarded-For` is trusted for per-IP limits because the UI proxy sets it; restrict that if the API is exposed directly.
 
