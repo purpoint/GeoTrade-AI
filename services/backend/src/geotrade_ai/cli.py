@@ -3,6 +3,7 @@
 import argparse
 import json
 import sys
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 from geotrade_ai.core.config import get_settings
@@ -109,6 +110,30 @@ def cmd_backfill(args: argparse.Namespace) -> None:
     print(json.dumps(backfill(get_sessionmaker(), args.days)))
 
 
+def cmd_digest(args: argparse.Namespace) -> None:
+    """Build and/or send a digest run by hand (the worker does this on schedule)."""
+    from datetime import date
+
+    from geotrade_ai.core.db import get_sessionmaker
+    from geotrade_ai.digest import jobs
+    from geotrade_ai.digest.sender import get_sender
+    from geotrade_ai.normalize import IST
+
+    day = date.fromisoformat(args.date) if args.date else datetime.now(IST).date()
+    with get_sessionmaker()() as session:
+        if args.action in ("build", "run"):
+            run = jobs.build(session, args.kind, day, rebuild=args.rebuild)
+            print(json.dumps({"run": run.stats if run else "not a trading day"}, default=str))
+        if args.action in ("send", "run"):
+            print(
+                json.dumps(
+                    jobs.send_due(
+                        session, get_sender(), now=datetime.now(UTC) + timedelta(days=1) if args.now else None
+                    )
+                )
+            )
+
+
 def cmd_why_sheet(args: argparse.Namespace) -> None:
     """50-item human rating sheet for the 'why this matters' sentences (P3-BE-06)."""
     import csv
@@ -189,6 +214,14 @@ def main(argv: list[str] | None = None) -> None:
 
     p = sub.add_parser("backtest", help="news signal vs next-session return; saved for the evaluation page")
     p.set_defaults(fn=cmd_backtest)
+
+    p = sub.add_parser("digest", help="build or send the Daily Pulse now (build | send | run)")
+    p.add_argument("action", choices=["build", "send", "run"])
+    p.add_argument("--kind", choices=["daily", "weekly"], default="daily")
+    p.add_argument("--date", help="session date (default today, IST)")
+    p.add_argument("--rebuild", action="store_true", help="refresh unsent snapshots")
+    p.add_argument("--now", action="store_true", help="send queued digests now instead of at their send time")
+    p.set_defaults(fn=cmd_digest)
 
     p = sub.add_parser("why-sheet", help="CSV of recent 'why this matters' sentences for human rating")
     p.add_argument("--out", default="why-this-matters-rating.csv")

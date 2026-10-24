@@ -2,13 +2,15 @@
 
 import logging
 import signal
-from datetime import UTC, datetime
+from datetime import UTC, datetime, time
 
 from apscheduler.schedulers.blocking import BlockingScheduler
 from prometheus_client import start_http_server
 
 from geotrade_ai.core.config import get_settings
 from geotrade_ai.core.db import get_sessionmaker
+from geotrade_ai.digest import jobs as digest_jobs
+from geotrade_ai.digest.sender import get_sender
 from geotrade_ai.market_calendar import is_market_open, is_trading_day
 from geotrade_ai.normalize import IST
 from geotrade_ai.repos import co_mentions as co_mentions_repo
@@ -70,6 +72,30 @@ def main() -> None:
         with factory() as session:
             explain.run(session)
 
+    sender = get_sender()
+
+    def digest_build() -> None:
+        today = datetime.now(IST).date()
+        if s.enable_digest and is_trading_day(today):
+            with factory() as session:
+                digest_jobs.build(session, "daily", today)
+
+    def digest_send() -> None:
+        if s.enable_digest:
+            with factory() as session:
+                digest_jobs.send_due(session, sender)
+
+    def digest_sweep() -> None:
+        if s.enable_digest:
+            with factory() as session:
+                digest_jobs.sweep(session, sender)
+
+    def weekly_digest() -> None:
+        if s.enable_digest and s.enable_weekly_digest:
+            with factory() as session:
+                digest_jobs.build(session, "weekly", datetime.now(IST).date())
+                digest_jobs.send_due(session, sender)
+
     def detect_spikes() -> None:
         with factory() as session:
             spikes.detect(session)
@@ -94,6 +120,26 @@ def main() -> None:
     sched.add_job(refresh_views, "interval", minutes=5, jitter=20, id="refresh_views")
     sched.add_job(retention, "cron", hour=3, minute=15, id="retention")
     sched.add_job(housekeeping, "interval", minutes=10, jitter=30, id="housekeeping")
+    build_at = time.fromisoformat(s.digest_build_time_ist)
+    weekly_at = time.fromisoformat(s.weekly_digest_time_ist)
+    sched.add_job(
+        digest_build,
+        "cron",
+        day_of_week="mon-fri",
+        hour=build_at.hour,
+        minute=build_at.minute,
+        id="digest_build",
+    )
+    sched.add_job(digest_send, "interval", seconds=60, jitter=5, id="digest_send")
+    sched.add_job(digest_sweep, "cron", hour=21, minute=0, id="digest_sweep")
+    sched.add_job(
+        weekly_digest,
+        "cron",
+        day_of_week="sat",
+        hour=weekly_at.hour,
+        minute=weekly_at.minute,
+        id="weekly_digest",
+    )
     sched.add_job(why_this_matters, "interval", minutes=10, jitter=30, id="why_this_matters")
     sched.add_job(detect_spikes, "interval", minutes=15, jitter=30, id="coverage_spikes")
     sched.add_job(alert_sweep, "interval", seconds=60, jitter=5, id="alert_sweep")

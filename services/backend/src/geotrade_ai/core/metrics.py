@@ -18,3 +18,7 @@ LLM_FALLBACKS = Counter("llm_fallback_total", "Articles scored by the keyword fa
 PIPELINE_BACKLOG = Gauge("pipeline_backlog", "Articles waiting per status", ["status"])
 HTTP_REQUESTS = Histogram("http_request_seconds", "API request latency", ["route", "status"])
 SSE_CLIENTS = Gauge("sse_clients", "Connected SSE clients")
+DIGEST_BUILT = Counter("digest_built_total", "Digest snapshots built", ["kind", "result"])
+DIGEST_SENT = Counter("digest_sent_total", "Digest deliveries leaving the outbox", ["provider", "status"])
+DIGEST_LLM_FALLBACK = Counter("digest_llm_fallback_total", "Digest narratives that fell back to the template")
+DIGEST_BUILD_SECONDS = Histogram("digest_build_seconds", "Time to build one digest run", ["kind"])

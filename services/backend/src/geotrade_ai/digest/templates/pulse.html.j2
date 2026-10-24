@@ -1,0 +1,129 @@
+{#- Daily and weekly Pulse email. Inline CSS, one 600px column, light colours that survive dark-mode
+    inversion (no pure white text on images, no background images). Every link is absolute. -#}
+{%- set pos = "#0f7b4b" -%}{%- set neg = "#b42318" -%}{%- set ink = "#1d2433" -%}{%- set mute = "#5b6475" -%}
+{%- macro signed(x) -%}<span style="color:{{ pos if x > 0 else neg if x < 0 else mute }};font-weight:600">{{ "%+.0f"|format(x) }}</span>{%- endmacro -%}
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light only"><meta name="supported-color-schemes" content="light">
+<title>{{ subject }}</title>
+</head>
+<body style="margin:0;padding:0;background:#f3f4f6;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:{{ ink }}">
+<div style="display:none;max-height:0;overflow:hidden">{{ narrative[:140] }}</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f3f4f6"><tr><td align="center" style="padding:16px 8px">
+<table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border:1px solid #e5e7eb;border-radius:8px">
+<tr><td style="padding:20px 24px;border-bottom:1px solid #e5e7eb">
+  <div style="font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:{{ mute }}">GeoTrade-AI {{ "Weekly Pulse" if s.kind == "weekly" else "Daily Pulse" }}</div>
+  <div style="font-size:20px;font-weight:700;margin-top:4px">{{ heading }}</div>
+  <div style="font-size:12px;color:{{ mute }};margin-top:6px">Not investment advice. Summary of public news and signals.</div>
+</td></tr>
+
+<tr><td style="padding:20px 24px">
+  <div style="font-size:12px;font-weight:700;color:{{ mute }};text-transform:uppercase">{{ "This week in one paragraph" if s.kind == "weekly" else "Today in one paragraph" }}</div>
+  <p style="font-size:15px;line-height:1.55;margin:8px 0 0">{{ narrative }}</p>
+</td></tr>
+
+{%- if s.kind == "weekly" %}
+<tr><td style="padding:0 24px 20px">
+  <div style="font-size:12px;font-weight:700;color:{{ mute }};text-transform:uppercase">Portfolio sentiment by session</div>
+  <table role="presentation" cellpadding="0" cellspacing="0" style="margin-top:8px;font-size:14px">
+  {%- for d in s.portfolio.trend %}<tr><td style="padding:2px 16px 2px 0;color:{{ mute }}">{{ d.date }}</td><td>{{ signed(d.index) }}</td></tr>{% endfor %}
+  </table>
+</td></tr>
+{%- if s.stories %}
+<tr><td style="padding:0 24px 20px">
+  <div style="font-size:12px;font-weight:700;color:{{ mute }};text-transform:uppercase">The week's biggest stories</div>
+  {%- for x in s.stories %}
+  <p style="font-size:14px;margin:8px 0 0"><strong>{{ x.ticker }}</strong> <a href="{{ x.url }}" style="color:#1d4ed8">{{ x.title }}</a> <span style="color:{{ mute }}">({{ x.source }}{% if x.source_count > 1 %} + {{ x.source_count - 1 }} more{% endif %})</span></p>
+  {%- endfor %}
+</td></tr>
+{%- endif %}
+<tr><td style="padding:0 24px 20px;font-size:14px">
+  <div style="font-size:12px;font-weight:700;color:{{ mute }};text-transform:uppercase">Alerts this week: {{ s.flags.count }}</div>
+  {%- for a in s.flags["items"] %}<div style="margin-top:4px">&bull; {{ a.title }}</div>{% endfor %}
+  {%- if s.persistent_momentum %}
+  <div style="font-size:12px;font-weight:700;color:{{ mute }};text-transform:uppercase;margin-top:14px">Positive momentum that persisted (not in your portfolio)</div>
+  <div style="margin-top:4px">{% for m in s.persistent_momentum %}{{ m.ticker }} ({{ m.days }} days){{ ", " if not loop.last }}{% endfor %}</div>
+  <div style="font-size:12px;color:{{ mute }};margin-top:4px">These are not recommendations.</div>
+  {%- endif %}
+</td></tr>
+{%- else %}
+<tr><td style="padding:0 24px 20px">
+  <div style="font-size:12px;font-weight:700;color:{{ mute }};text-transform:uppercase">Your holdings today</div>
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top:8px;font-size:14px;background:#f9fafb;border-radius:6px">
+  <tr>
+    <td style="padding:10px 12px">Value<br><strong>&#8377;{{ "{:,.0f}".format(s.portfolio.value) }}</strong></td>
+    <td style="padding:10px 12px">Day<br><strong>{% if s.portfolio.day_change_pct is not none %}{{ "%+.1f"|format(s.portfolio.day_change_pct) }}%{% else %}n/a{% endif %}</strong></td>
+    <td style="padding:10px 12px">Sentiment<br>{{ signed(s.portfolio.sentiment.index) }} <span style="color:{{ mute }}">({{ "%+.0f"|format(s.portfolio.sentiment.delta_24h) }})</span></td>
+  </tr>
+  </table>
+  {%- if s.portfolio.top_positive or s.portfolio.top_negative %}
+  <p style="font-size:13px;color:{{ mute }};margin:8px 0 0">
+    {%- if s.portfolio.top_positive %}Biggest positive: <strong style="color:{{ ink }}">{{ s.portfolio.top_positive.ticker }}</strong> {{ signed(s.portfolio.top_positive.delta) }}{% endif %}
+    {%- if s.portfolio.top_positive and s.portfolio.top_negative %} &nbsp;&middot;&nbsp; {% endif %}
+    {%- if s.portfolio.top_negative %}Biggest negative: <strong style="color:{{ ink }}">{{ s.portfolio.top_negative.ticker }}</strong> {{ signed(s.portfolio.top_negative.delta) }}{% endif %}
+  </p>
+  {%- endif %}
+</td></tr>
+
+<tr><td style="padding:0 24px 20px">
+  <div style="font-size:12px;font-weight:700;color:{{ mute }};text-transform:uppercase">Holdings to review (risk flags)</div>
+  {%- if not s.review %}<p style="font-size:14px;margin:8px 0 0">No holding carries a risk flag today.</p>{% endif %}
+  {%- for r in s.review %}
+  <div style="margin-top:10px;padding:10px 12px;border-left:3px solid {{ neg }};background:#fef3f2;border-radius:4px">
+    <div style="font-size:14px"><strong>{{ r.ticker }}</strong> &nbsp;{{ r.reason }}</div>
+    {%- for st in r.stories %}
+    <div style="font-size:13px;margin-top:4px"><a href="{{ st.url }}" style="color:#1d4ed8">{{ st.title }}</a> <span style="color:{{ mute }}">{{ st.source }}{% if st.source_count > 1 %} + {{ st.source_count - 1 }} sources{% endif %}</span></div>
+    {%- endfor %}
+  </div>
+  {%- endfor %}
+</td></tr>
+
+{%- if s.watch %}
+<tr><td style="padding:0 24px 20px">
+  <div style="font-size:12px;font-weight:700;color:{{ mute }};text-transform:uppercase">Positive momentum to watch (not in your portfolio)</div>
+  {%- for w in s.watch %}
+  <div style="margin-top:10px;font-size:14px"><strong>{{ w.ticker }}</strong> sentiment {{ signed(w.index) }}, {{ "%+.0f"|format(w.momentum_3d) }} over 3 sessions
+    <div style="font-size:13px;color:{{ mute }}">{{ w.reasons|join("; ") }}. Based on {{ w.evidence.n_stories }} stories from {{ w.evidence.n_sources }} sources.</div>
+  </div>
+  {%- endfor %}
+  <div style="font-size:12px;color:{{ mute }};margin-top:8px">These are not recommendations.</div>
+</td></tr>
+{%- endif %}
+
+{%- if s.watchlist or s.market %}
+<tr><td style="padding:0 24px 20px">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-size:14px"><tr>
+  {%- if s.watchlist %}
+  <td valign="top" style="padding-right:12px"><div style="font-size:12px;font-weight:700;color:{{ mute }};text-transform:uppercase">Your watchlist</div>
+    {%- for w in s.watchlist %}<div style="margin-top:4px">{{ w.ticker }} {{ signed(w.index) }} <span style="color:{{ mute }}">({{ "%+.0f"|format(w.delta_24h) }})</span></div>{% endfor %}</td>
+  {%- endif %}
+  {%- if s.market %}
+  <td valign="top"><div style="font-size:12px;font-weight:700;color:{{ mute }};text-transform:uppercase">Market context</div>
+    <div style="margin-top:4px">Market sentiment {{ signed(s.market.index) }} <span style="color:{{ mute }}">({{ "%+.0f"|format(s.market.delta_24h) }})</span></div>
+    {%- for x in s.market.top_sectors %}<div style="margin-top:2px">{{ x.name }} {{ signed(x.index) }}</div>{% endfor %}</td>
+  {%- endif %}
+  </tr></table>
+</td></tr>
+{%- endif %}
+
+{%- if s.backtest_note %}
+<tr><td style="padding:0 24px 20px">
+  <div style="font-size:12px;font-weight:700;color:{{ mute }};text-transform:uppercase">How these signals have behaved</div>
+  <p style="font-size:13px;line-height:1.5;margin:6px 0 0;color:{{ mute }}">Strong news signals were followed by a next-session move in the same direction {{ "%.0f"|format(s.backtest_note.hit_rate * 100) }}% of the time (n={{ s.backtest_note.n }}; baseline {{ "%.0f"|format(s.backtest_note.baseline * 100) }}%). Past behaviour is not a guide.</p>
+</td></tr>
+{%- endif %}
+{%- endif %}
+
+<tr><td style="padding:16px 24px;border-top:1px solid #e5e7eb;font-size:13px">
+  <a href="{{ s.links.dashboard }}" style="display:inline-block;background:#1d4ed8;color:#ffffff;text-decoration:none;padding:8px 14px;border-radius:6px">Open your dashboard</a>
+  &nbsp; <a href="{{ s.links.digest }}" style="color:#1d4ed8">View in the app</a>
+  &nbsp;&middot;&nbsp; <a href="{{ s.links.preferences }}" style="color:#1d4ed8">Manage email</a>
+  &nbsp;&middot;&nbsp; <a href="{{ s.links.unsubscribe }}" style="color:#1d4ed8">Unsubscribe (one click)</a>
+  <p style="font-size:11px;line-height:1.5;color:{{ mute }};margin:12px 0 0">{{ s.disclaimer }} You receive this because you opted in to the Daily Pulse in GeoTrade-AI settings. GeoTrade-AI is a college final-year project.</p>
+</td></tr>
+</table>
+</td></tr></table>
+</body>
+</html>

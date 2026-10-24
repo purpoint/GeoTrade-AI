@@ -71,7 +71,13 @@ services:
       LLM_PROVIDER: groq
       LLM_MODEL: ${LLM_MODEL:-qwen/qwen3.8-27b}
       DB_POOL_SIZE: 5
-    depends_on: { backend-migrate: { condition: service_completed_successfully } }
+      # local: digests go to Mailpit (http://localhost:8025), nothing leaves the machine
+      EMAIL_PROVIDER: ${EMAIL_PROVIDER:-smtp}
+      SMTP_HOST: mailpit
+      SMTP_PORT: 1025
+    depends_on:
+      backend-migrate: { condition: service_completed_successfully }
+      mailpit: { condition: service_started }
 
   ui:
     build:
@@ -79,6 +85,11 @@ services:
       args: { BACKEND_URL: "http://backend-api:8000" }
     ports: ["3000:3000"]
     depends_on: { backend-api: { condition: service_healthy } }
+
+  # catches every digest email locally (P3-BE-04); compose.prod.yml leaves it out
+  mailpit:
+    image: axllent/mailpit:v1.27
+    ports: ["8025:8025", "1025:1025"]
 
 volumes:
   pgdata:

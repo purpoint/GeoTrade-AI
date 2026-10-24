@@ -1,0 +1,51 @@
+GeoTrade-AI {{ "Weekly Pulse" if s.kind == "weekly" else "Daily Pulse" }} - {{ heading }}
+Not investment advice. Summary of public news and signals.
+
+{{ narrative }}
+{% if s.kind == "weekly" %}
+PORTFOLIO SENTIMENT BY SESSION
+{% for d in s.portfolio.trend %}  {{ d.date }}  {{ "%+.0f"|format(d.index) }}
+{% endfor %}
+{%- if s.stories %}
+THE WEEK'S BIGGEST STORIES
+{% for x in s.stories %}  {{ x.ticker }}: {{ x.title }} ({{ x.source }}) {{ x.url }}
+{% endfor %}{% endif %}
+ALERTS THIS WEEK: {{ s.flags.count }}
+{% for a in s.flags["items"] %}  - {{ a.title }}
+{% endfor %}
+{%- if s.persistent_momentum %}
+POSITIVE MOMENTUM THAT PERSISTED (not in your portfolio; not recommendations)
+  {% for m in s.persistent_momentum %}{{ m.ticker }} ({{ m.days }} days){{ ", " if not loop.last }}{% endfor %}
+{% endif %}
+{%- else %}
+YOUR HOLDINGS TODAY
+  Value Rs {{ "{:,.0f}".format(s.portfolio.value) }}{% if s.portfolio.day_change_pct is not none %}  Day {{ "%+.1f"|format(s.portfolio.day_change_pct) }}%{% endif %}  Sentiment {{ "%+.0f"|format(s.portfolio.sentiment.index) }} ({{ "%+.0f"|format(s.portfolio.sentiment.delta_24h) }})
+
+HOLDINGS TO REVIEW (risk flags)
+{% for r in s.review %}  ! {{ r.ticker }}: {{ r.reason }}
+{% for st in r.stories %}    "{{ st.title }}" {{ st.source }} {{ st.url }}
+{% endfor %}{% else %}  No holding carries a risk flag today.
+{% endfor %}
+{%- if s.watch %}
+POSITIVE MOMENTUM TO WATCH (not in your portfolio; not recommendations)
+{% for w in s.watch %}  {{ w.ticker }} sentiment {{ "%+.0f"|format(w.index) }}, {{ "%+.0f"|format(w.momentum_3d) }} over 3 sessions. {{ w.reasons|join("; ") }}. {{ w.evidence.n_stories }} stories, {{ w.evidence.n_sources }} sources.
+{% endfor %}{% endif %}
+{%- if s.watchlist %}
+YOUR WATCHLIST
+{% for w in s.watchlist %}  {{ w.ticker }} {{ "%+.0f"|format(w.index) }} ({{ "%+.0f"|format(w.delta_24h) }})
+{% endfor %}{% endif %}
+{%- if s.market %}
+MARKET CONTEXT
+  Market sentiment {{ "%+.0f"|format(s.market.index) }}{% for x in s.market.top_sectors %}, {{ x.name }} {{ "%+.0f"|format(x.index) }}{% endfor %}
+{% endif %}
+{%- if s.backtest_note %}
+HOW THESE SIGNALS HAVE BEHAVED
+  Strong signals were followed by a same-direction next-session move {{ "%.0f"|format(s.backtest_note.hit_rate * 100) }}% of the time (n={{ s.backtest_note.n }}; baseline {{ "%.0f"|format(s.backtest_note.baseline * 100) }}%). Past behaviour is not a guide.
+{% endif %}
+{%- endif %}
+Dashboard: {{ s.links.dashboard }}
+View in the app: {{ s.links.digest }}
+Manage email: {{ s.links.preferences }}
+Unsubscribe (one click): {{ s.links.unsubscribe }}
+
+{{ s.disclaimer }}
