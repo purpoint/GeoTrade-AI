@@ -11,6 +11,7 @@ from typing import Any
 from sqlalchemy import delete, select
 from sqlalchemy.orm import Session
 
+from geotrade_ai import alert_rules as ar
 from geotrade_ai import reference
 from geotrade_ai.market_calendar import session_date
 from geotrade_ai.models import (
@@ -109,6 +110,68 @@ def on_articles(session: Session, articles: list[Article], now: datetime | None 
     fresh = [a for a in articles if now - a.published_at <= FRESH]
     if not fresh:
         return 0
+    return _severe(session, fresh, now) + _custom(session, fresh, now)
+
+
+def _custom(session: Session, fresh: list[Article], now: datetime) -> int:
+    """Plain-English rules (P3-BE-13): the stored params decide, never the model."""
+    rules = repo.enabled_rules(session, "custom")
+    if not rules:
+        return 0
+    rows = session.execute(
+        select(Article, ArticleScore, ArticleEntity.entity_id)
+        .join(ArticleScore, ArticleScore.article_id == Article.id)
+        .join(ArticleEntity, ArticleEntity.article_id == Article.id)
+        .where(
+            Article.id.in_([a.id for a in fresh]),
+            ArticleEntity.entity_type == "stock",
+            ArticleEntity.is_primary,
+        )
+    ).all()
+    if not rows:
+        return 0
+    sector_of = {c["ticker"]: c["sector_id"] for c in reference.companies()}
+    tickers = {t for _, _, t in rows}
+    held = audience(session, tickers, include_watchlist=False)
+    either = audience(session, tickers, include_watchlist=True)
+    watched: dict[uuid.UUID, set[str]] = defaultdict(set)
+    for uid, t in session.execute(
+        select(WatchlistItem.user_id, WatchlistItem.ticker).where(WatchlistItem.ticker.in_(tickers))
+    ):
+        watched[uid].add(t)
+    users = {u.id: u for u in session.scalars(select(User).where(User.id.in_({r.user_id for r in rules})))}
+    created = 0
+    for rule in rules:
+        params = ar.CustomRule.model_validate(rule.params)
+        mine_held, mine_any = held.get(rule.user_id, set()), either.get(rule.user_id, set())
+        for article, score, ticker in rows:
+            in_scope = {
+                "holdings": ticker in mine_held,
+                "watchlist": ticker in watched.get(rule.user_id, set()),
+                "both": ticker in mine_any,
+                "tickers": True,
+            }[params.scope]
+            if rule.user_id not in users or not ar.matches(
+                params, ticker, sector_of.get(ticker, ""), article.title, score.label, score.event_type,
+                score.severity, in_scope,
+            ):  # fmt: skip
+                continue
+            alert = emit(
+                session, users[rule.user_id], rule,
+                {
+                    "kind": "custom", "ticker": ticker, "severity": score.severity,
+                    "title": f"{ticker}: matches your rule",
+                    "body": f"{article.title} (rule: \"{rule.source_text}\")",
+                    "article_ids": [article.id],
+                    "dedupe_key": f"custom:{rule.id}:{article.cluster_id or article.id}",
+                },
+                now,
+            )  # fmt: skip
+            created += alert is not None
+    return created
+
+
+def _severe(session: Session, fresh: list[Article], now: datetime) -> int:
     rows = session.execute(
         select(Article, ArticleScore, ArticleEntity.entity_id)
         .join(ArticleScore, ArticleScore.article_id == Article.id)

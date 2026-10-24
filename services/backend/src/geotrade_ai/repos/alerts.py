@@ -116,3 +116,21 @@ def mark_read(session: Session, user_id: uuid.UUID, alert_id: uuid.UUID | None =
     if alert_id is not None:
         stmt = stmt.where(Alert.id == alert_id)
     return int(getattr(session.execute(stmt), "rowcount", 0) or 0)
+
+
+def custom_rules(session: Session, user_id: uuid.UUID) -> list[AlertRule]:
+    return list(
+        session.scalars(
+            select(AlertRule)
+            .where(AlertRule.user_id == user_id, AlertRule.kind == "custom")
+            .order_by(AlertRule.created_at)
+        )
+    )
+
+
+def custom_rule(session: Session, user_id: uuid.UUID, rule_id: uuid.UUID) -> AlertRule | None:
+    return session.scalar(
+        select(AlertRule).where(
+            AlertRule.id == rule_id, AlertRule.user_id == user_id, AlertRule.kind == "custom"
+        )
+    )

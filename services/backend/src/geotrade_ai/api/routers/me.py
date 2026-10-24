@@ -138,6 +138,9 @@ def export(db: DbSession, user: CurrentUser) -> Response:
 def export_extras(db: DbSession, user: User) -> list[tuple[str, list[list[object]]]]:
     rules: list[list[object]] = [["kind", "enabled", "params"]]
     rules += [[r.kind, r.enabled, r.params] for r in alerts_repo.rules(db, user.id)]
+    rules += [
+        [f"custom: {r.source_text}", r.enabled, r.params] for r in alerts_repo.custom_rules(db, user.id)
+    ]
     alerts: list[list[object]] = [["created_at", "kind", "ticker", "title", "read_at"]]
     alerts += [
         [a.created_at, a.kind, a.ticker or "", a.title, a.read_at or ""]

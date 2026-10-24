@@ -163,6 +163,62 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/alert-rules/custom": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Custom */
+        get: operations["list_custom_api_v1_alert_rules_custom_get"];
+        put?: never;
+        /** Create Custom */
+        post: operations["create_custom_api_v1_alert_rules_custom_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/alert-rules/custom/{rule_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete Custom */
+        delete: operations["delete_custom_api_v1_alert_rules_custom__rule_id__delete"];
+        options?: never;
+        head?: never;
+        /** Patch Custom */
+        patch: operations["patch_custom_api_v1_alert_rules_custom__rule_id__patch"];
+        trace?: never;
+    };
+    "/api/v1/alert-rules/parse": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Parse Rule
+         * @description Proposes a rule from the user's words. Nothing is saved: confirm, then POST /alert-rules/custom.
+         */
+        post: operations["parse_rule_api_v1_alert_rules_parse_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/alert-rules/{kind}": {
         parameters: {
             query?: never;
@@ -1231,6 +1287,63 @@ export interface components {
             /** Unconfirmed */
             unconfirmed: boolean;
         };
+        /**
+         * CustomRule
+         * @description Stored in alert_rules.params for kind 'custom'. Unknown fields, tickers or sectors are rejected.
+         */
+        CustomRule: {
+            /** Event Types */
+            event_types?: string[];
+            /** Keywords */
+            keywords?: string[];
+            /**
+             * Min Severity
+             * @default 0
+             */
+            min_severity: number;
+            /**
+             * Scope
+             * @default holdings
+             * @enum {string}
+             */
+            scope: "holdings" | "watchlist" | "both" | "tickers";
+            /** Sectors */
+            sectors?: string[];
+            /** Tickers */
+            tickers?: string[];
+            /**
+             * Tone
+             * @default any
+             * @enum {string}
+             */
+            tone: "negative" | "positive" | "any";
+        };
+        /** CustomRuleIn */
+        CustomRuleIn: {
+            params: components["schemas"]["CustomRule"];
+            /** Text */
+            text: string;
+        };
+        /** CustomRuleOut */
+        CustomRuleOut: {
+            /** Enabled */
+            enabled: boolean;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            params: components["schemas"]["CustomRule"];
+            /** Summary */
+            summary: string;
+            /** Text */
+            text: string;
+        };
+        /** CustomRulePatch */
+        CustomRulePatch: {
+            /** Enabled */
+            enabled: boolean;
+        };
         /** DeadLetterOut */
         DeadLetterOut: {
             /**
@@ -1593,6 +1706,22 @@ export interface components {
             items: components["schemas"]["NewsItem"][];
             /** Next Cursor */
             next_cursor?: string | null;
+        };
+        /** ParseIn */
+        ParseIn: {
+            /** Text */
+            text: string;
+        };
+        /** ParsedRule */
+        ParsedRule: {
+            params: components["schemas"]["CustomRule"];
+            /**
+             * Parser
+             * @enum {string}
+             */
+            parser: "llm" | "keywords";
+            /** Summary */
+            summary: string;
         };
         /** PasswordChange */
         PasswordChange: {
@@ -2296,6 +2425,156 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["RuleOut"][];
+                };
+            };
+        };
+    };
+    list_custom_api_v1_alert_rules_custom_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CustomRuleOut"][];
+                };
+            };
+        };
+    };
+    create_custom_api_v1_alert_rules_custom_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CustomRuleIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CustomRuleOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_custom_api_v1_alert_rules_custom__rule_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                rule_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    patch_custom_api_v1_alert_rules_custom__rule_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                rule_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CustomRulePatch"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CustomRuleOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    parse_rule_api_v1_alert_rules_parse_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ParseIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ParsedRule"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

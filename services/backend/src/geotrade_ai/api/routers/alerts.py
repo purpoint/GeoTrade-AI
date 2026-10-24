@@ -1,4 +1,4 @@
-"""Alert inbox and rules (P2-BE-09)."""
+"""Alert inbox, built-in rules (P2-BE-09) and plain-English rules (P3-BE-13)."""
 
 import uuid
 from datetime import datetime
@@ -7,8 +7,10 @@ from typing import Literal
 from fastapi import APIRouter, Query, Response
 from pydantic import BaseModel, Field
 
+from geotrade_ai import alert_rules as ar
 from geotrade_ai.api.deps import CurrentUser, DbSession
 from geotrade_ai.core.errors import ApiError, not_found
+from geotrade_ai.core.ids import uuid7
 from geotrade_ai.models import Alert, AlertRule
 from geotrade_ai.repos import alerts as repo
 
@@ -124,3 +126,89 @@ def update_rule(db: DbSession, user: CurrentUser, kind: Kind, body: RuleUpdate) 
         rule.enabled = body.enabled
     db.commit()
     return RuleOut.of(rule)
+
+
+# ---------- plain-English rules (P3-BE-13) ----------
+
+
+class ParseIn(BaseModel):
+    text: str = Field(min_length=5, max_length=300)
+
+
+class ParsedRule(BaseModel):
+    params: ar.CustomRule
+    summary: str
+    parser: Literal["llm", "keywords"]
+
+
+class CustomRuleIn(BaseModel):
+    text: str = Field(min_length=5, max_length=300)
+    params: ar.CustomRule
+
+
+class CustomRuleOut(BaseModel):
+    id: uuid.UUID
+    text: str
+    params: ar.CustomRule
+    summary: str
+    enabled: bool
+
+    @classmethod
+    def of(cls, r: AlertRule) -> "CustomRuleOut":
+        p = ar.CustomRule.model_validate(r.params)
+        return cls(id=r.id, text=r.source_text or "", params=p, summary=ar.describe(p), enabled=r.enabled)
+
+
+class CustomRulePatch(BaseModel):
+    enabled: bool
+
+
+@router.post("/alert-rules/parse", response_model=ParsedRule)
+def parse_rule(db: DbSession, user: CurrentUser, body: ParseIn) -> ParsedRule:
+    """Proposes a rule from the user's words. Nothing is saved: confirm, then POST /alert-rules/custom."""
+    params, parser = ar.parse(db, body.text)
+    db.commit()  # the LLM budget and cache rows
+    return ParsedRule(params=params, summary=ar.describe(params), parser=parser)
+
+
+@router.get("/alert-rules/custom", response_model=list[CustomRuleOut])
+def list_custom(db: DbSession, user: CurrentUser) -> list[CustomRuleOut]:
+    return [CustomRuleOut.of(r) for r in repo.custom_rules(db, user.id)]
+
+
+@router.post("/alert-rules/custom", response_model=CustomRuleOut, status_code=201)
+def create_custom(db: DbSession, user: CurrentUser, body: CustomRuleIn) -> CustomRuleOut:
+    if len(repo.custom_rules(db, user.id)) >= ar.MAX_RULES:
+        raise ApiError(422, "too_many_rules", f"at most {ar.MAX_RULES} plain-English rules")
+    rule = AlertRule(
+        id=uuid7(),
+        user_id=user.id,
+        kind="custom",
+        params=body.params.model_dump(),
+        source_text=body.text.strip(),
+    )
+    db.add(rule)
+    db.commit()
+    return CustomRuleOut.of(rule)
+
+
+@router.patch("/alert-rules/custom/{rule_id}", response_model=CustomRuleOut)
+def patch_custom(
+    db: DbSession, user: CurrentUser, rule_id: uuid.UUID, body: CustomRulePatch
+) -> CustomRuleOut:
+    rule = repo.custom_rule(db, user.id, rule_id)
+    if rule is None:
+        raise not_found("rule")
+    rule.enabled = body.enabled
+    db.commit()
+    return CustomRuleOut.of(rule)
+
+
+@router.delete("/alert-rules/custom/{rule_id}", status_code=204)
+def delete_custom(db: DbSession, user: CurrentUser, rule_id: uuid.UUID) -> Response:
+    rule = repo.custom_rule(db, user.id, rule_id)
+    if rule is None:
+        raise not_found("rule")
+    db.delete(rule)
+    db.commit()
+    return Response(status_code=204)

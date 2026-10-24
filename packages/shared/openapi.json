@@ -522,6 +522,139 @@
         "title": "Credibility",
         "type": "object"
       },
+      "CustomRule": {
+        "additionalProperties": false,
+        "description": "Stored in alert_rules.params for kind 'custom'. Unknown fields, tickers or sectors are rejected.",
+        "properties": {
+          "event_types": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 5,
+            "title": "Event Types",
+            "type": "array"
+          },
+          "keywords": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 5,
+            "title": "Keywords",
+            "type": "array"
+          },
+          "min_severity": {
+            "default": 0.0,
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Min Severity",
+            "type": "number"
+          },
+          "scope": {
+            "default": "holdings",
+            "enum": [
+              "holdings",
+              "watchlist",
+              "both",
+              "tickers"
+            ],
+            "title": "Scope",
+            "type": "string"
+          },
+          "sectors": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 5,
+            "title": "Sectors",
+            "type": "array"
+          },
+          "tickers": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 10,
+            "title": "Tickers",
+            "type": "array"
+          },
+          "tone": {
+            "default": "any",
+            "enum": [
+              "negative",
+              "positive",
+              "any"
+            ],
+            "title": "Tone",
+            "type": "string"
+          }
+        },
+        "title": "CustomRule",
+        "type": "object"
+      },
+      "CustomRuleIn": {
+        "properties": {
+          "params": {
+            "$ref": "#/components/schemas/CustomRule"
+          },
+          "text": {
+            "maxLength": 300,
+            "minLength": 5,
+            "title": "Text",
+            "type": "string"
+          }
+        },
+        "required": [
+          "text",
+          "params"
+        ],
+        "title": "CustomRuleIn",
+        "type": "object"
+      },
+      "CustomRuleOut": {
+        "properties": {
+          "enabled": {
+            "title": "Enabled",
+            "type": "boolean"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "params": {
+            "$ref": "#/components/schemas/CustomRule"
+          },
+          "summary": {
+            "title": "Summary",
+            "type": "string"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "text",
+          "params",
+          "summary",
+          "enabled"
+        ],
+        "title": "CustomRuleOut",
+        "type": "object"
+      },
+      "CustomRulePatch": {
+        "properties": {
+          "enabled": {
+            "title": "Enabled",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "enabled"
+        ],
+        "title": "CustomRulePatch",
+        "type": "object"
+      },
       "DeadLetterOut": {
         "properties": {
           "article_id": {
@@ -1592,6 +1725,47 @@
           "items"
         ],
         "title": "Page[NewsItem]",
+        "type": "object"
+      },
+      "ParseIn": {
+        "properties": {
+          "text": {
+            "maxLength": 300,
+            "minLength": 5,
+            "title": "Text",
+            "type": "string"
+          }
+        },
+        "required": [
+          "text"
+        ],
+        "title": "ParseIn",
+        "type": "object"
+      },
+      "ParsedRule": {
+        "properties": {
+          "params": {
+            "$ref": "#/components/schemas/CustomRule"
+          },
+          "parser": {
+            "enum": [
+              "llm",
+              "keywords"
+            ],
+            "title": "Parser",
+            "type": "string"
+          },
+          "summary": {
+            "title": "Summary",
+            "type": "string"
+          }
+        },
+        "required": [
+          "params",
+          "summary",
+          "parser"
+        ],
+        "title": "ParsedRule",
         "type": "object"
       },
       "PasswordChange": {
@@ -3371,6 +3545,199 @@
           }
         },
         "summary": "List Rules",
+        "tags": [
+          "alerts"
+        ]
+      }
+    },
+    "/api/v1/alert-rules/custom": {
+      "get": {
+        "operationId": "list_custom_api_v1_alert_rules_custom_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/CustomRuleOut"
+                  },
+                  "title": "Response List Custom Api V1 Alert Rules Custom Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "List Custom",
+        "tags": [
+          "alerts"
+        ]
+      },
+      "post": {
+        "operationId": "create_custom_api_v1_alert_rules_custom_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CustomRuleIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CustomRuleOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create Custom",
+        "tags": [
+          "alerts"
+        ]
+      }
+    },
+    "/api/v1/alert-rules/custom/{rule_id}": {
+      "delete": {
+        "operationId": "delete_custom_api_v1_alert_rules_custom__rule_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "rule_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Rule Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Delete Custom",
+        "tags": [
+          "alerts"
+        ]
+      },
+      "patch": {
+        "operationId": "patch_custom_api_v1_alert_rules_custom__rule_id__patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "rule_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Rule Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CustomRulePatch"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CustomRuleOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Patch Custom",
+        "tags": [
+          "alerts"
+        ]
+      }
+    },
+    "/api/v1/alert-rules/parse": {
+      "post": {
+        "description": "Proposes a rule from the user's words. Nothing is saved: confirm, then POST /alert-rules/custom.",
+        "operationId": "parse_rule_api_v1_alert_rules_parse_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ParseIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ParsedRule"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Parse Rule",
         "tags": [
           "alerts"
         ]
