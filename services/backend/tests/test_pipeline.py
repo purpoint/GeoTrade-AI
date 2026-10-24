@@ -61,7 +61,7 @@ def test_fixtures_flow_through_dedupe_and_link(session: Session) -> None:
     drain(session, datetime.now(UTC) + timedelta(seconds=1))  # fetched rows are due at the DB's now()
     statuses = dict(session.execute(select(Article.status, func.count()).group_by(Article.status)).all())
     assert "fetched" not in statuses and "deduped" not in statuses
-    assert "linked" not in statuses and statuses.get("scored", 0) > 0
+    assert set(statuses) <= {"aggregated", "duplicate", "irrelevant", "dropped"} and statuses["aggregated"] > 0
     # every canonical article has exactly one cluster that points back at it
     assert session.scalar(select(func.count()).select_from(StoryCluster)) == session.scalar(
         select(func.count()).select_from(Article).where(Article.status != "duplicate")

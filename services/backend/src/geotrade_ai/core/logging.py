@@ -42,5 +42,5 @@ def setup_logging(level: str = "INFO") -> None:
     root = logging.getLogger()
     root.handlers[:] = [handler]
     root.setLevel(level)
-    for noisy in ("httpx", "apscheduler", "yfinance", "peewee"):
+    for noisy in ("httpx", "apscheduler", "yfinance", "peewee", "alembic"):
         logging.getLogger(noisy).setLevel(logging.WARNING)

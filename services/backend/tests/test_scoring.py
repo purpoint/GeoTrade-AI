@@ -137,6 +137,6 @@ def test_score_stage_without_llm(session: Session) -> None:
     article = add(session, "HDFC Bank Q2 profit rises 12%")
     drain(session, datetime.now(UTC) + timedelta(seconds=1))
     session.refresh(article)
-    assert article.status == "scored"
+    assert article.status == "aggregated"
     s = session.get_one(ArticleScore, article.id)
     assert (s.model_version_id, s.is_fallback, s.event_type) == ("keyword-v1", False, "earnings")

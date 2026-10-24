@@ -10,7 +10,7 @@ from urllib.parse import urlsplit
 
 import httpx
 
-USER_AGENT = "GeoTrade-AI/0.1 (+https://github.com/purpoint/GeoTrade-AI; college project news reader)"
+USER_AGENT = "GeoTrade-AI/0.1 (college project RSS reader)"  # Business Standard returns 403 if a URL is added
 MAX_BYTES = 5 * 1024 * 1024
 # minutes the circuit stays open after the 1st, 2nd, 3rd and later consecutive failures
 CIRCUIT_MINUTES = (1, 2, 5, 15)

@@ -37,6 +37,28 @@ def cmd_seed(args: argparse.Namespace) -> None:
 
     with get_sessionmaker()() as session:
         logging.getLogger("seed").info("reference seeded", extra={"extra": seed_reference(session)})
+    if args.history:
+        from geotrade_ai.worker.jobs import seed_history
+
+        seed_history(get_sessionmaker(), days=args.days)
+
+
+def cmd_worker(args: argparse.Namespace) -> None:
+    from geotrade_ai.worker.main import main as worker_main
+
+    worker_main()
+
+
+def cmd_prices(args: argparse.Namespace) -> None:
+    from geotrade_ai.core.config import get_settings
+    from geotrade_ai.core.db import get_sessionmaker
+    from geotrade_ai.worker import prices
+
+    if args.export:
+        prices.export_csv(get_settings().data_dir / "fixtures" / "prices" / "daily.csv")
+        return
+    with get_sessionmaker()() as session:
+        prices.sync(session, "1d", args.period)
 
 
 def cmd_openapi(args: argparse.Namespace) -> None:
@@ -66,7 +88,17 @@ def main(argv: list[str] | None = None) -> None:
 
     p = sub.add_parser("seed", help="load reference data (idempotent)")
     p.add_argument("--reference", action="store_true", default=True)
+    p.add_argument("--history", action="store_true", help="also add 7 days of simulated articles and candles")
+    p.add_argument("--days", type=int, default=7)
     p.set_defaults(fn=cmd_seed)
+
+    p = sub.add_parser("worker", help="run the scheduler and pipeline")
+    p.set_defaults(fn=cmd_worker)
+
+    p = sub.add_parser("prices", help="sync daily candles now, or --export the CSV fallback")
+    p.add_argument("--period", default="3mo")
+    p.add_argument("--export", action="store_true")
+    p.set_defaults(fn=cmd_prices)
 
     p = sub.add_parser("openapi", help="export the OpenAPI document")
     p.add_argument("--out", default="-")

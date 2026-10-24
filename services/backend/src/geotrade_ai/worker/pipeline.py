@@ -20,6 +20,7 @@ from geotrade_ai.models import (
     PipelineEvent,
 )
 from geotrade_ai.worker import relevance as rel
+from geotrade_ai.worker.aggregate import aggregate_batch
 from geotrade_ai.worker.dedupe import dedupe_one
 from geotrade_ai.worker.linker import get_linker
 from geotrade_ai.worker.scoring import score_batch
@@ -74,6 +75,7 @@ STAGES: list[Stage] = [
     Stage("dedupe", "fetched", article_fn=dedupe_one),
     Stage("link", "deduped", article_fn=link_one),
     Stage("score", "linked", batch_fn=score_batch, batch_size=20),
+    Stage("aggregate", "scored", batch_fn=aggregate_batch, batch_size=100),
 ]
 
 
