@@ -21,6 +21,12 @@ import {
   type PortfolioOut,
   type RelatedPage,
   type RuleOut,
+  type CustomRuleOut,
+  type Digest,
+  type DigestHistory,
+  type DigestRun,
+  type EmailPrefs,
+  type Spike,
 } from "./client";
 
 export type Bucket = "5m" | "1h" | "1d";
@@ -104,3 +110,20 @@ export const useAlerts = (unreadOnly = false, enabled = true) =>
   useQuery({ queryKey: ["alerts", unreadOnly], queryFn: () => api<AlertPage>("/alerts", { unread_only: unreadOnly, limit: 50 }), enabled });
 export const useAlertRules = (enabled = true) =>
   useQuery({ queryKey: ["alert-rules"], queryFn: () => api<RuleOut[]>("/alert-rules"), enabled });
+export const useCustomRules = (enabled = true) =>
+  useQuery({ queryKey: ["custom-rules"], queryFn: () => api<CustomRuleOut[]>("/alert-rules/custom"), enabled });
+
+export const useSpikes = () => useQuery({ queryKey: ["spikes"], queryFn: () => api<Spike[]>("/market/spikes"), refetchInterval: 300_000 });
+
+// ---------- Daily Pulse ----------
+
+export const useEmailPrefs = (enabled = true) =>
+  useQuery({ queryKey: ["email-prefs"], queryFn: () => api<EmailPrefs>("/me/email-preferences"), enabled });
+export const useDigest = (date: string | null, kind: string) =>
+  useQuery({
+    queryKey: ["digest", date ?? "today", kind],
+    queryFn: () => api<Digest>(date ? `/digest/${date}` : "/digest/today", date ? { kind } : undefined),
+    placeholderData: keepPreviousData,
+  });
+export const useDigestHistory = () => useQuery({ queryKey: ["digest-history"], queryFn: () => api<DigestHistory>("/digest/history") });
+export const useDigestRuns = () => useQuery({ queryKey: ["digest-runs"], queryFn: () => api<DigestRun[]>("/admin/digest/runs"), refetchInterval: 30_000 });

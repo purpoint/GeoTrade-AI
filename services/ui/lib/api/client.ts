@@ -31,6 +31,14 @@ export type BacktestReport = Schemas["BacktestReport"];
 export type Coverage = Schemas["Coverage"];
 export type PipelineStats = Schemas["PipelineStats"];
 export type DeadLetter = Schemas["DeadLetterOut"];
+export type EmailPrefs = Schemas["EmailPrefsOut"];
+export type EmailPrefsIn = Schemas["EmailPrefsIn"];
+export type Digest = Schemas["DigestOut"];
+export type DigestHistory = Schemas["DigestHistory"];
+export type Spike = Schemas["Spike"];
+export type ParsedRule = Schemas["ParsedRule"];
+export type CustomRuleOut = Schemas["CustomRuleOut"];
+export type DigestRun = Schemas["RunOut"];
 
 export const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "/api/v1";
 

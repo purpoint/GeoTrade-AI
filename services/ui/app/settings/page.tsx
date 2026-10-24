@@ -2,11 +2,12 @@
 
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
+import { EmailSettings } from "@/components/digest/EmailSettings";
 import { RequireAuth } from "@/components/RequireAuth";
 import { buildUrl, post, type Me } from "@/lib/api/client";
 import { useAuthActions, useMe } from "@/lib/auth/session";
 
-const TABS = ["Profile", "Preferences", "Data"] as const;
+const TABS = ["Profile", "Preferences", "Email", "Data"] as const;
 const input = "mt-1 w-full rounded border border-line bg-surface px-2 py-1.5 text-sm text-fg";
 
 function Saved({ msg }: { msg: string | null }) {
@@ -117,7 +118,7 @@ function Data({ me }: { me: Me }) {
     <div className="space-y-4 text-sm">
       <section className="card space-y-2 p-4">
         <h2 className="font-semibold">Export</h2>
-        <p className="text-muted">Download everything stored about you: profile, preferences, holdings, watchlist, alert rules and alerts.</p>
+        <p className="text-muted">Download everything stored about you: profile, preferences, holdings, watchlist, alert rules, alerts, email preferences and digest history.</p>
         <a href={buildUrl("/me/export")} className="inline-block rounded border border-line px-3 py-1 hover:bg-raised" download>
           Download CSV
         </a>
@@ -155,8 +156,9 @@ export default function SettingsPage() {
   const { data: me } = useMe();
   const [tab, setTab] = useState<(typeof TABS)[number]>("Profile");
   useEffect(() => {
-    const t = new URLSearchParams(window.location.search).get("tab");
-    if (t && (TABS as readonly string[]).includes(t)) setTab(t as (typeof TABS)[number]);
+    const t = new URLSearchParams(window.location.search).get("tab")?.toLowerCase();
+    const match = TABS.find((x) => x.toLowerCase() === t);
+    if (match) setTab(match);
   }, []);
   return (
     <RequireAuth>
@@ -169,7 +171,7 @@ export default function SettingsPage() {
             </button>
           ))}
         </div>
-        {me ? tab === "Profile" ? <Profile me={me} /> : tab === "Preferences" ? <Preferences me={me} /> : <Data me={me} /> : null}
+        {me ? tab === "Profile" ? <Profile me={me} /> : tab === "Preferences" ? <Preferences me={me} /> : tab === "Email" ? <EmailSettings /> : <Data me={me} /> : null}
       </div>
     </RequireAuth>
   );

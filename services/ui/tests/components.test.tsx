@@ -21,6 +21,7 @@ const item: NewsItem = {
   sentiment: { label: "positive", score: 0.7, confidence: 0.8 },
   event: { type: "order_win", severity: 0.5, hedged: false },
   cluster: { id: null, size: 3, source_count: 2 },
+  credibility: { score: 0.8, hedge_score: 0, unconfirmed: false },
   model_version: "keyword-v1",
   is_simulated: true,
 };

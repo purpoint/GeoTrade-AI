@@ -6,6 +6,7 @@ export const NAV = [
   { href: "/portfolio", label: "Portfolio", icon: "M3 7h18v13H3zM8 7V4h8v3", private: true },
   { href: "/attention", label: "Attention", icon: "M12 9v4m0 4h.01M10.3 3.9L2.2 18a2 2 0 001.7 3h16.2a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z", private: true },
   { href: "/alerts", label: "Alerts", icon: "M6 16V11a6 6 0 1112 0v5l1.5 2h-15zM10 20a2 2 0 004 0", private: true },
+  { href: "/digest", label: "Daily Pulse", icon: "M3 6h18v12H3zM3 6l9 7 9-7", private: true },
   { href: "/watchlist", label: "Watchlist", icon: "M12 3l2.7 5.6 6.3.9-4.5 4.4 1 6.1L12 17l-5.5 3 1-6.1L3 9.5l6.3-.9z", private: true },
   { href: "/evaluation", label: "Evaluation", icon: "M4 20V10m6 10V4m6 16v-7m4 7H2" },
   { href: "/methodology", label: "Method", icon: "M12 3a9 9 0 100 18 9 9 0 000-18zm0 5v5m0 3h.01" },
