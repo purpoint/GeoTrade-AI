@@ -9,12 +9,14 @@
   --raised: 241 245 249;
   --line: 226 232 240;
   --fg: 15 23 42;
-  --muted: 100 116 139;
-  --accent: 37 99 235;
-  --pos: 21 128 61;
+  /* text tokens hold 4.5:1 on surface, raised and their own 10% tints (axe check in tests/e2e/phase3) */
+  --muted: 85 96 113;
+  --accent: 29 78 216;
+  --on-accent: 255 255 255;
+  --pos: 22 101 52;
   --neg: 185 28 28;
-  --neu: 100 116 139;
-  --warn: 180 83 9;
+  --neu: 85 96 113;
+  --warn: 146 64 14;
   color-scheme: light;
 }
 
@@ -26,6 +28,7 @@
   --fg: 229 231 235;
   --muted: 156 163 175;
   --accent: 96 165 250;
+  --on-accent: 11 15 23;
   --pos: 74 222 128;
   --neg: 248 113 113;
   --neu: 156 163 175;
@@ -55,5 +58,10 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
   .tape { animation: none; }
-  * { scroll-behavior: auto !important; }
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

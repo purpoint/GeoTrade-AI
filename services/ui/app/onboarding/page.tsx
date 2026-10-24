@@ -123,7 +123,7 @@ function Wizard() {
       <h1 className="text-xl font-semibold">Set up your portfolio</h1>
       <ol className="flex gap-2 text-xs" aria-label="Steps">
         {STEPS.map((s, i) => (
-          <li key={s} aria-current={i === step ? "step" : undefined} className={`rounded-full px-3 py-1 ${i === step ? "bg-accent text-white" : i < step ? "bg-pos/15 text-pos" : "bg-raised text-muted"}`}>
+          <li key={s} aria-current={i === step ? "step" : undefined} className={`rounded-full px-3 py-1 ${i === step ? "bg-accent text-on-accent" : i < step ? "bg-pos/15 text-pos" : "bg-raised text-muted"}`}>
             {i + 1}. {s}
           </li>
         ))}
@@ -139,7 +139,7 @@ function Wizard() {
             <h2 className="text-sm font-semibold">Or enter holdings by hand</h2>
             <Manual onAdd={(r) => (setRows((prev) => [...prev, r]), setToken(null))} />
             {rows.length ? (
-              <button onClick={() => setStep(1)} className="rounded bg-accent px-3 py-1 text-sm text-white">
+              <button onClick={() => setStep(1)} className="rounded bg-accent px-3 py-1 text-sm text-on-accent">
                 Review {rows.length} holding{rows.length > 1 ? "s" : ""}
               </button>
             ) : null}
@@ -215,7 +215,7 @@ function Wizard() {
             <button onClick={() => setStep(0)} className="rounded border border-line px-3 py-1 text-sm hover:bg-raised">
               Back
             </button>
-            <button onClick={() => void confirm()} disabled={!keep.length} className="rounded bg-accent px-3 py-1 text-sm text-white disabled:opacity-50">
+            <button onClick={() => void confirm()} disabled={!keep.length} className="rounded bg-accent px-3 py-1 text-sm text-on-accent disabled:opacity-50">
               Import {keep.length} holding{keep.length === 1 ? "" : "s"}
             </button>
           </div>
@@ -236,7 +236,7 @@ function Wizard() {
               {RULE_TEXT[r.kind] ?? r.kind}
             </label>
           ))}
-          <button onClick={() => router.push("/portfolio")} className="rounded bg-accent px-3 py-1 text-white">
+          <button onClick={() => router.push("/portfolio")} className="rounded bg-accent px-3 py-1 text-on-accent">
             Go to my portfolio
           </button>
         </section>

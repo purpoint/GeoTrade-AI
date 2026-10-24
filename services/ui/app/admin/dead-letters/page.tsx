@@ -27,7 +27,7 @@ function Letters() {
           </p>
           <pre className="mt-1 whitespace-pre-wrap text-xs text-neg">{d.error}</pre>
           <div className="mt-2 flex gap-2">
-            <button onClick={() => void act(d.id, "retry")} className="rounded bg-accent px-2 py-0.5 text-xs text-white">
+            <button onClick={() => void act(d.id, "retry")} className="rounded bg-accent px-2 py-0.5 text-xs text-on-accent">
               Retry
             </button>
             <button onClick={() => void act(d.id, "discard")} className="rounded border border-line px-2 py-0.5 text-xs">

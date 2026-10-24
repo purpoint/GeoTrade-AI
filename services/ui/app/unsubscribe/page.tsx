@@ -30,7 +30,7 @@ export default function UnsubscribePage() {
       {token && state !== "done" ? (
         <>
           <p className="text-sm text-muted">Stop the daily and weekly Pulse emails. Alerts in the app are not affected.</p>
-          <button onClick={confirm} disabled={state === "working"} className="rounded bg-accent px-4 py-1.5 text-sm text-white disabled:opacity-50">
+          <button onClick={confirm} disabled={state === "working"} className="rounded bg-accent px-4 py-1.5 text-sm text-on-accent disabled:opacity-50">
             {state === "working" ? "Unsubscribing…" : "Unsubscribe"}
           </button>
         </>

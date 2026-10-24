@@ -81,7 +81,7 @@ export function PlainRules() {
                   setMsg("Rule saved");
                 })
               }
-              className="rounded bg-accent px-3 py-1 text-white disabled:opacity-50"
+              className="rounded bg-accent px-3 py-1 text-on-accent disabled:opacity-50"
             >
               Save this rule
             </button>

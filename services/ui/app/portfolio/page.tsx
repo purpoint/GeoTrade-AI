@@ -47,7 +47,7 @@ function Dashboard() {
       <div className="space-y-3">
         <h1 className="text-xl font-semibold">Portfolio</h1>
         <EmptyState title="No holdings yet" hint="Upload a Zerodha or Groww file, add holdings by hand, or load the sample." />
-        <Link href="/onboarding" className="inline-block rounded bg-accent px-3 py-1.5 text-sm text-white">
+        <Link href="/onboarding" className="inline-block rounded bg-accent px-3 py-1.5 text-sm text-on-accent">
           Add holdings
         </Link>
       </div>
@@ -71,7 +71,7 @@ function Dashboard() {
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <h1 className="text-xl font-semibold">Portfolio</h1>
         <div className="flex gap-2 text-sm">
-          <Link href="/attention" className="rounded bg-accent px-3 py-1 text-white">
+          <Link href="/attention" className="rounded bg-accent px-3 py-1 text-on-accent">
             Needs attention
           </Link>
           <Link href="/onboarding" className="rounded border border-line px-3 py-1 hover:bg-raised">

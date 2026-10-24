@@ -108,7 +108,7 @@ export default function EvaluationPage() {
             <section className="card space-y-3 p-4">
               <div className="flex gap-1">
                 {models.map((k) => (
-                  <button key={k} onClick={() => setModel(k)} aria-pressed={k === current} className={`rounded px-2 py-1 text-xs ${k === current ? "bg-accent text-white" : "border border-line"}`}>
+                  <button key={k} onClick={() => setModel(k)} aria-pressed={k === current} className={`rounded px-2 py-1 text-xs ${k === current ? "bg-accent text-on-accent" : "border border-line"}`}>
                     {k}
                   </button>
                 ))}

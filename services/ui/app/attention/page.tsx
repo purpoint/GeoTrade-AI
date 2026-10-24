@@ -59,7 +59,7 @@ function WeightsDialog({ weights, onClose }: { weights: Record<string, number>; 
           <button type="button" onClick={onClose} className="rounded border border-line px-3 py-1 text-sm">
             Cancel
           </button>
-          <button className="rounded bg-accent px-3 py-1 text-sm text-white">Save</button>
+          <button className="rounded bg-accent px-3 py-1 text-sm text-on-accent">Save</button>
         </div>
       </form>
     </div>
@@ -113,7 +113,7 @@ function Attention() {
   if (!data) return <SkeletonList rows={5} />;
   const focus = data.groups.find((g) => g.ticker === selected) ?? data.groups[0];
   const seg = (value: string, current: string, set: (v: string) => void, label: string) => (
-    <button key={value} onClick={() => set(value)} aria-pressed={current === value} className={`rounded px-2 py-1 text-xs ${current === value ? "bg-accent text-white" : "border border-line hover:bg-raised"}`}>
+    <button key={value} onClick={() => set(value)} aria-pressed={current === value} className={`rounded px-2 py-1 text-xs ${current === value ? "bg-accent text-on-accent" : "border border-line hover:bg-raised"}`}>
       {label}
     </button>
   );

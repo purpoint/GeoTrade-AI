@@ -76,7 +76,7 @@ function DemoPanel() {
           ))}
         </div>
         <div className="flex flex-wrap gap-2">
-          <button className="rounded bg-accent px-3 py-1.5 text-sm text-white">Inject headline</button>
+          <button className="rounded bg-accent px-3 py-1.5 text-sm text-on-accent">Inject headline</button>
           <button type="button" onClick={() => void run(async () => setMessage(`Injected ${(await post<{ article_ids: string[] }>("/admin/demo/replay")).article_ids.length} scripted headlines`))} className="rounded border border-line px-3 py-1.5 text-sm hover:bg-raised">
             Replay demo script
           </button>

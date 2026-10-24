@@ -81,7 +81,7 @@ export function AuthForm({ mode, next }: { mode: "login" | "signup"; next?: stri
             {error}
           </p>
         ) : null}
-        <button disabled={busy || (mode === "signup" && !accepted)} className="w-full rounded bg-accent py-1.5 text-sm text-white disabled:opacity-50">
+        <button disabled={busy || (mode === "signup" && !accepted)} className="w-full rounded bg-accent py-1.5 text-sm text-on-accent disabled:opacity-50">
           {busy ? "Please wait…" : mode === "login" ? "Sign in" : "Create account"}
         </button>
       </form>

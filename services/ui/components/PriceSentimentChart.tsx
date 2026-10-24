@@ -106,7 +106,7 @@ export function PriceSentimentChart({ candles, sentiment, events, height = 420 }
           </table>
         </div>
       ) : (
-        <div ref={box} style={{ height }} role="img" aria-label="Price candles with a news sentiment histogram below" />
+        <div ref={box} style={{ height }} role="figure" aria-label="Price candles with a news sentiment histogram below" />
       )}
     </div>
   );

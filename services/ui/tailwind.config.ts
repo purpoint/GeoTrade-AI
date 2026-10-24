@@ -15,6 +15,7 @@ export default {
         fg: v("fg"),
         muted: v("muted"),
         accent: v("accent"),
+        "on-accent": v("on-accent"),
         pos: v("pos"),
         neg: v("neg"),
         neu: v("neu"),

@@ -75,7 +75,7 @@ export function EmailSettings() {
         {data.consented_at ? ` Consent recorded ${fmtIst(data.consented_at)}.` : ""}
         {data.unsubscribed_at ? ` Unsubscribed ${fmtIst(data.unsubscribed_at)}.` : ""}
       </p>
-      <button className="rounded bg-accent px-3 py-1 text-white" disabled={turningOn && !consent}>
+      <button className="rounded bg-accent px-3 py-1 text-on-accent" disabled={turningOn && !consent}>
         Save
       </button>
       {msg ? <p className="text-xs text-muted" role="status">{msg}</p> : null}

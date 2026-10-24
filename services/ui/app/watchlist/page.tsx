@@ -40,7 +40,7 @@ function Watchlist() {
               </option>
             ))}
         </select>
-        <button disabled={!pick} className="rounded bg-accent px-3 py-1 text-sm text-white disabled:opacity-50">
+        <button disabled={!pick} className="rounded bg-accent px-3 py-1 text-sm text-on-accent disabled:opacity-50">
           Add
         </button>
       </form>

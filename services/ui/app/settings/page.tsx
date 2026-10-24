@@ -40,7 +40,7 @@ function Profile({ me }: { me: Me }) {
           Display name
           <input value={name} onChange={(e) => setName(e.target.value)} className={input} maxLength={80} />
         </label>
-        <button className="rounded bg-accent px-3 py-1 text-sm text-white">Save</button>
+        <button className="rounded bg-accent px-3 py-1 text-sm text-on-accent">Save</button>
       </form>
       {!me.is_demo ? (
         <form
@@ -104,7 +104,7 @@ function Preferences({ me }: { me: Me }) {
         </div>
       ) : null}
       <p className="text-xs text-muted">Attention weights are set from the Needs Attention page.</p>
-      <button className="rounded bg-accent px-3 py-1 text-white">Save</button>
+      <button className="rounded bg-accent px-3 py-1 text-on-accent">Save</button>
       <Saved msg={msg} />
     </form>
   );
@@ -141,7 +141,7 @@ function Data({ me }: { me: Me }) {
                 setError(e instanceof Error ? e.message : "Could not delete");
               }
             }}
-            className="rounded bg-neg px-3 py-1 text-white disabled:opacity-40"
+            className="rounded bg-neg px-3 py-1 text-on-accent disabled:opacity-40"
           >
             Delete everything
           </button>

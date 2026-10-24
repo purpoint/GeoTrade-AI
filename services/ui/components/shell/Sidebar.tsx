@@ -24,7 +24,7 @@ export function Sidebar() {
     <>
       <nav aria-label="Main" className="sticky top-0 hidden h-screen shrink-0 flex-col border-r border-line bg-surface md:flex md:w-16 lg:w-52">
         <Link href="/" className="flex h-14 items-center gap-2 px-4 font-semibold">
-          <span className="rounded bg-accent px-1.5 py-0.5 text-sm text-white">GT</span>
+          <span className="rounded bg-accent px-1.5 py-0.5 text-sm text-on-accent">GT</span>
           <span className="hidden lg:inline">GeoTrade-AI</span>
         </Link>
         <ul className="flex flex-col gap-1 p-2">

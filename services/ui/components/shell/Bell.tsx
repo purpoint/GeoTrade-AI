@@ -16,7 +16,7 @@ export function Bell() {
         <path d="M6 16V11a6 6 0 1112 0v5l1.5 2h-15zM10 20a2 2 0 004 0" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
       {n > 0 ? (
-        <span className="num absolute -right-1 -top-1 min-w-4 rounded-full bg-neg px-1 text-center text-[10px] leading-4 text-white" data-testid="bell-count">
+        <span className="num absolute -right-1 -top-1 min-w-4 rounded-full bg-neg px-1 text-center text-[10px] leading-4 text-on-accent" data-testid="bell-count">
           {n > 99 ? "99+" : n}
         </span>
       ) : null}

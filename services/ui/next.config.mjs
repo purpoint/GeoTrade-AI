@@ -8,6 +8,20 @@ const nextConfig = {
     return [{ source: "/api/v1/:path*", destination: `${backend}/api/v1/:path*` }];
   },
   compress: false, // keep SSE responses unbuffered through the proxy
+  poweredByHeader: false,
+  async headers() {
+    const security = [
+      { key: "X-Content-Type-Options", value: "nosniff" },
+      { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+      { key: "X-Frame-Options", value: "SAMEORIGIN" },
+      { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
+    ];
+    return [
+      { source: "/:path*", headers: security },
+      // hashed build output never changes; pages and API responses keep their own cache rules
+      { source: "/_next/static/:path*", headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }] },
+    ];
+  },
 };
 
 export default nextConfig;

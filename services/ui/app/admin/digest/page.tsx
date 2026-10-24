@@ -32,7 +32,7 @@ function Runs() {
             const r = await post<{ to: string; provider: string; subject_user: string }>("/admin/digest/test-send", {});
             return `Sent ${r.subject_user}'s digest to ${r.to} via ${r.provider}`;
           })}
-          className="rounded bg-accent px-3 py-1 text-sm text-white"
+          className="rounded bg-accent px-3 py-1 text-sm text-on-accent"
         >
           Send today&apos;s demo digest to me
         </button>

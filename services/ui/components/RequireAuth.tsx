@@ -17,7 +17,7 @@ export function RequireAuth({ children, operator = false }: { children: React.Re
         <p className="font-medium">Sign in to see this page</p>
         <p className="mt-1 text-sm text-muted">Your portfolio, alerts and settings are private to your account.</p>
         <div className="mt-4 flex justify-center gap-2">
-          <Link href={`/login?next=${encodeURIComponent(path)}`} className="rounded bg-accent px-3 py-1.5 text-sm text-white">
+          <Link href={`/login?next=${encodeURIComponent(path)}`} className="rounded bg-accent px-3 py-1.5 text-sm text-on-accent">
             Sign in
           </Link>
           <Link href="/signup" className="rounded border border-line px-3 py-1.5 text-sm hover:bg-raised">

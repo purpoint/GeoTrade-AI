@@ -72,7 +72,7 @@ export default function StockPage({ params }: { params: Promise<{ ticker: string
       <section className="card p-3">
         <div className="mb-2 flex gap-1" role="group" aria-label="Range">
           {(Object.keys(RANGES) as Range[]).map((r) => (
-            <button key={r} onClick={() => setRange(r)} aria-pressed={range === r} className={`rounded px-2 py-1 text-xs ${range === r ? "bg-accent text-white" : "border border-line hover:bg-raised"}`}>
+            <button key={r} onClick={() => setRange(r)} aria-pressed={range === r} className={`rounded px-2 py-1 text-xs ${range === r ? "bg-accent text-on-accent" : "border border-line hover:bg-raised"}`}>
               {r}
             </button>
           ))}

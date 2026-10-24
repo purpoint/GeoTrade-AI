@@ -294,8 +294,8 @@ def preview(session: Session, user: User, now: datetime | None = None) -> dict[s
     )
     if s is None:
         return None
-    s, _ = finalise(session, s)
-    return s
+    # previews render on page load, so they skip the LLM round trip; the 16:30 build writes the real one
+    return {**s, "narrative": {"text": narrative.template(s), "source": "template"}}
 
 
 def test_send(session: Session, user: User, to: str, sender: EmailSender) -> str | None:

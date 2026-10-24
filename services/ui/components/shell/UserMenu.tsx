@@ -16,14 +16,14 @@ export function UserMenu() {
   }, []);
   if (!me)
     return (
-      <Link href="/login" className="rounded-md bg-accent px-2.5 py-1 text-xs text-white">
+      <Link href="/login" className="rounded-md bg-accent px-2.5 py-1 text-xs text-on-accent">
         Sign in
       </Link>
     );
   const initial = (me.display_name || me.email).slice(0, 1).toUpperCase();
   return (
     <div className="relative" ref={box}>
-      <button onClick={() => setOpen((o) => !o)} aria-expanded={open} aria-haspopup="menu" aria-label="Account menu" className="flex h-7 w-7 items-center justify-center rounded-full bg-accent text-xs font-medium text-white">
+      <button onClick={() => setOpen((o) => !o)} aria-expanded={open} aria-haspopup="menu" aria-label="Account menu" className="flex h-7 w-7 items-center justify-center rounded-full bg-accent text-xs font-medium text-on-accent">
         {initial}
       </button>
       {open ? (

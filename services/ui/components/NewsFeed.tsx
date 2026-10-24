@@ -25,7 +25,7 @@ export function NewsFeed({ filters, limit = 20 }: { filters: NewsFilters; limit?
             qc.invalidateQueries({ queryKey: ["news"] });
             window.scrollTo({ top: 0 });
           }}
-          className="sticky top-24 z-20 mx-auto block rounded-full bg-accent px-3 py-1 text-xs text-white shadow"
+          className="sticky top-24 z-20 mx-auto block rounded-full bg-accent px-3 py-1 text-xs text-on-accent shadow"
         >
           {matching} new {matching === 1 ? "item" : "items"} · show
         </button>
