@@ -112,6 +112,80 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/admin/digest/preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Admin Preview
+         * @description Today's digest for any account (default: the demo investor), rendered live.
+         */
+        get: operations["admin_preview_api_v1_admin_digest_preview_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/digest/rebuild": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Rebuild
+         * @description Idempotent: refreshes unsent snapshots for the date; anything already sent is left alone.
+         */
+        post: operations["rebuild_api_v1_admin_digest_rebuild_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/digest/runs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Runs */
+        get: operations["runs_api_v1_admin_digest_runs_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/digest/test-send": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Test Send */
+        post: operations["test_send_api_v1_admin_digest_test_send_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/admin/pipeline/stats": {
         parameters: {
             query?: never;
@@ -389,6 +463,80 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/digest/history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** History */
+        get: operations["history_api_v1_digest_history_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/digest/today": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Today
+         * @description Today's digest exactly as emailed; before the 16:30 build, a live preview built the same way.
+         */
+        get: operations["today_api_v1_digest_today_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/digest/{day}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One */
+        get: operations["one_api_v1_digest__day__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/email/unsubscribe": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Unsubscribe
+         * @description One-click unsubscribe (RFC 8058): no login, no CSRF; the signed token is the authority.
+         */
+        post: operations["unsubscribe_api_v1_email_unsubscribe_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/evaluation/backtest": {
         parameters: {
             query?: never;
@@ -596,6 +744,24 @@ export interface paths {
         head?: never;
         /** Patch Me */
         patch: operations["patch_me_api_v1_me_patch"];
+        trace?: never;
+    };
+    "/api/v1/me/email-preferences": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Email Prefs */
+        get: operations["get_email_prefs_api_v1_me_email_preferences_get"];
+        /** Put Email Prefs */
+        put: operations["put_email_prefs_api_v1_me_email_preferences_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/api/v1/me/export": {
@@ -1079,6 +1245,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/webhooks/email/{provider}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Email Webhook
+         * @description Bounces and complaints into email_suppressions (checked before every send).
+         */
+        post: operations["email_webhook_api_v1_webhooks_email__provider__post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1372,6 +1558,61 @@ export interface components {
             /** Confirm */
             confirm: boolean;
         };
+        /** DigestHistory */
+        DigestHistory: {
+            /** Items */
+            items: components["schemas"]["DigestSummary"][];
+            /** Next Cursor */
+            next_cursor: string | null;
+        };
+        /** DigestOut */
+        DigestOut: {
+            /** Html */
+            html: string | null;
+            /** Kind */
+            kind: string;
+            /** Message */
+            message?: string | null;
+            /** Narrative Source */
+            narrative_source: string | null;
+            /** Sent At */
+            sent_at: string | null;
+            /**
+             * Session Date
+             * Format: date
+             */
+            session_date: string;
+            /** Snapshot */
+            snapshot: {
+                [key: string]: unknown;
+            } | null;
+            /** Status */
+            status: string;
+            /** Subject */
+            subject: string | null;
+            /** Text */
+            text: string | null;
+        };
+        /** DigestSummary */
+        DigestSummary: {
+            /** Kind */
+            kind: string;
+            /** Narrative Source */
+            narrative_source: string | null;
+            /** Sent At */
+            sent_at: string | null;
+            /**
+             * Session Date
+             * Format: date
+             */
+            session_date: string;
+            /** Skip Reason */
+            skip_reason: string | null;
+            /** Status */
+            status: string;
+            /** Subject */
+            subject: string | null;
+        };
         /** Disclaimer */
         Disclaimer: {
             /** Text */
@@ -1385,6 +1626,61 @@ export interface components {
             quantity: number;
             /** Symbol */
             symbol: string;
+        };
+        /** EmailPrefsIn */
+        EmailPrefsIn: {
+            /**
+             * Consent
+             * @default false
+             */
+            consent: boolean;
+            /** Daily Digest Enabled */
+            daily_digest_enabled: boolean;
+            /**
+             * Include Market
+             * @default true
+             */
+            include_market: boolean;
+            /**
+             * Include Watch Ideas
+             * @default true
+             */
+            include_watch_ideas: boolean;
+            /**
+             * Include Watchlist
+             * @default true
+             */
+            include_watchlist: boolean;
+            /**
+             * Send Time Ist
+             * @default 17:00
+             */
+            send_time_ist: string;
+        };
+        /** EmailPrefsOut */
+        EmailPrefsOut: {
+            /** Consent Text */
+            consent_text: string;
+            /** Consent Version */
+            consent_version: string;
+            /** Consented At */
+            consented_at: string | null;
+            /** Daily Digest Enabled */
+            daily_digest_enabled: boolean;
+            /** Include Market */
+            include_market: boolean;
+            /** Include Watch Ideas */
+            include_watch_ideas: boolean;
+            /** Include Watchlist */
+            include_watchlist: boolean;
+            /** Last Delivery */
+            last_delivery: {
+                [key: string]: unknown;
+            } | null;
+            /** Send Time Ist */
+            send_time_ist: string;
+            /** Unsubscribed At */
+            unsubscribed_at: string | null;
         };
         /** EvalReport */
         EvalReport: {
@@ -1851,6 +2147,20 @@ export interface components {
             /** Start */
             start: string;
         };
+        /** Rebuild */
+        Rebuild: {
+            /**
+             * Kind
+             * @default daily
+             * @enum {string}
+             */
+            kind: "daily" | "weekly";
+            /**
+             * Session Date
+             * Format: date
+             */
+            session_date: string;
+        };
         /** RelatedOut */
         RelatedOut: {
             /** Delta 24H */
@@ -1916,6 +2226,38 @@ export interface components {
             /** Enabled */
             enabled?: boolean | null;
             params?: components["schemas"]["RuleParams"] | null;
+        };
+        /** RunOut */
+        RunOut: {
+            /** Counts */
+            counts: {
+                [key: string]: number;
+            };
+            /** Finished At */
+            finished_at: string | null;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Kind */
+            kind: string;
+            /**
+             * Session Date
+             * Format: date
+             */
+            session_date: string;
+            /**
+             * Started At
+             * Format: date-time
+             */
+            started_at: string;
+            /** Stats */
+            stats: {
+                [key: string]: unknown;
+            };
+            /** Status */
+            status: string;
         };
         /** SectorDetail */
         SectorDetail: {
@@ -2082,6 +2424,30 @@ export interface components {
             /** Ticker */
             ticker: string;
         };
+        /** TestSend */
+        TestSend: {
+            /**
+             * To
+             * @description recipient; default: the signed-in operator's address
+             */
+            to?: string | null;
+            /**
+             * User Email
+             * @description whose digest to render; default: the demo account
+             */
+            user_email?: string | null;
+        };
+        /** TestSendOut */
+        TestSendOut: {
+            /** Message Id */
+            message_id: string | null;
+            /** Provider */
+            provider: string;
+            /** Subject User */
+            subject_user: string;
+            /** To */
+            to: string;
+        };
         /** TickerRef */
         TickerRef: {
             /** Is Primary */
@@ -2119,6 +2485,16 @@ export interface components {
             stage: string;
             /** Status */
             status: string;
+        };
+        /** UnsubscribeOut */
+        UnsubscribeOut: {
+            /** Email Hint */
+            email_hint: string;
+            /**
+             * Status
+             * @constant
+             */
+            status: "unsubscribed";
         };
         /** ValidationError */
         ValidationError: {
@@ -2331,6 +2707,142 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Trace"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    admin_preview_api_v1_admin_digest_preview_get: {
+        parameters: {
+            query?: {
+                user_email?: string | null;
+            };
+            header?: {
+                "x-operator-token"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DigestOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    rebuild_api_v1_admin_digest_rebuild_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "x-operator-token"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Rebuild"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RunOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    runs_api_v1_admin_digest_runs_get: {
+        parameters: {
+            query?: {
+                limit?: number;
+            };
+            header?: {
+                "x-operator-token"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RunOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    test_send_api_v1_admin_digest_test_send_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "x-operator-token"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TestSend"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TestSendOut"];
                 };
             };
             /** @description Validation Error */
@@ -2851,6 +3363,122 @@ export interface operations {
             };
         };
     };
+    history_api_v1_digest_history_get: {
+        parameters: {
+            query?: {
+                cursor?: string | null;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DigestHistory"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    today_api_v1_digest_today_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DigestOut"];
+                };
+            };
+        };
+    };
+    one_api_v1_digest__day__get: {
+        parameters: {
+            query?: {
+                kind?: "daily" | "weekly";
+            };
+            header?: never;
+            path: {
+                day: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DigestOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    unsubscribe_api_v1_email_unsubscribe_post: {
+        parameters: {
+            query: {
+                token: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UnsubscribeOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     latest_backtest_api_v1_evaluation_backtest_get: {
         parameters: {
             query?: never;
@@ -3187,6 +3815,59 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Me"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_email_prefs_api_v1_me_email_preferences_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EmailPrefsOut"];
+                };
+            };
+        };
+    };
+    put_email_prefs_api_v1_me_email_preferences_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EmailPrefsIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EmailPrefsOut"];
                 };
             };
             /** @description Validation Error */
@@ -4052,6 +4733,37 @@ export interface operations {
             header?: never;
             path: {
                 ticker: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    email_webhook_api_v1_webhooks_email__provider__post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "x-webhook-token"?: string | null;
+            };
+            path: {
+                provider: "brevo";
             };
             cookie?: never;
         };

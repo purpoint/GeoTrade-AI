@@ -13,7 +13,7 @@ from geotrade_ai.api.deps import CurrentUser, DbSession
 from geotrade_ai.api.routers.auth import Me, clear_session, start_session
 from geotrade_ai.core import security
 from geotrade_ai.core.errors import ApiError
-from geotrade_ai.models import Holding, Portfolio, User, WatchlistItem
+from geotrade_ai.models import DigestDelivery, EmailPreferences, Holding, Portfolio, User, WatchlistItem
 from geotrade_ai.repos import alerts as alerts_repo
 from geotrade_ai.repos import users as users_repo
 
@@ -146,4 +146,13 @@ def export_extras(db: DbSession, user: User) -> list[tuple[str, list[list[object
         [a.created_at, a.kind, a.ticker or "", a.title, a.read_at or ""]
         for a in alerts_repo.page(db, user.id, False, 1000, None)
     ]
-    return [("alert_rules", rules), ("alerts", alerts)]
+    email: list[list[object]] = [["daily_digest_enabled", "send_time_ist", "consented_at", "unsubscribed_at"]]
+    p = db.get(EmailPreferences, user.id)
+    if p is not None:
+        email.append([p.daily_digest_enabled, p.send_time_ist, p.consented_at or "", p.unsubscribed_at or ""])
+    digests: list[list[object]] = [["session_date", "kind", "status", "subject", "sent_at"]]
+    digests += [
+        [d.session_date, d.kind, d.status, d.subject or "", d.sent_at or ""]
+        for d in db.scalars(select(DigestDelivery).where(DigestDelivery.user_id == user.id))
+    ]
+    return [("alert_rules", rules), ("alerts", alerts), ("email_preferences", email), ("digests", digests)]

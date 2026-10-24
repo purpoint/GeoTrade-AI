@@ -713,6 +713,217 @@
         "title": "DeleteRequest",
         "type": "object"
       },
+      "DigestHistory": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/DigestSummary"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Cursor"
+          }
+        },
+        "required": [
+          "items",
+          "next_cursor"
+        ],
+        "title": "DigestHistory",
+        "type": "object"
+      },
+      "DigestOut": {
+        "properties": {
+          "html": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Html"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Message"
+          },
+          "narrative_source": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Narrative Source"
+          },
+          "sent_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sent At"
+          },
+          "session_date": {
+            "format": "date",
+            "title": "Session Date",
+            "type": "string"
+          },
+          "snapshot": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Snapshot"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "subject": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subject"
+          },
+          "text": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Text"
+          }
+        },
+        "required": [
+          "session_date",
+          "kind",
+          "status",
+          "subject",
+          "narrative_source",
+          "sent_at",
+          "snapshot",
+          "html",
+          "text"
+        ],
+        "title": "DigestOut",
+        "type": "object"
+      },
+      "DigestSummary": {
+        "properties": {
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "narrative_source": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Narrative Source"
+          },
+          "sent_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sent At"
+          },
+          "session_date": {
+            "format": "date",
+            "title": "Session Date",
+            "type": "string"
+          },
+          "skip_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Skip Reason"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "subject": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subject"
+          }
+        },
+        "required": [
+          "session_date",
+          "kind",
+          "status",
+          "subject",
+          "narrative_source",
+          "sent_at",
+          "skip_reason"
+        ],
+        "title": "DigestSummary",
+        "type": "object"
+      },
       "Disclaimer": {
         "properties": {
           "text": {
@@ -753,6 +964,127 @@
           "avg_price"
         ],
         "title": "EditedRow",
+        "type": "object"
+      },
+      "EmailPrefsIn": {
+        "properties": {
+          "consent": {
+            "default": false,
+            "title": "Consent",
+            "type": "boolean"
+          },
+          "daily_digest_enabled": {
+            "title": "Daily Digest Enabled",
+            "type": "boolean"
+          },
+          "include_market": {
+            "default": true,
+            "title": "Include Market",
+            "type": "boolean"
+          },
+          "include_watch_ideas": {
+            "default": true,
+            "title": "Include Watch Ideas",
+            "type": "boolean"
+          },
+          "include_watchlist": {
+            "default": true,
+            "title": "Include Watchlist",
+            "type": "boolean"
+          },
+          "send_time_ist": {
+            "default": "17:00",
+            "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$",
+            "title": "Send Time Ist",
+            "type": "string"
+          }
+        },
+        "required": [
+          "daily_digest_enabled"
+        ],
+        "title": "EmailPrefsIn",
+        "type": "object"
+      },
+      "EmailPrefsOut": {
+        "properties": {
+          "consent_text": {
+            "title": "Consent Text",
+            "type": "string"
+          },
+          "consent_version": {
+            "title": "Consent Version",
+            "type": "string"
+          },
+          "consented_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Consented At"
+          },
+          "daily_digest_enabled": {
+            "title": "Daily Digest Enabled",
+            "type": "boolean"
+          },
+          "include_market": {
+            "title": "Include Market",
+            "type": "boolean"
+          },
+          "include_watch_ideas": {
+            "title": "Include Watch Ideas",
+            "type": "boolean"
+          },
+          "include_watchlist": {
+            "title": "Include Watchlist",
+            "type": "boolean"
+          },
+          "last_delivery": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Delivery"
+          },
+          "send_time_ist": {
+            "title": "Send Time Ist",
+            "type": "string"
+          },
+          "unsubscribed_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unsubscribed At"
+          }
+        },
+        "required": [
+          "daily_digest_enabled",
+          "send_time_ist",
+          "include_watch_ideas",
+          "include_watchlist",
+          "include_market",
+          "consented_at",
+          "unsubscribed_at",
+          "consent_text",
+          "consent_version",
+          "last_delivery"
+        ],
+        "title": "EmailPrefsOut",
         "type": "object"
       },
       "EvalReport": {
@@ -2165,6 +2497,29 @@
         "title": "QuietHours",
         "type": "object"
       },
+      "Rebuild": {
+        "properties": {
+          "kind": {
+            "default": "daily",
+            "enum": [
+              "daily",
+              "weekly"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "session_date": {
+            "format": "date",
+            "title": "Session Date",
+            "type": "string"
+          }
+        },
+        "required": [
+          "session_date"
+        ],
+        "title": "Rebuild",
+        "type": "object"
+      },
       "RelatedOut": {
         "properties": {
           "delta_24h": {
@@ -2389,6 +2744,69 @@
           }
         },
         "title": "RuleUpdate",
+        "type": "object"
+      },
+      "RunOut": {
+        "properties": {
+          "counts": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "title": "Counts",
+            "type": "object"
+          },
+          "finished_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Finished At"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "session_date": {
+            "format": "date",
+            "title": "Session Date",
+            "type": "string"
+          },
+          "started_at": {
+            "format": "date-time",
+            "title": "Started At",
+            "type": "string"
+          },
+          "stats": {
+            "additionalProperties": true,
+            "title": "Stats",
+            "type": "object"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "session_date",
+          "status",
+          "started_at",
+          "finished_at",
+          "stats",
+          "counts"
+        ],
+        "title": "RunOut",
         "type": "object"
       },
       "SectorDetail": {
@@ -2891,6 +3309,71 @@
         "title": "TapeItem",
         "type": "object"
       },
+      "TestSend": {
+        "properties": {
+          "to": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "recipient; default: the signed-in operator's address",
+            "title": "To"
+          },
+          "user_email": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "whose digest to render; default: the demo account",
+            "title": "User Email"
+          }
+        },
+        "title": "TestSend",
+        "type": "object"
+      },
+      "TestSendOut": {
+        "properties": {
+          "message_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Message Id"
+          },
+          "provider": {
+            "title": "Provider",
+            "type": "string"
+          },
+          "subject_user": {
+            "title": "Subject User",
+            "type": "string"
+          },
+          "to": {
+            "title": "To",
+            "type": "string"
+          }
+        },
+        "required": [
+          "provider",
+          "message_id",
+          "to",
+          "subject_user"
+        ],
+        "title": "TestSendOut",
+        "type": "object"
+      },
       "TickerRef": {
         "properties": {
           "is_primary": {
@@ -2989,6 +3472,25 @@
           "at"
         ],
         "title": "TraceEvent",
+        "type": "object"
+      },
+      "UnsubscribeOut": {
+        "properties": {
+          "email_hint": {
+            "title": "Email Hint",
+            "type": "string"
+          },
+          "status": {
+            "const": "unsubscribed",
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "email_hint"
+        ],
+        "title": "UnsubscribeOut",
         "type": "object"
       },
       "ValidationError": {
@@ -3399,6 +3901,256 @@
           }
         },
         "summary": "Trace",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/api/v1/admin/digest/preview": {
+      "get": {
+        "description": "Today's digest for any account (default: the demo investor), rendered live.",
+        "operationId": "admin_preview_api_v1_admin_digest_preview_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "user_email",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "User Email"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-operator-token",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Operator-Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DigestOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Admin Preview",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/api/v1/admin/digest/rebuild": {
+      "post": {
+        "description": "Idempotent: refreshes unsent snapshots for the date; anything already sent is left alone.",
+        "operationId": "rebuild_api_v1_admin_digest_rebuild_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-operator-token",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Operator-Token"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Rebuild"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Rebuild",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/api/v1/admin/digest/runs": {
+      "get": {
+        "operationId": "runs_api_v1_admin_digest_runs_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 30,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-operator-token",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Operator-Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/RunOut"
+                  },
+                  "title": "Response Runs Api V1 Admin Digest Runs Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Runs",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/api/v1/admin/digest/test-send": {
+      "post": {
+        "operationId": "test_send_api_v1_admin_digest_test_send_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-operator-token",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Operator-Token"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TestSend"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TestSendOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Test Send",
         "tags": [
           "admin"
         ]
@@ -4134,6 +4886,192 @@
         ]
       }
     },
+    "/api/v1/digest/history": {
+      "get": {
+        "operationId": "history_api_v1_digest_history_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 30,
+              "maximum": 60,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DigestHistory"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "History",
+        "tags": [
+          "digest"
+        ]
+      }
+    },
+    "/api/v1/digest/today": {
+      "get": {
+        "description": "Today's digest exactly as emailed; before the 16:30 build, a live preview built the same way.",
+        "operationId": "today_api_v1_digest_today_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DigestOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Today",
+        "tags": [
+          "digest"
+        ]
+      }
+    },
+    "/api/v1/digest/{day}": {
+      "get": {
+        "operationId": "one_api_v1_digest__day__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "day",
+            "required": true,
+            "schema": {
+              "format": "date",
+              "title": "Day",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "kind",
+            "required": false,
+            "schema": {
+              "default": "daily",
+              "enum": [
+                "daily",
+                "weekly"
+              ],
+              "title": "Kind",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DigestOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "One",
+        "tags": [
+          "digest"
+        ]
+      }
+    },
+    "/api/v1/email/unsubscribe": {
+      "post": {
+        "description": "One-click unsubscribe (RFC 8058): no login, no CSRF; the signed token is the authority.",
+        "operationId": "unsubscribe_api_v1_email_unsubscribe_post",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "schema": {
+              "maxLength": 600,
+              "minLength": 10,
+              "title": "Token",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnsubscribeOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Unsubscribe",
+        "tags": [
+          "digest"
+        ]
+      }
+    },
     "/api/v1/evaluation/backtest": {
       "get": {
         "operationId": "latest_backtest_api_v1_evaluation_backtest_get",
@@ -4577,6 +5515,68 @@
         },
         "summary": "Patch Me",
         "tags": [
+          "me"
+        ]
+      }
+    },
+    "/api/v1/me/email-preferences": {
+      "get": {
+        "operationId": "get_email_prefs_api_v1_me_email_preferences_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmailPrefsOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get Email Prefs",
+        "tags": [
+          "digest",
+          "me"
+        ]
+      },
+      "put": {
+        "operationId": "put_email_prefs_api_v1_me_email_preferences_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmailPrefsIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmailPrefsOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Put Email Prefs",
+        "tags": [
+          "digest",
           "me"
         ]
       }
@@ -6051,6 +7051,59 @@
         "tags": [
           "portfolio",
           "watchlist"
+        ]
+      }
+    },
+    "/api/v1/webhooks/email/{provider}": {
+      "post": {
+        "description": "Bounces and complaints into email_suppressions (checked before every send).",
+        "operationId": "email_webhook_api_v1_webhooks_email__provider__post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "provider",
+            "required": true,
+            "schema": {
+              "const": "brevo",
+              "title": "Provider",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-webhook-token",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Webhook-Token"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Email Webhook",
+        "tags": [
+          "digest"
         ]
       }
     }

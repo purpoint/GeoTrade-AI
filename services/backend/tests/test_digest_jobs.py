@@ -95,8 +95,10 @@ def test_suppressed_and_unsubscribed_are_skipped(setup: Session, investor: User)
 
 
 def test_quota_guard_skips_and_alerts_operator(
-    setup: Session, investor: User, monkeypatch: pytest.MonkeyPatch
-) -> None:  # noqa: F811
+    setup: Session,  # noqa: F811
+    investor: User,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     from geotrade_ai.repos import users as users_repo
 
     users_repo.create_user(setup, "ops@example.com", "correct horse battery", role="operator")
