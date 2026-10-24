@@ -22,6 +22,7 @@ from geotrade_ai.models import (
 from geotrade_ai.worker import relevance as rel
 from geotrade_ai.worker.dedupe import dedupe_one
 from geotrade_ai.worker.linker import get_linker
+from geotrade_ai.worker.scoring import score_batch
 
 log = logging.getLogger(__name__)
 
@@ -72,6 +73,7 @@ def link_one(session: Session, article: Article) -> str:
 STAGES: list[Stage] = [
     Stage("dedupe", "fetched", article_fn=dedupe_one),
     Stage("link", "deduped", article_fn=link_one),
+    Stage("score", "linked", batch_fn=score_batch, batch_size=20),
 ]
 
 
