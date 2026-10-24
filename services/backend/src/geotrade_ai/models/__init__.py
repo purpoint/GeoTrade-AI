@@ -19,7 +19,7 @@ from sqlalchemy import (
     Text,
     func,
 )
-from sqlalchemy.dialects.postgresql import JSONB, UUID
+from sqlalchemy.dialects.postgresql import CITEXT, JSONB, UUID
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 ARTICLE_STATUSES = (
@@ -310,3 +310,70 @@ class MarketSentimentBucket(Base):
     index_value: Mapped[float] = mapped_column(REAL)
     article_count: Mapped[int] = mapped_column(Integer)
     updated_at: Mapped[datetime] = _updated()
+
+
+# ---------- users and portfolios (0005) ----------
+
+
+class User(Base):
+    __tablename__ = "users"
+    id: Mapped[uuid.UUID] = mapped_column(UUID, primary_key=True)
+    email: Mapped[str] = mapped_column(CITEXT, unique=True)
+    password_hash: Mapped[str] = mapped_column(Text)
+    display_name: Mapped[str | None] = mapped_column(Text)
+    role: Mapped[str] = mapped_column(Text, server_default="user")
+    is_demo: Mapped[bool] = mapped_column(Boolean, server_default="false")
+    disclaimer_accepted_at: Mapped[datetime] = mapped_column(TS)
+    preferences: Mapped[dict[str, Any]] = mapped_column(JSONB, server_default="{}")
+    created_at: Mapped[datetime] = _created()
+    updated_at: Mapped[datetime] = _updated()
+
+
+class RefreshToken(Base):
+    __tablename__ = "refresh_tokens"
+    id: Mapped[uuid.UUID] = mapped_column(UUID, primary_key=True)
+    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
+    family_id: Mapped[uuid.UUID] = mapped_column(UUID)
+    token_hash: Mapped[str] = mapped_column(Text, unique=True)
+    expires_at: Mapped[datetime] = mapped_column(TS)
+    revoked_at: Mapped[datetime | None] = mapped_column(TS)
+    replaced_by: Mapped[uuid.UUID | None] = mapped_column(UUID)
+    created_at: Mapped[datetime] = _created()
+
+
+class Portfolio(Base):
+    __tablename__ = "portfolios"
+    id: Mapped[uuid.UUID] = mapped_column(UUID, primary_key=True)
+    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), unique=True)
+    name: Mapped[str] = mapped_column(Text, server_default="My portfolio")
+    created_at: Mapped[datetime] = _created()
+    updated_at: Mapped[datetime] = _updated()
+
+
+class Holding(Base):
+    __tablename__ = "holdings"
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
+    portfolio_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("portfolios.id", ondelete="CASCADE"))
+    symbol: Mapped[str] = mapped_column(Text)
+    ticker: Mapped[str | None] = mapped_column(ForeignKey("companies.ticker"))
+    isin: Mapped[str | None] = mapped_column(Text)
+    quantity: Mapped[Decimal] = mapped_column(Numeric(18, 4))
+    avg_price: Mapped[Decimal] = mapped_column(Numeric(14, 4))
+    created_at: Mapped[datetime] = _created()
+
+
+class ImportPreview(Base):
+    __tablename__ = "import_previews"
+    token: Mapped[uuid.UUID] = mapped_column(UUID, primary_key=True)
+    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
+    format: Mapped[str] = mapped_column(Text)
+    rows: Mapped[Any] = mapped_column(JSONB)
+    created_at: Mapped[datetime] = _created()
+    expires_at: Mapped[datetime] = mapped_column(TS)
+
+
+class WatchlistItem(Base):
+    __tablename__ = "watchlist_items"
+    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), primary_key=True)
+    ticker: Mapped[str] = mapped_column(ForeignKey("companies.ticker"), primary_key=True)
+    created_at: Mapped[datetime] = _created()

@@ -8,7 +8,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
 
 from geotrade_ai.api.cache import ResponseCache
-from geotrade_ai.api.routers import admin, meta, public
+from geotrade_ai.api.ratelimit import rate_limit_middleware
+from geotrade_ai.api.routers import admin, auth, me, meta, public
 from geotrade_ai.api.stream import hub
 from geotrade_ai.api.stream import router as stream_router
 from geotrade_ai.core.config import get_settings
@@ -38,11 +39,13 @@ def create_app() -> FastAPI:
     cache = ResponseCache(s.cache_ttl_seconds)
     hub.listeners.append(cache.clear)
     app.middleware("http")(cache.middleware)
+    app.middleware("http")(rate_limit_middleware)
     app.add_middleware(
         CORSMiddleware,
         allow_origins=s.cors_origin_list,
-        allow_methods=["GET", "POST"],
+        allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE"],
         allow_headers=["*"],
+        allow_credentials=True,
         expose_headers=["X-Request-ID", "ETag"],
     )
 
@@ -70,6 +73,6 @@ def create_app() -> FastAPI:
         return Response(generate_latest(), media_type=CONTENT_TYPE_LATEST)
 
     install_error_handlers(app)
-    for router in (meta.router, public.router, stream_router, admin.router):
+    for router in (meta.router, auth.router, me.router, public.router, stream_router, admin.router):
         app.include_router(router, prefix=API_PREFIX)
     return app

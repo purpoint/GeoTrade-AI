@@ -43,7 +43,7 @@ services:
   # one-shot: schema, reference data and (by default) a week of sample history
   backend-migrate:
     <<: *backend
-    entrypoint: ["sh", "-c", "backend migrate && backend seed ${SEED_ARGS:---history}"]
+    entrypoint: ["sh", "-c", "backend migrate && backend seed ${SEED_ARGS:---history --demo}"]
     depends_on: { database: { condition: service_healthy } }
 
   backend-api:

@@ -37,6 +37,21 @@ class Settings(BaseSettings):
     article_max_age_hours: int = 72
     worker_metrics_port: int = 9101
 
+    # auth (Phase 2)
+    jwt_secret: str = "dev-only-change-me-jwt-secret-32-bytes!!"
+    refresh_token_pepper: str = "dev-only-change-me-pepper"
+    access_ttl_minutes: int = 15
+    refresh_ttl_days: int = 30
+    cookie_secure: bool = False  # true behind HTTPS (Render / Railway)
+    # Next.js rewrites forward the browser IP in X-Forwarded-For.
+    # shortcut: trusted unconditionally; restrict to the proxy's address if the API is exposed directly.
+    trust_forwarded_for: bool = True
+    rate_limit_auth_per_min: int = 10
+    rate_limit_upload_per_min: int = 10
+    rate_limit_default_per_min: int = 300
+    operator_email: str = ""
+    operator_password: str = ""
+
     # api
     cache_ttl_seconds: float = 20.0
     sse_heartbeat_seconds: float = 15.0

@@ -1,28 +1,16 @@
-"""Minimal demo injection (P1-BE-22) behind a static operator token; full auth arrives in Phase 2."""
+"""Demo injection and stage trace (P1-BE-22), for operators or the static operator token."""
 
-import secrets
-from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, Header
+from fastapi import APIRouter, Depends
 
 from geotrade_ai.api import schemas as s
-from geotrade_ai.api.deps import DbSession
+from geotrade_ai.api.deps import DbSession, require_operator
 from geotrade_ai.api.views import news_detail
-from geotrade_ai.core.config import get_settings
 from geotrade_ai.core.errors import ApiError, not_found
 from geotrade_ai.models import Article
 from geotrade_ai.repos import articles as articles_repo
 from geotrade_ai.repos import read
-
-
-def require_operator(x_operator_token: Annotated[str | None, Header()] = None) -> None:
-    expected = get_settings().operator_token
-    if not expected:
-        raise ApiError(503, "demo_disabled", "OPERATOR_TOKEN is not configured")
-    if not x_operator_token or not secrets.compare_digest(x_operator_token, expected):
-        raise ApiError(401, "unauthorized", "operator token required")
-
 
 router = APIRouter(prefix="/admin/demo", tags=["admin"], dependencies=[Depends(require_operator)])
 

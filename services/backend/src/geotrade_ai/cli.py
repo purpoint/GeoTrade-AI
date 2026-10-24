@@ -37,6 +37,14 @@ def cmd_seed(args: argparse.Namespace) -> None:
 
     with get_sessionmaker()() as session:
         logging.getLogger("seed").info("reference seeded", extra={"extra": seed_reference(session)})
+    if args.demo:
+        from geotrade_ai.core.config import get_settings
+        from geotrade_ai.repos.accounts import seed_demo_accounts
+
+        with get_sessionmaker()() as session:
+            s = get_settings()
+            seed_demo_accounts(session, s.operator_email, s.operator_password)
+            logging.getLogger("seed").info("demo accounts seeded")
     if args.history:
         from geotrade_ai.worker.jobs import seed_history
 
@@ -101,6 +109,9 @@ def main(argv: list[str] | None = None) -> None:
     p.add_argument("--reference", action="store_true", default=True)
     p.add_argument("--history", action="store_true", help="also add 7 days of simulated articles and candles")
     p.add_argument("--days", type=int, default=7)
+    p.add_argument(
+        "--demo", action="store_true", help="also create the demo investor and the operator account"
+    )
     p.set_defaults(fn=cmd_seed)
 
     p = sub.add_parser("worker", help="run the scheduler and pipeline")

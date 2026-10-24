@@ -40,4 +40,6 @@ def install_error_handlers(app: FastAPI) -> None:
 
     @app.exception_handler(RequestValidationError)
     async def _validation_error(_: Request, exc: RequestValidationError) -> JSONResponse:
-        return JSONResponse(_body("validation_error", "Invalid request", exc.errors()), status_code=422)
+        # keep only JSON-safe fields; `ctx` can hold the raised exception object
+        details = [{"loc": list(e["loc"]), "msg": e["msg"], "type": e["type"]} for e in exc.errors()]
+        return JSONResponse(_body("validation_error", "Invalid request", details), status_code=422)
