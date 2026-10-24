@@ -410,3 +410,16 @@ class Alert(Base):
     notified: Mapped[bool] = mapped_column(Boolean, server_default="false")
     created_at: Mapped[datetime] = _created()
     read_at: Mapped[datetime | None] = mapped_column(TS)
+
+
+# ---------- related stocks (0007) ----------
+
+
+class CoMention(Base):
+    __tablename__ = "co_mentions"
+    ticker_a: Mapped[str] = mapped_column(ForeignKey("companies.ticker"), primary_key=True)
+    ticker_b: Mapped[str] = mapped_column(ForeignKey("companies.ticker"), primary_key=True)
+    n_articles: Mapped[int] = mapped_column(Integer)
+    rate: Mapped[float] = mapped_column(REAL)
+    window_days: Mapped[int] = mapped_column(Integer)
+    computed_at: Mapped[datetime] = _created()

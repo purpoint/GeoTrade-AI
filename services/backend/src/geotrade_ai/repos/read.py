@@ -400,3 +400,68 @@ def severe_negative_events(
     for ticker, severity, title in rows:
         out.setdefault(ticker, (float(severity), title))
     return out
+
+
+def article_counts(session: Session, since: datetime) -> dict[str, int]:
+    """Visible stories per stock since `since` (primary or secondary links)."""
+    rows = session.execute(
+        select(ArticleEntity.entity_id, func.count())
+        .join(Article, Article.id == ArticleEntity.article_id)
+        .where(ArticleEntity.entity_type == "stock", Article.status == VISIBLE, Article.published_at >= since)
+        .group_by(ArticleEntity.entity_id)
+    ).all()
+    return {t: int(n) for t, n in rows}
+
+
+def max_severity(session: Session, tickers: list[str], since: datetime) -> dict[str, float]:
+    rows = session.execute(
+        select(ArticleEntity.entity_id, func.max(ArticleScore.severity))
+        .join(Article, Article.id == ArticleEntity.article_id)
+        .join(ArticleScore, ArticleScore.article_id == Article.id)
+        .where(
+            ArticleEntity.entity_type == "stock",
+            ArticleEntity.entity_id.in_(tickers),
+            Article.status == VISIBLE,
+            Article.published_at >= since,
+            ArticleScore.event_type != "other",
+        )
+        .group_by(ArticleEntity.entity_id)
+    ).all()
+    return {t: float(v) for t, v in rows}
+
+
+def stock_articles(session: Session, tickers: list[str], since: datetime, per_ticker: int = 30) -> list[Any]:
+    """(ticker, Article, ArticleScore) for visible stories, newest first."""
+    return list(
+        session.execute(
+            select(ArticleEntity.entity_id, Article, ArticleScore)
+            .join(Article, Article.id == ArticleEntity.article_id)
+            .join(ArticleScore, ArticleScore.article_id == Article.id)
+            .where(
+                ArticleEntity.entity_type == "stock",
+                ArticleEntity.entity_id.in_(tickers),
+                Article.status == VISIBLE,
+                Article.published_at >= since,
+            )
+            .order_by(Article.published_at.desc())
+            .limit(per_ticker * max(len(tickers), 1))
+        ).all()
+    )
+
+
+def co_mentions_for(session: Session, tickers: list[str]) -> list[tuple[str, str, float, int]]:
+    """(held, other, rate, n) pairs touching any of `tickers`."""
+    rows = session.execute(
+        text(
+            "SELECT ticker_a, ticker_b, rate, n_articles FROM co_mentions "
+            "WHERE ticker_a = ANY(:t) OR ticker_b = ANY(:t)"
+        ),
+        {"t": tickers},
+    ).all()
+    out = []
+    for a, b, rate, n in rows:
+        if a in tickers:
+            out.append((a, b, float(rate), int(n)))
+        if b in tickers:
+            out.append((b, a, float(rate), int(n)))
+    return out

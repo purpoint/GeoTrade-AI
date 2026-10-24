@@ -160,6 +160,115 @@
         "title": "ArticleSentiment",
         "type": "object"
       },
+      "AttentionGroup": {
+        "properties": {
+          "articles": {
+            "items": {
+              "$ref": "#/components/schemas/NewsItem"
+            },
+            "title": "Articles",
+            "type": "array"
+          },
+          "attention": {
+            "title": "Attention",
+            "type": "number"
+          },
+          "components": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "title": "Components",
+            "type": "object"
+          },
+          "delta_24h": {
+            "title": "Delta 24H",
+            "type": "number"
+          },
+          "flags": {
+            "items": {
+              "$ref": "#/components/schemas/FlagOut"
+            },
+            "title": "Flags",
+            "type": "array"
+          },
+          "held": {
+            "title": "Held",
+            "type": "boolean"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "reasons": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Reasons",
+            "type": "array"
+          },
+          "sentiment": {
+            "title": "Sentiment",
+            "type": "number"
+          },
+          "ticker": {
+            "title": "Ticker",
+            "type": "string"
+          },
+          "weight": {
+            "title": "Weight",
+            "type": "number"
+          }
+        },
+        "required": [
+          "ticker",
+          "name",
+          "held",
+          "weight",
+          "attention",
+          "components",
+          "reasons",
+          "flags",
+          "sentiment",
+          "delta_24h",
+          "articles"
+        ],
+        "title": "AttentionGroup",
+        "type": "object"
+      },
+      "AttentionOut": {
+        "properties": {
+          "groups": {
+            "items": {
+              "$ref": "#/components/schemas/AttentionGroup"
+            },
+            "title": "Groups",
+            "type": "array"
+          },
+          "scope": {
+            "title": "Scope",
+            "type": "string"
+          },
+          "weights": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "title": "Weights",
+            "type": "object"
+          },
+          "window": {
+            "title": "Window",
+            "type": "string"
+          }
+        },
+        "required": [
+          "scope",
+          "window",
+          "weights",
+          "groups"
+        ],
+        "title": "AttentionOut",
+        "type": "object"
+      },
       "Body_import_file_api_v1_portfolio_import_post": {
         "properties": {
           "file": {
@@ -1588,6 +1697,78 @@
         "title": "QuietHours",
         "type": "object"
       },
+      "RelatedOut": {
+        "properties": {
+          "delta_24h": {
+            "title": "Delta 24H",
+            "type": "number"
+          },
+          "index": {
+            "title": "Index",
+            "type": "number"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "reasons": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Reasons",
+            "type": "array"
+          },
+          "score": {
+            "title": "Score",
+            "type": "number"
+          },
+          "sector_id": {
+            "title": "Sector Id",
+            "type": "string"
+          },
+          "stories_3d": {
+            "title": "Stories 3D",
+            "type": "integer"
+          },
+          "ticker": {
+            "title": "Ticker",
+            "type": "string"
+          }
+        },
+        "required": [
+          "ticker",
+          "name",
+          "sector_id",
+          "index",
+          "delta_24h",
+          "stories_3d",
+          "score",
+          "reasons"
+        ],
+        "title": "RelatedOut",
+        "type": "object"
+      },
+      "RelatedPage": {
+        "properties": {
+          "disclaimer": {
+            "title": "Disclaimer",
+            "type": "string"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/RelatedOut"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "items",
+          "disclaimer"
+        ],
+        "title": "RelatedPage",
+        "type": "object"
+      },
       "RuleOut": {
         "properties": {
           "enabled": {
@@ -2665,6 +2846,79 @@
         "summary": "Read One",
         "tags": [
           "alerts"
+        ]
+      }
+    },
+    "/api/v1/attention": {
+      "get": {
+        "operationId": "attention_api_v1_attention_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "scope",
+            "required": false,
+            "schema": {
+              "default": "holdings",
+              "enum": [
+                "holdings",
+                "watchlist",
+                "both"
+              ],
+              "title": "Scope",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "window",
+            "required": false,
+            "schema": {
+              "default": "24h",
+              "enum": [
+                "24h",
+                "72h",
+                "7d"
+              ],
+              "title": "Window",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "per_group",
+            "required": false,
+            "schema": {
+              "default": 5,
+              "title": "Per Group",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AttentionOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Attention",
+        "tags": [
+          "attention"
         ]
       }
     },
@@ -3787,6 +4041,49 @@
         "summary": "Confirm Import",
         "tags": [
           "portfolio"
+        ]
+      }
+    },
+    "/api/v1/portfolio/related": {
+      "get": {
+        "operationId": "related_api_v1_portfolio_related_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 5,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RelatedPage"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Related",
+        "tags": [
+          "attention"
         ]
       }
     },

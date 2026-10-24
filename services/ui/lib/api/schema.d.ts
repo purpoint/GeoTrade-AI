@@ -123,6 +123,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/attention": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Attention */
+        get: operations["attention_api_v1_attention_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/auth/demo": {
         parameters: {
             query?: never;
@@ -554,6 +571,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/portfolio/related": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Related */
+        get: operations["related_api_v1_portfolio_related_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/portfolio/sample": {
         parameters: {
             query?: never;
@@ -852,6 +886,46 @@ export interface components {
             label: string;
             /** Score */
             score: number;
+        };
+        /** AttentionGroup */
+        AttentionGroup: {
+            /** Articles */
+            articles: components["schemas"]["NewsItem"][];
+            /** Attention */
+            attention: number;
+            /** Components */
+            components: {
+                [key: string]: number;
+            };
+            /** Delta 24H */
+            delta_24h: number;
+            /** Flags */
+            flags: components["schemas"]["FlagOut"][];
+            /** Held */
+            held: boolean;
+            /** Name */
+            name: string;
+            /** Reasons */
+            reasons: string[];
+            /** Sentiment */
+            sentiment: number;
+            /** Ticker */
+            ticker: string;
+            /** Weight */
+            weight: number;
+        };
+        /** AttentionOut */
+        AttentionOut: {
+            /** Groups */
+            groups: components["schemas"]["AttentionGroup"][];
+            /** Scope */
+            scope: string;
+            /** Weights */
+            weights: {
+                [key: string]: number;
+            };
+            /** Window */
+            window: string;
         };
         /** Body_import_file_api_v1_portfolio_import_post */
         Body_import_file_api_v1_portfolio_import_post: {
@@ -1311,6 +1385,32 @@ export interface components {
             /** Start */
             start: string;
         };
+        /** RelatedOut */
+        RelatedOut: {
+            /** Delta 24H */
+            delta_24h: number;
+            /** Index */
+            index: number;
+            /** Name */
+            name: string;
+            /** Reasons */
+            reasons: string[];
+            /** Score */
+            score: number;
+            /** Sector Id */
+            sector_id: string;
+            /** Stories 3D */
+            stories_3d: number;
+            /** Ticker */
+            ticker: string;
+        };
+        /** RelatedPage */
+        RelatedPage: {
+            /** Disclaimer */
+            disclaimer: string;
+            /** Items */
+            items: components["schemas"]["RelatedOut"][];
+        };
         /** RuleOut */
         RuleOut: {
             /** Enabled */
@@ -1749,6 +1849,39 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    attention_api_v1_attention_get: {
+        parameters: {
+            query?: {
+                scope?: "holdings" | "watchlist" | "both";
+                window?: "24h" | "72h" | "7d";
+                per_group?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AttentionOut"];
+                };
             };
             /** @description Validation Error */
             422: {
@@ -2510,6 +2643,37 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PortfolioOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    related_api_v1_portfolio_related_get: {
+        parameters: {
+            query?: {
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RelatedPage"];
                 };
             };
             /** @description Validation Error */

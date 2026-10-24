@@ -9,7 +9,7 @@ from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
 
 from geotrade_ai.api.cache import ResponseCache
 from geotrade_ai.api.ratelimit import rate_limit_middleware
-from geotrade_ai.api.routers import admin, alerts, auth, me, meta, portfolio, public
+from geotrade_ai.api.routers import admin, alerts, attention, auth, me, meta, portfolio, public
 from geotrade_ai.api.stream import hub
 from geotrade_ai.api.stream import router as stream_router
 from geotrade_ai.core.config import get_settings
@@ -79,6 +79,7 @@ def create_app() -> FastAPI:
         me.router,
         portfolio.router,
         alerts.router,
+        attention.router,
         public.router,
         stream_router,
         admin.router,
