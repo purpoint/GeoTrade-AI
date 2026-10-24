@@ -78,6 +78,25 @@ def cmd_evaluate(args: argparse.Namespace) -> None:
     for model, m in r["sentiment"].items():
         print(f"{model:20s} accuracy={m['accuracy']} macro_f1={m['macro_f1']}")
     print(f"events   accuracy={r['events']['accuracy']}")
+    print(f"dedupe   {r['dedupe']}")
+    print(f"agreement {r['agreement']}")
+
+
+def cmd_backtest(args: argparse.Namespace) -> None:
+    from geotrade_ai.core.db import get_sessionmaker
+    from geotrade_ai.core.ids import uuid7
+    from geotrade_ai.eval.backtest import backtest
+    from geotrade_ai.models import BacktestRun
+
+    with get_sessionmaker()() as session:
+        results = backtest(session)
+        session.add(
+            BacktestRun(
+                id=uuid7(), params={"signal": "daily impact sum", "horizon": "next session"}, results=results
+            )
+        )
+        session.commit()
+    print(json.dumps(results, indent=2))
 
 
 def cmd_openapi(args: argparse.Namespace) -> None:
@@ -123,8 +142,11 @@ def main(argv: list[str] | None = None) -> None:
     p.set_defaults(fn=cmd_prices)
 
     p = sub.add_parser("evaluate", help="score the golden set and write a JSON report")
-    p.add_argument("--golden", default="golden-v0")
+    p.add_argument("--golden", default="golden-v1")
     p.set_defaults(fn=cmd_evaluate)
+
+    p = sub.add_parser("backtest", help="news signal vs next-session return; saved for the evaluation page")
+    p.set_defaults(fn=cmd_backtest)
 
     p = sub.add_parser("openapi", help="export the OpenAPI document")
     p.add_argument("--out", default="-")

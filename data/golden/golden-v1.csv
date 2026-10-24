@@ -1,0 +1,301 @@
+id,headline,tickers,label,event
+1,Infosys raises FY27 revenue guidance after strong deal wins,INFY,positive,guidance
+2,"TCS Q2 net profit rises 9% to Rs 12,400 crore; declares interim dividend",TCS,positive,earnings
+3,Wipro shares fall 4% as Q2 revenue misses Street estimates,WIPRO,negative,earnings
+4,HCLTech bags multi-year deal from European telecom major,HCLTECH,positive,order_win
+5,Tech Mahindra CEO says margin recovery on track,TECHM,positive,management
+6,SEBI imposes Rs 25 lakh penalty on Adani Enterprises over disclosure lapses,ADANIENT,negative,regulatory
+7,Adani Ports cargo volumes rise 11% in September,ADANIPORTS,positive,operations
+8,"Reliance Industries to invest Rs 75,000 crore in new energy giga complex",RELIANCE,positive,operations
+9,RIL shares slip after weak refining margins in Q2,RELIANCE,negative,earnings
+10,HDFC Bank deposits grow 15% year-on-year in Q2 business update,HDFCBANK,positive,operations
+11,ICICI Bank Q2 profit beats estimates as asset quality improves,ICICIBANK,positive,earnings
+12,RBI imposes monetary penalty on Kotak Mahindra Bank for KYC lapses,KOTAKBANK,negative,regulatory
+13,Axis Bank net interest margin contracts; stock under pressure,AXISBANK,negative,earnings
+14,"SBI raises Rs 10,000 crore via infrastructure bonds",SBIN,neutral,capital
+15,State Bank of India cuts lending rates by 10 basis points,SBIN,neutral,operations
+16,Bajaj Finance AUM growth slows; shares drop 5%,BAJFINANCE,negative,operations
+17,Bajaj Finserv completes stake purchase in Allianz joint ventures,BAJAJFINSV,positive,deal
+18,Shriram Finance Q2 profit jumps 59% on strong interest income,SHRIRAMFIN,positive,earnings
+19,Jio Financial Services gets RBI nod for payment aggregator business,JIOFIN,positive,regulatory
+20,HDFC Life new business premium growth disappoints,HDFCLIFE,negative,earnings
+21,SBI Life Q2 VNB margin steady at 27%,SBILIFE,neutral,earnings
+22,Maruti Suzuki October sales hit record high on festive demand,MARUTI,positive,operations
+23,Tata Motors JLR wholesales decline 12% amid cyber incident,TATAMOTORS,negative,operations
+24,Mahindra & Mahindra SUV sales surge 25% in September,M&M,positive,operations
+25,Bajaj Auto exports jump 30% while domestic sales stay flat,BAJAJ-AUTO,positive,operations
+26,Eicher Motors' Royal Enfield launches new 650cc motorcycle,EICHERMOT,neutral,operations
+27,Tata Steel posts Q2 loss on European operations impairment,TATASTEEL,negative,earnings
+28,JSW Steel posts three-fold jump in profit; lines up capacity expansion,JSWSTEEL,positive,earnings
+29,Hindalco's Novelis plant fire to hit output for weeks,HINDALCO,negative,operations
+30,Coal India production misses target for third straight month,COALINDIA,negative,operations
+31,NTPC commissions 1 GW of renewable capacity in Rajasthan,NTPC,positive,operations
+32,"Power Grid board approves capex of Rs 5,000 crore",POWERGRID,positive,operations
+33,ONGC Q2 profit falls 20% on lower crude realisation,ONGC,negative,earnings
+34,Hindustan Unilever volume growth slows to 2% as rural demand stays weak,HINDUNILVR,negative,earnings
+35,ITC cigarette volumes grow 6%; hotels demerger completed,ITC,positive,earnings
+36,Nestle India Q2 profit dips 8% on high commodity costs,NESTLEIND,negative,earnings
+37,"Tata Consumer Products to acquire organic food brand for Rs 1,200 crore",TATACONSUM,positive,deal
+38,Asian Paints loses market share as competition intensifies,ASIANPAINT,negative,operations
+39,UltraTech Cement completes acquisition of India Cements stake,ULTRACEMCO,positive,deal
+40,Grasim's Birla Opus paints business widens losses,GRASIM,negative,earnings
+41,Sun Pharma receives USFDA warning letter for Halol plant,SUNPHARMA,negative,regulatory
+42,Cipla launches generic asthma inhaler in the US,CIPLA,positive,operations
+43,Dr Reddy's Q2 profit rises 14% on strong North America sales,DRREDDY,positive,earnings
+44,"Apollo Hospitals to add 1,500 beds over three years",APOLLOHOSP,positive,operations
+45,Max Healthcare acquires Lucknow hospital for Rs 940 crore,MAXHEALTH,positive,deal
+46,Bharti Airtel ARPU rises to Rs 245 after tariff hike,BHARTIARTL,positive,earnings
+47,Airtel Africa unit faces currency headwinds,BHARTIARTL,negative,other
+48,Titan Company jewellery sales grow 20% in festive quarter,TITAN,positive,operations
+49,Trent's Zudio store expansion continues; revenue up 39%,TRENT,positive,earnings
+50,Zomato parent Eternal posts profit drop as quick commerce losses widen,ETERNAL,negative,earnings
+51,IndiGo adds 10 new international routes for winter schedule,INDIGO,positive,operations
+52,InterGlobe Aviation shares fall as crude prices spike,INDIGO,negative,macro
+53,"L&T bags 'mega' order worth over Rs 15,000 crore from Middle East client",LT,positive,order_win
+54,"Bharat Electronics wins Rs 2,210 crore defence order",BEL,positive,order_win
+55,BEL shares hit record high after strong order inflow,BEL,positive,order_win
+56,Larsen & Toubro board meets on Friday to consider results,LT,neutral,earnings
+57,Infosys sets record date for share buyback,INFY,neutral,dividend
+58,TCS announces third interim dividend of Rs 11 per share,TCS,neutral,dividend
+59,Wipro appoints new chief financial officer,WIPRO,neutral,management
+60,HDFC Bank names new chief risk officer,HDFCBANK,neutral,management
+61,Reliance AGM on August 29; investors await Jio IPO details,RELIANCE,neutral,capital
+62,Kotak Mahindra Bank shares trade flat ahead of Q2 results,KOTAKBANK,neutral,earnings
+63,ICICI Bank to consider bond issue at board meeting,ICICIBANK,neutral,capital
+64,Maruti Suzuki to hold investor meet next week,MARUTI,neutral,other
+65,Sun Pharma completes acquisition of US speciality firm,SUNPHARMA,positive,deal
+66,Tata Steel may sell stake in Thai unit; talks at early stage,TATASTEEL,neutral,deal
+67,Adani Enterprises reportedly in talks to raise $1 billion,ADANIENT,neutral,capital
+68,Bajaj Finance could see RBI curbs lifted soon say analysts,BAJFINANCE,positive,regulatory
+69,Is Asian Paints a value trap after 30% fall?,ASIANPAINT,negative,other
+70,Coal India declares interim dividend of Rs 15.75,COALINDIA,positive,dividend
+71,NTPC Green Energy IPO fully subscribed on day two,,neutral,capital
+72,Reliance Power shares hit upper circuit on fresh orders,,positive,order_win
+73,"L&T Finance raises Rs 2,000 crore via NCDs",,neutral,capital
+74,ITC Hotels shares list at 27% premium,,positive,capital
+75,SBI Card Q2 profit falls on higher provisions,,negative,earnings
+76,ICICI Prudential Life shares slip after weak premium growth,,negative,earnings
+77,HDFC AMC reports record assets under management,,positive,operations
+78,"Sensex jumps 800 points as FIIs return; Nifty reclaims 25,000",,positive,macro
+79,Nifty ends lower for third straight session amid weak global cues,,negative,macro
+80,RBI keeps repo rate unchanged at 5.5%; retains neutral stance,,neutral,macro
+81,India's GDP growth slows to 5.4% in July-September quarter,,negative,macro
+82,CPI inflation eases to 3.2% in September,,positive,macro
+83,Rupee falls to record low of 88.9 against dollar,,negative,macro
+84,"FPIs pull out Rs 12,000 crore from Indian equities in October",,negative,macro
+85,Markets today: Sensex and Nifty open flat ahead of Fed decision,,neutral,macro
+86,Bank stocks rally as RBI eases risk weights on NBFC loans,,positive,regulatory
+87,IT stocks fall as US visa fee hike rattles sector,,negative,regulatory
+88,Pharma stocks rise after US tariff exemption for generics,,positive,macro
+89,Metal stocks slide on weak China demand,,negative,macro
+90,Auto stocks gain on GST rate cut for small cars,,positive,macro
+91,Infosys and Wipro shares fall as Accenture cuts outlook,INFY;WIPRO,negative,guidance
+92,TCS and HCLTech gain after strong US tech earnings,TCS;HCLTECH,positive,earnings
+93,Tata Motors and M&M lead auto rally on festive sales,TATAMOTORS;M&M,positive,operations
+94,HDFC Bank and ICICI Bank drag Nifty lower,HDFCBANK;ICICIBANK,negative,other
+95,"Reliance and Bharti Airtel add Rs 50,000 crore in market value",RELIANCE;BHARTIARTL,positive,other
+96,JSW Steel and Tata Steel cut prices as imports surge,JSWSTEEL;TATASTEEL,negative,operations
+97,Kotak Bank shares rise 3% after RBI lifts curbs on digital onboarding,KOTAKBANK,positive,regulatory
+98,Paytm shares surge on strong quarterly numbers,,positive,earnings
+99,Vedanta demerger gets NCLT approval,,positive,regulatory
+100,Hero MotoCorp sales decline 8% in September,,negative,operations
+101,Infosys does not expect impact from US visa rule changes,INFY,neutral,regulatory
+102,TCS fails to win renewal of large UK contract,TCS,negative,order_win
+103,Wipro shares not affected by client loss says management,WIPRO,neutral,other
+104,ONGC to raise gas output by 10% from KG basin,ONGC,positive,operations
+105,BPCL and ONGC sign LNG supply pact,ONGC,positive,deal
+106,Cipla CFO resigns citing personal reasons,CIPLA,negative,management
+107,Dr Reddy's shares slump 6% after USFDA observations at Hyderabad unit,DRREDDY,negative,regulatory
+108,Apollo Hospitals Q2 profit rises 26%,APOLLOHOSP,positive,earnings
+109,Max Healthcare shares decline after weak occupancy data,MAXHEALTH,negative,operations
+110,Hindustan Unilever announces price cuts after GST reduction,HINDUNILVR,neutral,operations
+111,Nestle India launches new range of high-protein products,NESTLEIND,neutral,operations
+112,Trent shares tumble 8% as revenue growth slows,TRENT,negative,earnings
+113,Titan shares hit 52-week high on strong demand outlook,TITAN,positive,guidance
+114,"Eternal's Blinkit crosses 1,500 dark stores",ETERNAL,positive,operations
+115,Swiggy slumps to new low after Q2 miss,,negative,earnings
+116,IndiGo Q2 loss widens on higher fuel costs,INDIGO,negative,earnings
+117,SBI Life gets IRDAI nod for new products,SBILIFE,positive,regulatory
+118,HDFC Life MD's term extended by three years,HDFCLIFE,neutral,management
+119,Bajaj Auto launches electric Chetak variant priced at Rs 1 lakh,BAJAJ-AUTO,neutral,operations
+120,Eicher Motors shares surge 7% on robust Q2 margins,EICHERMOT,positive,earnings
+121,Grasim Industries Q2 profit rises 15% on chemicals recovery,GRASIM,positive,earnings
+122,UltraTech Cement raises prices by Rs 10 per bag,ULTRACEMCO,positive,operations
+123,Asian Paints shares rebound 4% after brokerage upgrade,ASIANPAINT,positive,rating
+124,Jefferies downgrades Maruti Suzuki to hold,MARUTI,negative,rating
+125,Morgan Stanley raises target price on ICICI Bank,ICICIBANK,positive,rating
+126,CLSA cuts target on Bajaj Finance citing slower growth,BAJFINANCE,negative,rating
+127,Goldman Sachs initiates coverage on Trent with neutral rating,TRENT,neutral,rating
+128,ED raids premises linked to Adani Ports in money laundering probe,ADANIPORTS,negative,legal
+129,Court dismisses lawsuit against Reliance Retail,RELIANCE,positive,legal
+130,Income tax department slaps Rs 600 crore demand on ITC,ITC,negative,legal
+131,Sun Pharma settles US patent litigation,SUNPHARMA,positive,legal
+132,"Power Grid Q2 profit flat at Rs 3,800 crore",POWERGRID,neutral,earnings
+133,NTPC Q2 profit rises 6% in line with estimates,NTPC,positive,earnings
+134,Coal India Q2 profit drops 22% on lower e-auction prices,COALINDIA,negative,earnings
+135,Hindalco Q2 profit beats estimates on strong aluminium prices,HINDALCO,positive,earnings
+136,Tata Consumer Q2 margin contracts on high tea costs,TATACONSUM,negative,earnings
+137,"Bharti Airtel to raise Rs 15,000 crore via QIP",BHARTIARTL,neutral,capital
+138,Jio Financial shares fall 5% after weak listing of subsidiary,JIOFIN,negative,capital
+139,"Shriram Finance board approves fund raising of Rs 5,000 crore",SHRIRAMFIN,neutral,capital
+140,Axis Bank completes integration of Citi's India consumer business,AXISBANK,positive,deal
+141,SBI shares jump 4% after strong loan growth,SBIN,positive,operations
+142,HDFC shares slip 2% after Q2 numbers,HDFCBANK,negative,earnings
+143,Kotak Mahindra Bank appoints new CEO,KOTAKBANK,neutral,management
+144,"M&M to invest Rs 12,000 crore in EV platform",M&M,positive,operations
+145,Tech Mahindra wins $500 million deal from telecom client,TECHM,positive,order_win
+146,HCL Tech cuts revenue growth outlook amid demand slowdown,HCLTECH,negative,guidance
+147,Monsoon covers entire country ahead of schedule says IMD,,neutral,other
+148,Gold prices hit record high as dollar weakens,,neutral,macro
+149,Union Budget to focus on capex says finance ministry,,neutral,macro
+150,Crude oil prices fall 3% on weak demand outlook,,neutral,macro
+151,Infosys signs five-year digital deal with Danish retailer,INFY,positive,order_win
+152,TCS posts 2% sequential revenue decline in North America,TCS,negative,earnings
+153,Wipro wins $500 million contract from US healthcare major,WIPRO,positive,order_win
+154,HCLTech to acquire German engineering services firm for $300 million,HCLTECH,positive,deal
+155,Tech Mahindra reports third straight quarter of revenue decline,TECHM,negative,earnings
+156,Reliance Retail opens 500 new stores in the quarter,RELIANCE,positive,operations
+157,Reliance Industries refinancing worries weigh on stock,RELIANCE,negative,capital
+158,HDFC Bank loan growth slows to 7% as deposits lag,HDFCBANK,negative,operations
+159,ICICI Bank shares hit record high after strong Q2 numbers,ICICIBANK,positive,earnings
+160,Kotak Mahindra Bank Q2 net profit falls 4% on higher provisions,KOTAKBANK,negative,earnings
+161,"Axis Bank board approves raising Rs 35,000 crore via bonds",AXISBANK,neutral,capital
+162,SBI chairman says asset quality remains stable,SBIN,neutral,management
+163,State Bank of India Q2 profit jumps 28% beating estimates,SBIN,positive,earnings
+164,Bajaj Finance shares tumble 7% after RBI flags lending practices,BAJFINANCE,negative,regulatory
+165,Bajaj Finserv insurance arm reports strong premium growth,BAJAJFINSV,positive,operations
+166,Shriram Finance asset quality deteriorates in commercial vehicle loans,SHRIRAMFIN,negative,operations
+167,Jio Financial Services and BlackRock launch mutual fund schemes,JIOFIN,positive,operations
+168,HDFC Life Q2 profit rises 15% on strong renewal premiums,HDFCLIFE,positive,earnings
+169,SBI Life shares slip as new business margins compress,SBILIFE,negative,earnings
+170,"Maruti Suzuki recalls 17,000 cars over airbag fault",MARUTI,negative,operations
+171,Tata Motors launches new electric SUV at Rs 17 lakh,TATAMOTORS,neutral,operations
+172,Mahindra & Mahindra Q2 profit jumps 35% on strong tractor demand,M&M,positive,earnings
+173,Bajaj Auto September sales fall 5% on weak domestic demand,BAJAJ-AUTO,negative,operations
+174,Eicher Motors appoints new chief executive for Royal Enfield,EICHERMOT,neutral,management
+175,Tata Steel UK unit announces job cuts amid losses,TATASTEEL,negative,operations
+176,JSW Steel crude steel output rises 12% in September,JSWSTEEL,positive,operations
+177,Hindalco shares fall as aluminium prices slide,HINDALCO,negative,macro
+178,Coal India e-auction premiums decline sharply,COALINDIA,negative,operations
+179,NTPC signs power purchase agreement for 2 GW solar capacity,NTPC,positive,order_win
+180,"Power Grid wins transmission project worth Rs 3,500 crore",POWERGRID,positive,order_win
+181,ONGC discovers new oil and gas reserves in Mumbai offshore,ONGC,positive,operations
+182,Hindustan Unilever Q2 net profit rises 3% in line with estimates,HINDUNILVR,neutral,earnings
+183,ITC Q2 profit misses estimates as FMCG margins shrink,ITC,negative,earnings
+184,Nestle India shares fall after weak volume growth,NESTLEIND,negative,earnings
+185,Tata Consumer Products reports 12% revenue growth,TATACONSUM,positive,earnings
+186,Asian Paints cuts prices by 4% to defend market share,ASIANPAINT,negative,operations
+187,UltraTech Cement Q2 volumes grow 15%,ULTRACEMCO,positive,operations
+188,"Grasim board approves Rs 4,000 crore rights issue",GRASIM,neutral,capital
+189,Sun Pharma Q2 profit rises 22% on speciality drug sales,SUNPHARMA,positive,earnings
+190,Cipla faces USFDA import alert on Goa facility,CIPLA,negative,regulatory
+191,Dr Reddy's launches generic cancer drug in US market,DRREDDY,positive,operations
+192,Apollo Hospitals pharmacy unit losses widen,APOLLOHOSP,negative,earnings
+193,Max Healthcare Q2 revenue rises 25% on new beds,MAXHEALTH,positive,earnings
+194,Bharti Airtel adds 4 million subscribers in September,BHARTIARTL,positive,operations
+195,Airtel shares fall after TRAI penalty for call drops,BHARTIARTL,negative,regulatory
+196,Titan Company Q2 profit dips on gold price volatility,TITAN,negative,earnings
+197,"Trent board approves Rs 2,000 crore capex for Zudio expansion",TRENT,positive,operations
+198,Eternal's food delivery growth slows to 15%,ETERNAL,negative,operations
+199,IndiGo net profit surges on strong international traffic,INDIGO,positive,earnings
+200,InterGlobe Aviation grounds 30 planes over engine issues,INDIGO,negative,operations
+201,"L&T Q2 order inflow rises 20% to Rs 80,000 crore",LT,positive,order_win
+202,Larsen & Toubro shares fall on margin miss,LT,negative,earnings
+203,"Bharat Electronics signs Rs 3,000 crore contract with Navy",BEL,positive,order_win
+204,Adani Enterprises airport business posts strong passenger growth,ADANIENT,positive,operations
+205,Adani Ports faces customs probe over cargo misdeclaration,ADANIPORTS,negative,legal
+206,Adani Ports to acquire Australian port for $2 billion,ADANIPORTS,positive,deal
+207,Infosys shares steady ahead of results announcement,INFY,neutral,earnings
+208,TCS board to consider share buyback on Thursday,TCS,neutral,dividend
+209,HDFC Bank completes merger integration ahead of schedule,HDFCBANK,positive,deal
+210,ICICI Bank appoints new independent director,ICICIBANK,neutral,management
+211,Kotak Mahindra Bank founder Uday Kotak sells 2% stake,KOTAKBANK,negative,capital
+212,Axis Bank shares slump 6% after asset quality concerns,AXISBANK,negative,earnings
+213,Bajaj Finance raises fixed deposit rates by 25 basis points,BAJFINANCE,neutral,operations
+214,"Maruti Suzuki to set up new plant in Gujarat with Rs 35,000 crore",MARUTI,positive,operations
+215,Tata Motors JLR posts record quarterly profit,TATAMOTORS,positive,earnings
+216,Bajaj Auto sees weak festive bookings for motorcycles,BAJAJ-AUTO,negative,operations
+217,Reliance Jio raises tariffs by 15%,RELIANCE,positive,operations
+218,ONGC shares slip as government raises windfall tax,ONGC,negative,regulatory
+219,Coal India workers call two-day strike,COALINDIA,negative,operations
+220,NTPC Green Energy shares list at small premium,,neutral,capital
+221,Sun Pharma CEO steps down after 15 years,SUNPHARMA,negative,management
+222,Cipla receives USFDA approval for generic inhaler,CIPLA,positive,regulatory
+223,Asian Paints Q2 profit falls 40% amid weak demand,ASIANPAINT,negative,earnings
+224,UltraTech Cement shares rise after price hike,ULTRACEMCO,positive,operations
+225,Bharti Airtel board approves merger of DTH business,BHARTIARTL,neutral,deal
+226,Titan shares jump 5% on strong festive jewellery demand,TITAN,positive,operations
+227,Eternal shares fall 6% as Blinkit losses widen,ETERNAL,negative,earnings
+228,Trent Q2 profit beats estimates on Zudio growth,TRENT,positive,earnings
+229,Wipro shares fall after weak revenue guidance,WIPRO,negative,guidance
+230,HCLTech raises FY guidance to 4-5% growth,HCLTECH,positive,guidance
+231,Tech Mahindra announces 10% headcount reduction,TECHM,negative,operations
+232,Infosys founder Narayana Murthy gifts shares to grandson,INFY,neutral,other
+233,JSW Steel to acquire Bhushan Power assets,JSWSTEEL,positive,deal
+234,Tata Steel Netherlands plant faces environmental fine,TATASTEEL,negative,regulatory
+235,Hindalco's Novelis files for US IPO,HINDALCO,neutral,capital
+236,SBI Card shares rise on lower credit costs,,positive,earnings
+237,LIC raises stake in ITC to 15%,ITC,neutral,capital
+238,ITC hotels business demerger record date fixed,ITC,neutral,deal
+239,"Nestle India to invest Rs 5,000 crore in new factories",NESTLEIND,positive,operations
+240,HUL appoints new managing director and CEO,HINDUNILVR,neutral,management
+241,Tata Consumer shares hit 52-week low,TATACONSUM,negative,other
+242,Grasim Q2 profit jumps on cement business recovery,GRASIM,positive,earnings
+243,Dr Reddy's shares fall 4% after Q2 profit misses estimates,DRREDDY,negative,earnings
+244,Apollo Hospitals shares rise on healthcare demerger plan,APOLLOHOSP,positive,deal
+245,Max Healthcare faces tax demand of Rs 400 crore,MAXHEALTH,negative,legal
+246,SBI Life gets new MD and CEO,SBILIFE,neutral,management
+247,HDFC Life shares tumble 5% after VNB margin disappoints,HDFCLIFE,negative,earnings
+248,Jio Financial shares surge 8% on insurance licence,JIOFIN,positive,regulatory
+249,Shriram Finance to raise $500 million via overseas bonds,SHRIRAMFIN,neutral,capital
+250,Bajaj Finserv board approves stake sale in insurance arm,BAJAJFINSV,neutral,deal
+251,Eicher Motors shares slip after Royal Enfield sales fall 3%,EICHERMOT,negative,operations
+252,M&M shares surge after strong SUV bookings,M&M,positive,operations
+253,IndiGo announces order for 30 wide-body aircraft,INDIGO,positive,operations
+254,L&T Technology Services wins European deal,,positive,order_win
+255,BEL shares slip as order execution slows,BEL,negative,operations
+256,Adani Enterprises QIP oversubscribed 4 times,ADANIENT,positive,capital
+257,Adani Enterprises shares crash 20% after US indictment,ADANIENT,negative,legal
+258,Power Grid Q2 profit rises 4%,POWERGRID,positive,earnings
+259,NTPC Q2 profit falls as coal costs rise,NTPC,negative,earnings
+260,"Sensex crashes 1,200 points as global markets tumble",,negative,macro
+261,Nifty hits fresh record high led by banks,,positive,macro
+262,RBI cuts repo rate by 25 basis points to 5.25%,,positive,macro
+263,India's industrial output growth slows to 2.5%,,negative,macro
+264,GST collections rise 9% to Rs 1.87 lakh crore,,positive,macro
+265,Rupee recovers 30 paise against dollar,,positive,macro
+266,FIIs turn net buyers after three months of selling,,positive,macro
+267,Markets end flat ahead of US inflation data,,neutral,macro
+268,SEBI tightens rules for futures and options trading,,neutral,regulatory
+269,Crude oil jumps 5% after supply disruption,,neutral,macro
+270,Banking stocks under pressure as bond yields rise,,negative,macro
+271,IT stocks rally after strong Nasdaq session,,positive,other
+272,Pharma stocks fall on US drug pricing order,,negative,regulatory
+273,Auto stocks slide on weak October sales data,,negative,operations
+274,FMCG stocks gain on rural demand recovery hopes,,positive,macro
+275,Metal stocks surge as China announces stimulus,,positive,macro
+276,Cement stocks rise after price hikes across regions,,positive,operations
+277,Telecom stocks rise after tariff hike announcements,,positive,operations
+278,Union cabinet approves new semiconductor incentive scheme,,neutral,macro
+279,India's trade deficit widens to $25 billion,,negative,macro
+280,Monsoon rainfall 8% above normal says IMD,,neutral,other
+281,Gold prices fall Rs 800 per 10 grams,,neutral,macro
+282,Reliance Industries and Disney complete media merger,RELIANCE,positive,deal
+283,TCS may announce large deal wins in coming weeks say analysts,TCS,neutral,order_win
+284,Infosys reportedly in talks to acquire US consulting firm,INFY,neutral,deal
+285,HDFC Bank could see weak margins next quarter analysts warn,HDFCBANK,negative,guidance
+286,Is Maruti Suzuki losing its edge in the SUV market?,MARUTI,negative,other
+287,Tata Motors not planning to raise funds says CFO,TATAMOTORS,neutral,capital
+288,Wipro does not see demand improving before next fiscal,WIPRO,negative,guidance
+289,Bajaj Auto fails to gain market share in electric scooters,BAJAJ-AUTO,negative,operations
+290,"Sun Pharma, Cipla and Dr Reddy's gain on export optimism",SUNPHARMA;CIPLA;DRREDDY,positive,macro
+291,Kotak Bank and Axis Bank fall after RBI draft norms,KOTAKBANK;AXISBANK,negative,regulatory
+292,Tata Steel and JSW Steel rise on safeguard duty,TATASTEEL;JSWSTEEL,positive,regulatory
+293,ONGC and Coal India gain on PSU rally,ONGC;COALINDIA,positive,other
+294,Bharti Airtel and Reliance Jio battle for 5G subscribers,BHARTIARTL;RELIANCE,neutral,operations
+295,"HDFC Bank, ICICI Bank and SBI lead Nifty gains",HDFCBANK;ICICIBANK;SBIN,positive,other
+296,Hindustan Unilever shares drop 3% after price cuts,HINDUNILVR,negative,operations
+297,Coal India board declares second interim dividend,COALINDIA,positive,dividend
+298,Tata Steel board to meet on November 5 for results,TATASTEEL,neutral,earnings
+299,Grasim shares slide 5% after paints business losses widen,GRASIM,negative,earnings
+300,JSW Steel shares hit record high on strong demand outlook,JSWSTEEL,positive,guidance

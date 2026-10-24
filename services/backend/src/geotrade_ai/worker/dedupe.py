@@ -11,12 +11,17 @@ from sqlalchemy.orm import Session
 from geotrade_ai.core.ids import uuid7
 from geotrade_ai.models import Article, StoryCluster
 from geotrade_ai.worker.linker import get_linker
+from geotrade_ai.worker.nlp import keyword
 
 L2_WINDOW = timedelta(hours=48)
 L3_WINDOW = timedelta(hours=6)
 FUZZY_THRESHOLD = 88
 JACCARD_THRESHOLD = 0.5
 _NUMBER = re.compile(r"\d+(?:\.\d+)?")
+_PERIOD = re.compile(
+    r"\b(q[1-4]|fy\d{2,4}|h[12]|jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec|january|february|march|"
+    r"april|june|july|august|september|october|november|december)\b"
+)
 
 
 def numbers(text: str) -> set[str]:
@@ -26,6 +31,17 @@ def numbers(text: str) -> set[str]:
 def numbers_conflict(a: str, b: str) -> bool:
     na, nb = numbers(a), numbers(b)
     return bool(na and nb and not (na <= nb or nb <= na))
+
+
+def periods_conflict(a: str, b: str) -> bool:
+    """'September sales' and 'October sales' are different stories."""
+    pa, pb = set(_PERIOD.findall(a)), set(_PERIOD.findall(b))
+    return bool(pa and pb and not (pa & pb))
+
+
+def direction_conflict(a: str, b: str) -> bool:
+    """'shares slump 6%' and 'shares jump 6%' share every other word but say opposite things."""
+    return {keyword.score(a).label, keyword.score(b).label} == {"positive", "negative"}
 
 
 def tickers_disjoint(a: set[str], b: set[str]) -> bool:
@@ -39,6 +55,8 @@ def jaccard(a: str, b: str) -> float:
 
 def is_near_duplicate(a_norm: str, b_norm: str, a_tickers: set[str], b_tickers: set[str]) -> bool:
     if numbers_conflict(a_norm, b_norm) or tickers_disjoint(a_tickers, b_tickers):
+        return False
+    if periods_conflict(a_norm, b_norm) or direction_conflict(a_norm, b_norm):
         return False
     if not (a_tickers & b_tickers):  # L3 needs a shared company
         return False

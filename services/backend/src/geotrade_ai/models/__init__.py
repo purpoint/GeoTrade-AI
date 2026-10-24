@@ -423,3 +423,34 @@ class CoMention(Base):
     rate: Mapped[float] = mapped_column(REAL)
     window_days: Mapped[int] = mapped_column(Integer)
     computed_at: Mapped[datetime] = _created()
+
+
+# ---------- evaluation (0008) ----------
+
+
+class GoldenExample(Base):
+    __tablename__ = "golden_examples"
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
+    set_name: Mapped[str] = mapped_column(Text)
+    ext_id: Mapped[str] = mapped_column(Text)
+    annotator: Mapped[str] = mapped_column(Text, server_default="a1")
+    headline: Mapped[str] = mapped_column(Text)
+    tickers: Mapped[list[str]] = mapped_column(ARRAY(Text), server_default="{}")
+    label: Mapped[str] = mapped_column(SentimentLabel)
+    event: Mapped[str | None] = mapped_column(Text)
+
+
+class EvalRun(Base):
+    __tablename__ = "eval_runs"
+    id: Mapped[uuid.UUID] = mapped_column(UUID, primary_key=True)
+    set_name: Mapped[str] = mapped_column(Text)
+    report: Mapped[Any] = mapped_column(JSONB)
+    created_at: Mapped[datetime] = _created()
+
+
+class BacktestRun(Base):
+    __tablename__ = "backtest_runs"
+    id: Mapped[uuid.UUID] = mapped_column(UUID, primary_key=True)
+    params: Mapped[Any] = mapped_column(JSONB)
+    results: Mapped[Any] = mapped_column(JSONB)
+    created_at: Mapped[datetime] = _created()

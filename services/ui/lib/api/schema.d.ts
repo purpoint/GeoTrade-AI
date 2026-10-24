@@ -225,6 +225,74 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/evaluation/backtest": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Latest Backtest */
+        get: operations["latest_backtest_api_v1_evaluation_backtest_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/evaluation/coverage": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Coverage */
+        get: operations["coverage_api_v1_evaluation_coverage_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/evaluation/latest": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Latest */
+        get: operations["latest_api_v1_evaluation_latest_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/evaluation/runs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Runs */
+        get: operations["runs_api_v1_evaluation_runs_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/health/live": {
         parameters: {
             query?: never;
@@ -927,6 +995,27 @@ export interface components {
             /** Window */
             window: string;
         };
+        /** BacktestReport */
+        BacktestReport: {
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Params */
+            params: {
+                [key: string]: unknown;
+            };
+            /** Results */
+            results: {
+                [key: string]: unknown;
+            };
+        };
         /** Body_import_file_api_v1_portfolio_import_post */
         Body_import_file_api_v1_portfolio_import_post: {
             /**
@@ -985,6 +1074,19 @@ export interface components {
             /** Ticker */
             ticker: string;
         };
+        /** Coverage */
+        Coverage: {
+            /** Movers */
+            movers: {
+                [key: string]: unknown;
+            }[];
+            /** Sectors With News 24H */
+            sectors_with_news_24h: number;
+            /** Stock Links 24H */
+            stock_links_24h: number;
+            /** Stocks With News 24H */
+            stocks_with_news_24h: number;
+        };
         /** Credentials */
         Credentials: {
             /** Email */
@@ -1010,6 +1112,42 @@ export interface components {
             quantity: number;
             /** Symbol */
             symbol: string;
+        };
+        /** EvalReport */
+        EvalReport: {
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Report */
+            report: {
+                [key: string]: unknown;
+            };
+        };
+        /** EvalRunSummary */
+        EvalRunSummary: {
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Golden Set */
+            golden_set: string;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Macro F1 */
+            macro_f1: {
+                [key: string]: number;
+            };
         };
         /** EventMarker */
         EventMarker: {
@@ -2005,6 +2143,108 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Me"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    latest_backtest_api_v1_evaluation_backtest_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BacktestReport"];
+                };
+            };
+        };
+    };
+    coverage_api_v1_evaluation_coverage_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Coverage"];
+                };
+            };
+        };
+    };
+    latest_api_v1_evaluation_latest_get: {
+        parameters: {
+            query?: {
+                golden_set?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EvalReport"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    runs_api_v1_evaluation_runs_get: {
+        parameters: {
+            query?: {
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EvalRunSummary"][];
                 };
             };
             /** @description Validation Error */

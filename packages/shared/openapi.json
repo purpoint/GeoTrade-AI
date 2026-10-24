@@ -269,6 +269,38 @@
         "title": "AttentionOut",
         "type": "object"
       },
+      "BacktestReport": {
+        "properties": {
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "params": {
+            "additionalProperties": true,
+            "title": "Params",
+            "type": "object"
+          },
+          "results": {
+            "additionalProperties": true,
+            "title": "Results",
+            "type": "object"
+          }
+        },
+        "required": [
+          "id",
+          "created_at",
+          "params",
+          "results"
+        ],
+        "title": "BacktestReport",
+        "type": "object"
+      },
       "Body_import_file_api_v1_portfolio_import_post": {
         "properties": {
           "file": {
@@ -414,6 +446,38 @@
         "title": "Contributor",
         "type": "object"
       },
+      "Coverage": {
+        "properties": {
+          "movers": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Movers",
+            "type": "array"
+          },
+          "sectors_with_news_24h": {
+            "title": "Sectors With News 24H",
+            "type": "integer"
+          },
+          "stock_links_24h": {
+            "title": "Stock Links 24H",
+            "type": "integer"
+          },
+          "stocks_with_news_24h": {
+            "title": "Stocks With News 24H",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "stocks_with_news_24h",
+          "stock_links_24h",
+          "sectors_with_news_24h",
+          "movers"
+        ],
+        "title": "Coverage",
+        "type": "object"
+      },
       "Credentials": {
         "properties": {
           "email": {
@@ -488,6 +552,65 @@
           "avg_price"
         ],
         "title": "EditedRow",
+        "type": "object"
+      },
+      "EvalReport": {
+        "properties": {
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "report": {
+            "additionalProperties": true,
+            "title": "Report",
+            "type": "object"
+          }
+        },
+        "required": [
+          "id",
+          "created_at",
+          "report"
+        ],
+        "title": "EvalReport",
+        "type": "object"
+      },
+      "EvalRunSummary": {
+        "properties": {
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "golden_set": {
+            "title": "Golden Set",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "macro_f1": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "title": "Macro F1",
+            "type": "object"
+          }
+        },
+        "required": [
+          "id",
+          "golden_set",
+          "created_at",
+          "macro_f1"
+        ],
+        "title": "EvalRunSummary",
         "type": "object"
       },
       "EventMarker": {
@@ -3057,6 +3180,138 @@
         "summary": "Signup",
         "tags": [
           "auth"
+        ]
+      }
+    },
+    "/api/v1/evaluation/backtest": {
+      "get": {
+        "operationId": "latest_backtest_api_v1_evaluation_backtest_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BacktestReport"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Latest Backtest",
+        "tags": [
+          "evaluation"
+        ]
+      }
+    },
+    "/api/v1/evaluation/coverage": {
+      "get": {
+        "operationId": "coverage_api_v1_evaluation_coverage_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Coverage"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Coverage",
+        "tags": [
+          "evaluation"
+        ]
+      }
+    },
+    "/api/v1/evaluation/latest": {
+      "get": {
+        "operationId": "latest_api_v1_evaluation_latest_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "golden_set",
+            "required": false,
+            "schema": {
+              "default": "golden-v1",
+              "title": "Golden Set",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EvalReport"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Latest",
+        "tags": [
+          "evaluation"
+        ]
+      }
+    },
+    "/api/v1/evaluation/runs": {
+      "get": {
+        "operationId": "runs_api_v1_evaluation_runs_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/EvalRunSummary"
+                  },
+                  "title": "Response Runs Api V1 Evaluation Runs Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Runs",
+        "tags": [
+          "evaluation"
         ]
       }
     },

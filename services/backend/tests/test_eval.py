@@ -14,7 +14,7 @@ def test_classification_metrics() -> None:
 
 def test_golden_v0_report(tmp_path: Path) -> None:
     assert len(load()) == 150
-    report = evaluate(out_dir=tmp_path)
+    report = evaluate("golden-v0", out_dir=tmp_path, save=False)
     assert Path(report["path"]).exists()
     assert report["linking"]["precision"] > 0.8  # regression floor for the linker
     assert report["sentiment"]["keyword-v1"]["n"] == 150
