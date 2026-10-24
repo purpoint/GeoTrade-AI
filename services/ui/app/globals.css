@@ -1,0 +1,59 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Design tokens (light / dark) as RGB triplets so Tailwind can apply opacity. */
+:root {
+  --bg: 247 248 250;
+  --surface: 255 255 255;
+  --raised: 241 245 249;
+  --line: 226 232 240;
+  --fg: 15 23 42;
+  --muted: 100 116 139;
+  --accent: 37 99 235;
+  --pos: 21 128 61;
+  --neg: 185 28 28;
+  --neu: 100 116 139;
+  --warn: 180 83 9;
+  color-scheme: light;
+}
+
+[data-theme="dark"] {
+  --bg: 11 15 23;
+  --surface: 17 24 39;
+  --raised: 31 41 55;
+  --line: 43 52 68;
+  --fg: 229 231 235;
+  --muted: 156 163 175;
+  --accent: 96 165 250;
+  --pos: 74 222 128;
+  --neg: 248 113 113;
+  --neu: 156 163 175;
+  --warn: 251 191 36;
+  color-scheme: dark;
+}
+
+body {
+  @apply bg-bg text-fg font-sans antialiased;
+}
+
+.num {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+.card {
+  @apply rounded-lg border border-line bg-surface;
+}
+
+@keyframes tape {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.tape { animation: tape 90s linear infinite; }
+.tape:hover { animation-play-state: paused; }
+
+@media (prefers-reduced-motion: reduce) {
+  .tape { animation: none; }
+  * { scroll-behavior: auto !important; }
+}
