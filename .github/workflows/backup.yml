@@ -1,0 +1,30 @@
+# Nightly off-box backup of the hosted (Railway) database (P3-DB-05). The repository is public, so the
+# dump is encrypted with BACKUP_PASSPHRASE before it becomes an artifact. Skips when secrets are unset.
+# Restore drill: docs/runbook.md.
+name: backup
+
+on:
+  schedule: [{ cron: "30 21 * * *" }] # 03:00 IST
+  workflow_dispatch:
+
+jobs:
+  dump:
+    runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: ${{ secrets.RAILWAY_DATABASE_URL }}
+      BACKUP_PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
+    steps:
+      - name: Skip without secrets
+        if: env.DATABASE_URL == '' || env.BACKUP_PASSPHRASE == ''
+        run: echo "RAILWAY_DATABASE_URL or BACKUP_PASSPHRASE not set; nothing to back up" && exit 0
+      - name: Dump and encrypt
+        if: env.DATABASE_URL != '' && env.BACKUP_PASSPHRASE != ''
+        run: |
+          sudo apt-get install -y -qq postgresql-client-16 >/dev/null 2>&1 || sudo apt-get install -y -qq postgresql-client >/dev/null
+          f="geotrade-$(date -u +%Y%m%dT%H%M%SZ).dump"
+          pg_dump -Fc --no-owner -f "$f" "$DATABASE_URL"
+          gpg --batch --yes --pinentry-mode loopback --passphrase "$BACKUP_PASSPHRASE" --symmetric --cipher-algo AES256 -o "$f.gpg" "$f"
+          rm "$f" && ls -l "$f.gpg"
+      - uses: actions/upload-artifact@v4
+        if: env.DATABASE_URL != '' && env.BACKUP_PASSPHRASE != ''
+        with: { name: db-backup, path: "*.dump.gpg", retention-days: 14 }

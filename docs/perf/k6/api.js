@@ -19,15 +19,19 @@ export const options = {
   },
 };
 
+// The API allows 300 requests a minute per IP, so each VU and iteration sends its own forwarded address
+// (the API trusts X-Forwarded-For from the UI proxy). Without this the run measures the rate limiter.
+const as = () => ({ headers: { "X-Forwarded-For": `10.${__VU % 250}.${Math.floor(__ITER / 250) % 250}.${__ITER % 250}` } });
+
 export function cached() {
-  const r = http.get(`${BASE}/market/overview`, { tags: { name: "overview" } });
+  const r = http.get(`${BASE}/market/overview`, { ...as(), tags: { name: "overview" } });
   check(r, { "200": (x) => x.status === 200 });
-  http.get(`${BASE}/sectors`, { tags: { name: "sectors" } });
+  http.get(`${BASE}/sectors`, { ...as(), tags: { name: "sectors" } });
 }
 
 // a unique query string defeats the 20 s response cache, so every request does the real work
 export function uncached() {
   const t = TICKERS[__ITER % TICKERS.length];
-  const r = http.get(`${BASE}/stocks/${t}?nocache=${__VU}-${__ITER}`, { tags: { name: "stock" } });
+  const r = http.get(`${BASE}/stocks/${t}?nocache=${__VU}-${__ITER}`, { ...as(), tags: { name: "stock" } });
   check(r, { "200": (x) => x.status === 200 });
 }

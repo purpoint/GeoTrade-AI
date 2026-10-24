@@ -1,0 +1,19 @@
+# Render Blueprint (P3-UI-07): the UI on Render's free plan. The browser only talks to this origin;
+# Next.js rewrites forward /api/v1/* (and the SSE stream) to the Railway backend, so cookies stay
+# first-party. BACKEND_URL is read at build time (rewrites are compiled in), so redeploy after changing it.
+services:
+  - type: web
+    name: geotrade-ai
+    runtime: docker
+    plan: free
+    region: singapore
+    rootDir: services/ui
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /login # a static page: the UI stays healthy even while the backend restarts
+    autoDeploy: true
+    envVars:
+      - key: BACKEND_URL
+        sync: false # the Railway api URL, e.g. https://geotrade-api.up.railway.app
+      - key: NEXT_PUBLIC_API_BASE
+        value: /api/v1

@@ -1,0 +1,63 @@
+# Single-VM production overlay (P3-BE-11): Caddy terminates TLS in front of the UI, nothing else is
+# published, cookies are Secure and email goes through Brevo's HTTP API. Hosted on Render + Railway
+# instead? See docs/deploy.md; this file is the self-hosted alternative and the demo-day backup.
+#
+#   DOMAIN=pulse.example.com docker compose -f compose.yaml -f infra/compose/compose.prod.yml up -d --build
+#
+# Needs in .env: JWT_SECRET, REFRESH_TOKEN_PEPPER, UNSUBSCRIBE_TOKEN_SECRET (32+ chars each),
+# POSTGRES_PASSWORD, BREVO_API_KEY, EMAIL_WEBHOOK_SECRET, OPERATOR_EMAIL/OPERATOR_PASSWORD.
+
+x-prod-env: &prod-env
+  COOKIE_SECURE: "true"
+  PUBLIC_WEB_URL: https://${DOMAIN:?set DOMAIN}
+  CORS_ORIGINS: https://${DOMAIN}
+  EMAIL_PROVIDER: brevo
+  LOG_LEVEL: INFO
+  RATE_LIMIT_AUTH_PER_MIN: 10
+
+services:
+  database:
+    ports: !reset []
+    restart: unless-stopped
+
+  database-backup:
+    restart: unless-stopped
+
+  backend-migrate:
+    environment:
+      <<: *prod-env
+    entrypoint: ["sh", "-c", "backend migrate && backend seed --demo"]  # no simulated history in production
+
+  backend-api:
+    ports: !reset []
+    restart: unless-stopped
+    environment:
+      <<: *prod-env
+      DB_POOL_SIZE: 10
+
+  backend-worker:
+    restart: unless-stopped
+    environment:
+      <<: *prod-env
+      DB_POOL_SIZE: 5
+      SMTP_HOST: ""
+
+  ui:
+    ports: !reset []
+    restart: unless-stopped
+
+  mailpit:
+    profiles: ["dev"]  # never started in production
+
+  caddy:
+    image: caddy:2.10-alpine
+    restart: unless-stopped
+    ports: ["80:80", "443:443"]
+    environment: { DOMAIN: "${DOMAIN}" }
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+    depends_on: [ui]
+
+volumes:
+  caddy-data:

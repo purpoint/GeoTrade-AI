@@ -4,7 +4,7 @@ Indian business news for the NIFTY 50: ingested from RSS, deduplicated, linked t
 
 **Not investment advice.** GeoTrade-AI summarises public news and signals. It never says buy, sell or target.
 
-See [GeoTrade-AI_Implementation_Plan.md](GeoTrade-AI_Implementation_Plan.md) for the full plan. This repository implements **Phase 1** (release v0, the public news product) and **Phase 2** (release v1: accounts, portfolios and personalisation).
+See [GeoTrade-AI_Implementation_Plan.md](GeoTrade-AI_Implementation_Plan.md) for the full plan. This repository implements **Phase 1** (release v0, the public news product), **Phase 2** (release v1: accounts, portfolios and personalisation) and **Phase 3** (release v1.5: the Daily Pulse email, AI extras, hardening and deployment config).
 
 ## Run it
 
@@ -25,7 +25,9 @@ Open http://localhost:3000. The first start migrates the database, loads referen
 | http://localhost:3000/attention | Needs Attention feed and related stocks to watch |
 | http://localhost:3000/alerts | Alert inbox and rules (live bell and toasts) |
 | http://localhost:3000/evaluation | Golden-set metrics and backtest |
-| http://localhost:3000/admin | Operator console: pipeline health, demo panel, dead letters (sign in with `OPERATOR_EMAIL`) |
+| http://localhost:3000/admin | Operator console: pipeline health, demo panel, dead letters, Daily Pulse runs (sign in with `OPERATOR_EMAIL`) |
+| http://localhost:3000/digest | Today's Daily Pulse as emailed, and the last 30 days; opt in from Settings, Email |
+| http://localhost:8025 | Mailpit: every email the stack sends locally (nothing leaves the machine) |
 
 ## Architecture
 
@@ -66,6 +68,8 @@ uv run backend evaluate             # golden-v1 report into data/golden/reports/
 uv run backend backfill --days 60   # real headlines from Google News search, one query per company (for the backtest)
 uv run backend backtest             # news signal vs next-session return
 uv run pytest -m contract           # Schemathesis: every operation, no server errors (slow)
+uv run backend digest run --now     # build today's Daily Pulse for opted-in users and send it now
+uv run backend why-sheet            # 50-item rating sheet for the Qwen "why this matters" sentences
 
 # ui
 cd services/ui
@@ -112,6 +116,34 @@ Known limits:
 - Rate limits, the response cache and SSE connection caps are per API process (one replica). Redis is the documented upgrade if the API scales out.
 - `X-Forwarded-For` is trusted for per-IP limits because the UI proxy sets it; restrict that if the API is exposed directly.
 
+## Phase 3 status
+
+- **Daily Pulse**: opt-in email after the close on NSE trading days (build 16:30 IST, send at each
+  user's time, default 17:00) and a Saturday 09:00 recap. Sections: today in one paragraph, holdings
+  today, holdings to review (risk flags), positive momentum to watch (not held; formula in plan 8.5 with
+  at least 3 stories from 2 sources), watchlist, market context and how the signals have behaved. The
+  summary is a template, or Qwen when enabled, checked against the snapshot's tickers and numbers.
+  Outbox with retries, suppressions, quota guard, one-click unsubscribe and no tracking.
+- **AI extras**: news-spike detection (24h stories vs 20 sessions, z > 3 and 4+ stories), rumour and
+  credibility scoring ("single source, unconfirmed" chip; severity discounted), plain-English alert
+  rules (parsed, confirmed, then matched deterministically), Qwen "why this matters" sentences and an
+  LLM entity-linking fallback. Everything works with `ENABLE_LLM=false`.
+- **Hardening**: retention jobs, per-role connection pools, security tests (every private route needs a
+  session, cross-user isolation, cookie flags, CORS, upload fuzzing, rate limits), dependency audits,
+  secret and image scanning in CI, axe accessibility checks in Playwright. Load results:
+  [docs/perf/phase3-load.md](docs/perf/phase3-load.md) (cached p95 9 ms, uncached 83 ms, 200 SSE clients).
+- **Deployment**: [docs/deploy.md](docs/deploy.md) (Render + Railway + Brevo), `render.yaml`,
+  `infra/railway/*.json`, `infra/compose/compose.prod.yml` with Caddy, encrypted nightly backups.
+  Operations: [docs/runbook.md](docs/runbook.md). Decisions: [docs/adr/README.md](docs/adr/README.md).
+
+Known limits:
+- The G3 soak (five trading days of digests on Railway, Groq usage for a week, k6 on the deployed host,
+  the demo recording) needs the hosted accounts and real days; the code and scripts for it are here.
+- The "why this matters" rating sheet still needs a human to fill it in.
+- Spike detection uses the 24-hour window only (not also the latest hour).
+- Without a verified domain, Brevo rewrites the sender and emails may land in spam; `/digest` is the
+  reliable copy.
+
 ## Vocabulary rules
 
-The product never uses "buy", "sell", "target price", "will rise" or "recommended". Movers are "rising" or "falling sentiment".
+The product never uses "buy", "sell", "target price", "will rise" or "recommended". Movers are "rising" or "falling sentiment". The list every LLM output is checked against lives in `data/reference/vocabulary.json`.

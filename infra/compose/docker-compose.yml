@@ -14,6 +14,10 @@ x-backend: &backend
     OPERATOR_EMAIL: ${OPERATOR_EMAIL:-}
     OPERATOR_PASSWORD: ${OPERATOR_PASSWORD:-}
     RATE_LIMIT_AUTH_PER_MIN: ${RATE_LIMIT_AUTH_PER_MIN:-10}
+    # local: digests (worker) and operator test sends (api) go to Mailpit at http://localhost:8025
+    EMAIL_PROVIDER: ${EMAIL_PROVIDER:-smtp}
+    SMTP_HOST: mailpit
+    SMTP_PORT: 1025
 
 services:
   database:
@@ -41,7 +45,8 @@ services:
       PGUSER: ${POSTGRES_USER:-geotrade}
       PGPASSWORD: ${POSTGRES_PASSWORD:-geotrade-dev}
       POSTGRES_DB: ${POSTGRES_DB:-geotrade}
-    volumes: ["../../backups:/backups"]
+      BACKUP_RCLONE_REMOTE: ${BACKUP_RCLONE_REMOTE:-}
+    volumes: ["../../backups:/backups", "${RCLONE_CONFIG_DIR:-../../backups/.rclone}:/root/.config/rclone:ro"]
     depends_on: { database: { condition: service_healthy } }
 
   # one-shot: schema, reference data and (by default) a week of sample history
@@ -52,7 +57,7 @@ services:
 
   backend-api:
     <<: *backend
-    command: ["api", "--workers", "1"]
+    command: ["backend", "api", "--workers", "1"]
     environment:
       <<: *backend-env
       DB_POOL_SIZE: 10  # P3-DB-04: api 10, worker 5
@@ -65,19 +70,15 @@ services:
 
   backend-worker:
     <<: *backend
-    command: ["worker"]
+    command: ["backend", "worker"]
     environment:
       <<: *backend-env
       LLM_PROVIDER: groq
       LLM_MODEL: ${LLM_MODEL:-qwen/qwen3.8-27b}
       DB_POOL_SIZE: 5
-      # local: digests go to Mailpit (http://localhost:8025), nothing leaves the machine
-      EMAIL_PROVIDER: ${EMAIL_PROVIDER:-smtp}
-      SMTP_HOST: mailpit
-      SMTP_PORT: 1025
     depends_on:
       backend-migrate: { condition: service_completed_successfully }
-      mailpit: { condition: service_started }
+      mailpit: { condition: service_started, required: false }  # absent in compose.prod.yml
 
   ui:
     build:

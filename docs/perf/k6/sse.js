@@ -7,8 +7,8 @@ import http from "k6/http";
 const BASE = `${__ENV.BASE_URL || "http://localhost:8000"}/api/v1`;
 
 export const options = {
+  // no thresholds: every request ends by the 40 s client timeout by design; the result is sse_clients
   scenarios: { sse: { executor: "per-vu-iterations", vus: 200, iterations: 1, maxDuration: "90s" } },
-  thresholds: { "http_req_failed": ["rate<1"] },
 };
 
 export default function () {

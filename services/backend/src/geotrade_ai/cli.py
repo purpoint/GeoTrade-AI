@@ -2,6 +2,7 @@
 
 import argparse
 import json
+import os
 import sys
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
@@ -186,7 +187,7 @@ def main(argv: list[str] | None = None) -> None:
 
     p = sub.add_parser("api", help="run the HTTP API")
     p.add_argument("--host", default="0.0.0.0")
-    p.add_argument("--port", type=int, default=8000)
+    p.add_argument("--port", type=int, default=int(os.environ.get("PORT", "8000")))  # Railway sets PORT
     p.add_argument("--workers", type=int, default=1)
     p.set_defaults(fn=cmd_api)
 

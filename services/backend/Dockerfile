@@ -16,5 +16,5 @@ COPY data/ /app/data/
 RUN useradd --uid 1000 app && chown -R app /app
 USER app
 EXPOSE 8000
-ENTRYPOINT ["backend"]
-CMD ["api"]
+# no ENTRYPOINT: platforms (Railway, Render) replace the whole command, e.g. "backend worker"
+CMD ["backend", "api"]

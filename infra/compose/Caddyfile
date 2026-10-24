@@ -1,0 +1,13 @@
+# Automatic HTTPS (Let's Encrypt) for $DOMAIN. The UI proxies /api/v1/* to the backend itself, so the
+# browser only ever talks to this origin; SSE needs flush_interval -1 so events are not buffered.
+{$DOMAIN} {
+	encode zstd gzip {
+		match {
+			not path /api/v1/stream*
+		}
+	}
+	reverse_proxy ui:3000 {
+		flush_interval -1
+	}
+	header Strict-Transport-Security "max-age=31536000; includeSubDomains"
+}
