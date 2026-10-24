@@ -27,6 +27,8 @@ jobs:
           uv run ruff format --check .
           uv run mypy src
           uv run lint-imports
+      - name: Dependency audit (P3-BE-10)
+        run: uv export --frozen --no-dev --no-hashes --no-emit-project -o /tmp/req.txt && uvx pip-audit -r /tmp/req.txt --no-deps --disable-pip
       - name: Tests (unit, fixtures, pipeline and API against Postgres, migration drift)
         run: uv run pytest
       - name: Contract tests (Schemathesis, every operation, no server errors)
@@ -46,12 +48,32 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: 22, cache: npm, cache-dependency-path: services/ui/package-lock.json }
       - run: npm ci
+      - name: Dependency audit (P3-BE-10)
+        run: npm audit --omit=dev --audit-level=high
       - name: Generated API types match openapi.json
         run: npm run gen:api && git diff --exit-code lib/api/schema.d.ts
       - run: npm run lint
       - run: npm run typecheck
       - run: npm test
       - run: npm run build
+
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - name: Secret scan (gitleaks)
+        uses: gitleaks/gitleaks-action@v2
+        env: { GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}" }
+      - name: Build the backend image
+        run: docker build -f services/backend/Dockerfile -t geotrade-ai/backend:ci .
+      - name: Container image scan (HIGH and CRITICAL with a fix)
+        uses: aquasecurity/trivy-action@0.33.1
+        with:
+          image-ref: geotrade-ai/backend:ci
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          exit-code: "1"
 
   e2e:
     runs-on: ubuntu-latest

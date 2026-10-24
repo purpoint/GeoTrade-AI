@@ -106,7 +106,10 @@ def _read_csv(content: bytes) -> list[list[str]]:
         dialect: Any = csv.Sniffer().sniff(text[:4096], delimiters=",;\t")
     except csv.Error:
         dialect = csv.excel
-    return [row for row in csv.reader(io.StringIO(text), dialect)]
+    try:
+        return [row for row in csv.reader(io.StringIO(text, newline=""), dialect)]
+    except csv.Error as exc:  # e.g. a stray NUL or a broken quote: the user's file, not a server error
+        raise ImportError_(f"could not read this CSV: {exc}") from exc
 
 
 def _read_xlsx(content: bytes) -> list[list[str]]:
@@ -118,7 +121,10 @@ def _read_xlsx(content: bytes) -> list[list[str]]:
         if any(n.lower().endswith("vbaproject.bin") for n in z.namelist()):
             raise ImportError_("workbooks with macros are not accepted")
     # read-only and values only: formulas are never evaluated, macros never run
-    wb = load_workbook(io.BytesIO(content), read_only=True, data_only=True)
+    try:
+        wb = load_workbook(io.BytesIO(content), read_only=True, data_only=True)
+    except Exception as exc:  # openpyxl raises many types for a damaged workbook
+        raise ImportError_("this .xlsx file could not be read") from exc
     try:
         ws = wb.worksheets[0]
         return [

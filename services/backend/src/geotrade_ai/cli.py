@@ -134,6 +134,13 @@ def cmd_digest(args: argparse.Namespace) -> None:
             )
 
 
+def cmd_flood(args: argparse.Namespace) -> None:
+    from geotrade_ai.core.db import get_sessionmaker
+    from geotrade_ai.worker.jobs import flood
+
+    print(json.dumps(flood(get_sessionmaker(), args.n)))
+
+
 def cmd_why_sheet(args: argparse.Namespace) -> None:
     """50-item human rating sheet for the 'why this matters' sentences (P3-BE-06)."""
     import csv
@@ -222,6 +229,10 @@ def main(argv: list[str] | None = None) -> None:
     p.add_argument("--rebuild", action="store_true", help="refresh unsent snapshots")
     p.add_argument("--now", action="store_true", help="send queued digests now instead of at their send time")
     p.set_defaults(fn=cmd_digest)
+
+    p = sub.add_parser("flood", help="pipeline throughput test with N simulated articles (local only)")
+    p.add_argument("-n", type=int, default=500)
+    p.set_defaults(fn=cmd_flood)
 
     p = sub.add_parser("why-sheet", help="CSV of recent 'why this matters' sentences for human rating")
     p.add_argument("--out", default="why-this-matters-rating.csv")

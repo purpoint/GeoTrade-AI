@@ -92,8 +92,10 @@ def list_alerts(
 
 @router.post("/alerts/{alert_id}/read", status_code=204)
 def read_one(db: DbSession, user: CurrentUser, alert_id: uuid.UUID) -> Response:
-    if not repo.mark_read(db, user.id, alert_id) and db.get(Alert, alert_id) is None:
-        raise not_found("alert")
+    if not repo.mark_read(db, user.id, alert_id):
+        own = db.get(Alert, alert_id)
+        if own is None or own.user_id != user.id:  # someone else's alert is "not found", not "already read"
+            raise not_found("alert")
     db.commit()
     return Response(status_code=204)
 

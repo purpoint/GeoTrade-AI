@@ -82,16 +82,45 @@ def seed_history(factory: sessionmaker[Session], days: int = 7, per_day: int = 2
         if session.scalar(select(Article.id).where(Article.url.startswith(SIM_URL)).limit(1)):
             log.info("history already seeded, skipping")
             return 0
-    rng = random.Random(seed)
+    rows = simulated_articles(days * per_day, days, random.Random(seed))
+    with factory() as session:
+        session.add_all(rows)
+        session.commit()
+        n = prices.sync(session, "1d", "3mo", [prices.CsvProvider()])
+    pipeline.run_all(factory, max_rounds=200)
+    log.info("history seeded", extra={"extra": {"articles": len(rows), "candles": n}})
+    return len(rows)
+
+
+def flood(factory: sessionmaker[Session], n: int, seed: int = 11) -> dict[str, float]:
+    """P3-BE-09 throughput test: n simulated articles from the last hour through every pipeline stage."""
+    import time
+
+    rows = simulated_articles(n, 0, random.Random(seed))
+    with factory() as session:
+        session.add_all(rows)
+        session.commit()
+    started = time.perf_counter()
+    moved = pipeline.run_all(factory, max_rounds=10_000)
+    seconds = time.perf_counter() - started
+    return {
+        "articles": n,
+        "stage_moves": moved,
+        "seconds": round(seconds, 2),
+        "articles_per_s": round(n / seconds, 1),
+    }
+
+
+def simulated_articles(count: int, days: int, rng: random.Random) -> list[Article]:
     companies = reference.companies()
     now = datetime.now(UTC)
     rows = []
-    for _ in range(days * per_day):
+    for _ in range(count):
         c = rng.choice(companies)
         title = rng.choice(HISTORY_TEMPLATES).format(
             name=c["name"], n=rng.randint(2, 18), big=rng.randint(2, 90) * 100
         )
-        ts = now - timedelta(minutes=rng.randint(30, days * 24 * 60))
+        ts = now - timedelta(minutes=rng.randint(1, 50) if not days else rng.randint(30, days * 24 * 60))
         url = f"{SIM_URL}{uuid7()}"
         rows.append(
             Article(
@@ -110,13 +139,7 @@ def seed_history(factory: sessionmaker[Session], days: int = 7, per_day: int = 2
                 stage_timestamps={},
             )  # fmt: skip
         )
-    with factory() as session:
-        session.add_all(rows)
-        session.commit()
-        n = prices.sync(session, "1d", "3mo", [prices.CsvProvider()])
-    pipeline.run_all(factory, max_rounds=200)
-    log.info("history seeded", extra={"extra": {"articles": len(rows), "candles": n}})
-    return len(rows)
+    return rows
 
 
 def housekeeping(session: Session) -> dict[str, int]:
