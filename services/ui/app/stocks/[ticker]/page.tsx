@@ -7,6 +7,7 @@ import { NewsFeed } from "@/components/NewsFeed";
 import { PriceSentimentChart } from "@/components/PriceSentimentChart";
 import { SentimentBadge } from "@/components/SentimentBadge";
 import { Sparkline } from "@/components/Sparkline";
+import { WatchButton } from "@/components/WatchButton";
 import { ErrorState, Skeleton, SkeletonList, StaleNote } from "@/components/states";
 import { useStock, useStockEvents, useStockPrices, useStockSeries } from "@/lib/api/hooks";
 import { fmtIndex, fmtIst, fmtPct, fmtPrice } from "@/lib/format";
@@ -59,6 +60,7 @@ export default function StockPage({ params }: { params: Promise<{ ticker: string
               </p>
             </div>
             <Sparkline values={(spark.data ?? []).map((p) => p.index)} />
+            <WatchButton ticker={s.ticker} />
           </div>
         </header>
       ) : (

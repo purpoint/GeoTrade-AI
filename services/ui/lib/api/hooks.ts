@@ -16,6 +16,11 @@ import {
   type StockDetail,
   type StockSummary,
   type TapeItem,
+  type AlertPage,
+  type AttentionOut,
+  type PortfolioOut,
+  type RelatedPage,
+  type RuleOut,
 } from "./client";
 
 export type Bucket = "5m" | "1h" | "1d";
@@ -79,3 +84,23 @@ export const useArticle = (id: string) =>
 export const useCluster = (id: string) =>
   useQuery({ queryKey: ["cluster", id], queryFn: () => api<NewsItem[]>(`/news/${id}/cluster`), enabled: Boolean(id) });
 export const useSources = () => useQuery({ queryKey: ["sources"], queryFn: () => api<SourceStatus[]>("/sources") });
+
+// ---------- private (signed in) ----------
+
+export const usePortfolio = (enabled = true) =>
+  useQuery({ queryKey: ["portfolio"], queryFn: () => api<PortfolioOut>("/portfolio"), enabled });
+export const useWatchlist = (enabled = true) =>
+  useQuery({ queryKey: ["watchlist"], queryFn: () => api<StockSummary[]>("/watchlist"), enabled });
+export const useAttention = (scope: string, window: string, enabled = true) =>
+  useQuery({
+    queryKey: ["attention", scope, window],
+    queryFn: () => api<AttentionOut>("/attention", { scope, window }),
+    enabled,
+    placeholderData: keepPreviousData,
+  });
+export const useRelated = (enabled = true) =>
+  useQuery({ queryKey: ["related"], queryFn: () => api<RelatedPage>("/portfolio/related"), enabled });
+export const useAlerts = (unreadOnly = false, enabled = true) =>
+  useQuery({ queryKey: ["alerts", unreadOnly], queryFn: () => api<AlertPage>("/alerts", { unread_only: unreadOnly, limit: 50 }), enabled });
+export const useAlertRules = (enabled = true) =>
+  useQuery({ queryKey: ["alert-rules"], queryFn: () => api<RuleOut[]>("/alert-rules"), enabled });

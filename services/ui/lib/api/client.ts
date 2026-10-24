@@ -105,3 +105,20 @@ export const post = <T>(path: string, body?: unknown, method = "POST") =>
     headers: body === undefined ? {} : { "Content-Type": "application/json" },
     body: body === undefined ? undefined : JSON.stringify(body),
   });
+
+/** Multipart upload (portfolio import) with the same CSRF and refresh handling. */
+export async function upload<T>(path: string, file: File, fields: Record<string, string> = {}): Promise<T> {
+  const form = () => {
+    const f = new FormData();
+    f.append("file", file);
+    for (const [k, v] of Object.entries(fields)) f.append(k, v);
+    return f;
+  };
+  return api<T>(path, undefined, { method: "POST", body: form() }).catch(async (e) => {
+    // a FormData body cannot be replayed after a refresh, so rebuild it and try once more
+    if (e instanceof ApiError && e.status === 401 && (await refreshSession())) {
+      return api<T>(path, undefined, { method: "POST", body: form() });
+    }
+    throw e;
+  });
+}

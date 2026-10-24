@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useMe } from "@/lib/auth/session";
 import { NAV } from "./nav";
 
 function Icon({ d }: { d: string }) {
@@ -17,6 +18,8 @@ const active = (path: string, href: string) => (href === "/" ? path === "/" : pa
 /** Full sidebar on large screens, icons only on tablets, bottom tab bar on phones. */
 export function Sidebar() {
   const path = usePathname();
+  const { data: me } = useMe();
+  const items = NAV.filter((n) => !("private" in n) || Boolean(me));
   return (
     <>
       <nav aria-label="Main" className="sticky top-0 hidden h-screen shrink-0 flex-col border-r border-line bg-surface md:flex md:w-16 lg:w-52">
@@ -25,7 +28,7 @@ export function Sidebar() {
           <span className="hidden lg:inline">GeoTrade-AI</span>
         </Link>
         <ul className="flex flex-col gap-1 p-2">
-          {NAV.map((n) => (
+          {items.map((n) => (
             <li key={n.href}>
               <Link
                 href={n.href}
@@ -41,7 +44,7 @@ export function Sidebar() {
         </ul>
       </nav>
       <nav aria-label="Main" className="fixed inset-x-0 bottom-0 z-40 flex border-t border-line bg-surface md:hidden">
-        {NAV.slice(0, 5).map((n) => (
+        {items.slice(0, 5).map((n) => (
           <Link
             key={n.href}
             href={n.href}
