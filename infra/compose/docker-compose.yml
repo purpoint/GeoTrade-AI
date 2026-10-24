@@ -11,7 +11,7 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ../../backups:/backups
-    ports: ["5432:5432"]
+    ports: ["${POSTGRES_HOST_PORT:-5432}:5432"]
     healthcheck:
       test: ["CMD", "pg_isready", "-d", "${POSTGRES_DB:-geotrade}"]
       interval: 5s
