@@ -10,6 +10,10 @@ x-backend: &backend
       required: false
   environment: &backend-env
     DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-geotrade}:${POSTGRES_PASSWORD:-geotrade-dev}@database:5432/${POSTGRES_DB:-geotrade}
+    # operator login for /admin (created by `backend seed --demo` when both are set)
+    OPERATOR_EMAIL: ${OPERATOR_EMAIL:-}
+    OPERATOR_PASSWORD: ${OPERATOR_PASSWORD:-}
+    RATE_LIMIT_AUTH_PER_MIN: ${RATE_LIMIT_AUTH_PER_MIN:-10}
 
 services:
   database:

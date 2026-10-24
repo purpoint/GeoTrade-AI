@@ -53,8 +53,32 @@ jobs:
       - run: npm test
       - run: npm run build
 
-  images:
+  e2e:
     runs-on: ubuntu-latest
+    env:
+      OPERATOR_EMAIL: ops@example.com
+      OPERATOR_PASSWORD: e2e-operator-passphrase
+      RATE_LIMIT_AUTH_PER_MIN: "1000"
     steps:
       - uses: actions/checkout@v4
-      - run: docker compose build
+      - name: Start the full stack (database, migrate + seed, api, worker, ui)
+        run: docker compose up -d --build
+      - name: Wait for the UI and API
+        run: timeout 300 sh -c 'until curl -sf http://localhost:3000/api/v1/health/ready; do sleep 3; done'
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm, cache-dependency-path: services/ui/package-lock.json }
+      - working-directory: services/ui
+        run: npm ci && npx playwright install --with-deps chromium
+      - name: Playwright journeys (desktop and phone)
+        working-directory: services/ui
+        env:
+          BASE_URL: http://localhost:3000
+          E2E_OPERATOR_EMAIL: ops@example.com
+          E2E_OPERATOR_PASSWORD: e2e-operator-passphrase
+        run: npm run e2e
+      - name: Stack logs on failure
+        if: failure()
+        run: docker compose logs --tail 200
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with: { name: playwright-report, path: services/ui/test-results }
