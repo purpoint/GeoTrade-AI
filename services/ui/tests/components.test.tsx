@@ -58,6 +58,7 @@ describe("Gauge and format", () => {
 
   it("formats values", () => {
     expect(fmtIndex(12.4)).toBe("+12");
+    expect(fmtIndex(-0.3)).toBe("0");
     expect(tone(-6)).toBe("negative");
     expect(timeAgo(new Date(Date.now() - 7200_000).toISOString())).toBe("2h ago");
   });

@@ -1,5 +1,16 @@
 name: geotrade-ai
 
+x-backend: &backend
+  build:
+    context: ../..
+    dockerfile: services/backend/Dockerfile
+  image: geotrade-ai/backend
+  env_file:
+    - path: ../../.env
+      required: false
+  environment: &backend-env
+    DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-geotrade}:${POSTGRES_PASSWORD:-geotrade-dev}@database:5432/${POSTGRES_DB:-geotrade}
+
 services:
   database:
     build: ../../services/database
@@ -28,6 +39,38 @@ services:
       POSTGRES_DB: ${POSTGRES_DB:-geotrade}
     volumes: ["../../backups:/backups"]
     depends_on: { database: { condition: service_healthy } }
+
+  # one-shot: schema, reference data and (by default) a week of sample history
+  backend-migrate:
+    <<: *backend
+    entrypoint: ["sh", "-c", "backend migrate && backend seed ${SEED_ARGS:---history}"]
+    depends_on: { database: { condition: service_healthy } }
+
+  backend-api:
+    <<: *backend
+    command: ["api", "--workers", "1"]
+    ports: ["8000:8000"]
+    depends_on: { backend-migrate: { condition: service_completed_successfully } }
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request;urllib.request.urlopen('http://localhost:8000/api/v1/health/ready')"]
+      interval: 10s
+      retries: 10
+
+  backend-worker:
+    <<: *backend
+    command: ["worker"]
+    environment:
+      <<: *backend-env
+      LLM_PROVIDER: groq
+      LLM_MODEL: qwen/qwen3-32b
+    depends_on: { backend-migrate: { condition: service_completed_successfully } }
+
+  ui:
+    build:
+      context: ../../services/ui
+      args: { BACKEND_URL: "http://backend-api:8000" }
+    ports: ["3000:3000"]
+    depends_on: { backend-api: { condition: service_healthy } }
 
 volumes:
   pgdata:

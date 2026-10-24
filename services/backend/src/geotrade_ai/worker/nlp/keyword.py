@@ -30,6 +30,7 @@ NEGATIVE = {
     "pressure": 0.6, "dip": 0.8, "dips": 0.8, "cut": 0.5, "cuts": 0.6, "trims": 0.8, "cautious": 0.6,
     "show cause": 1.2, "sebi order": 1.0, "selloff": 1.2, "sell-off": 1.2, "bearish": 1.0, "erodes": 1.0,
     "wiped": 1.0, "drag": 0.8, "drags": 0.8, "below expectations": 1.2, "disappoints": 1.2, "halts": 0.8,
+    "forensic audit": 1.5, "audit lapses": 1.2, "lapses": 0.8, "violations": 1.0,
 }  # fmt: skip
 NEGATORS = {"not", "no", "fails", "failed", "without", "unlikely"}
 _TOKEN = re.compile(r"[a-z0-9][a-z0-9\-]*")

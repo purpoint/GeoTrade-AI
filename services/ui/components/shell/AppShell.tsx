@@ -1,10 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Toasts } from "@/components/Toasts";
 import { useOverview } from "@/lib/api/hooks";
+import { useLive } from "@/lib/sse/live";
 import { CommandPalette } from "./CommandPalette";
 import { Footer } from "./Footer";
-import { FreshnessPill, type LiveStatus } from "./FreshnessPill";
+import { FreshnessPill } from "./FreshnessPill";
 import { Sidebar } from "./Sidebar";
 import { ThemeToggle, useTheme } from "./ThemeToggle";
 import { TickerTape } from "./TickerTape";
@@ -12,7 +14,8 @@ import { TickerTape } from "./TickerTape";
 const typing = (el: EventTarget | null) =>
   el instanceof HTMLElement && (el.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(el.tagName));
 
-export function AppShell({ children, status = "connecting" }: { children: React.ReactNode; status?: LiveStatus }) {
+export function AppShell({ children }: { children: React.ReactNode }) {
+  const { status } = useLive();
   const [palette, setPalette] = useState(false);
   const { theme, toggle } = useTheme();
   const { data: overview } = useOverview();
@@ -55,12 +58,18 @@ export function AppShell({ children, status = "connecting" }: { children: React.
           </div>
           <TickerTape />
         </header>
+        {status === "offline" ? (
+          <p className="bg-neg/10 px-4 py-1 text-center text-xs text-neg" role="alert">
+            You are offline. Showing the last data loaded; it will refresh when the connection returns.
+          </p>
+        ) : null}
         <main id="main" className="mx-auto w-full max-w-7xl flex-1 px-4 py-4">
           {children}
         </main>
         <Footer />
       </div>
       <CommandPalette open={palette} onClose={() => setPalette(false)} />
+      <Toasts />
     </div>
   );
 }

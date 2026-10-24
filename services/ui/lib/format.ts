@@ -1,5 +1,8 @@
-export const fmtIndex = (v: number | null | undefined) =>
-  v === null || v === undefined ? "—" : `${v > 0 ? "+" : ""}${v.toFixed(0)}`;
+export function fmtIndex(v: number | null | undefined): string {
+  if (v === null || v === undefined) return "—";
+  const r = Math.round(v);
+  return r === 0 ? "0" : `${r > 0 ? "+" : ""}${r}`;
+}
 
 export const fmtPct = (v: number | null | undefined) =>
   v === null || v === undefined ? "—" : `${v > 0 ? "+" : ""}${v.toFixed(2)}%`;

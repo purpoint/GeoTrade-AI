@@ -48,6 +48,7 @@ def rescore_fallbacks(session: Session, limit: int = 100) -> int:
     return len(articles)
 
 
+SIM_URL = "https://geotrade.local/sim/"
 HISTORY_TEMPLATES = [
     "{name} Q2 profit rises {n}% on strong demand",
     "{name} shares slump {n}% after weak quarterly results",
@@ -65,6 +66,10 @@ HISTORY_TEMPLATES = [
 def seed_history(factory: sessionmaker[Session], days: int = 7, per_day: int = 25, seed: int = 7) -> int:
     """Simulated articles (is_simulated) over the last `days`, run through the real pipeline,
     plus daily candles from the CSV fallback. Lets the UI show charts on a fresh machine."""
+    with factory() as session:
+        if session.scalar(select(Article.id).where(Article.url.startswith(SIM_URL)).limit(1)):
+            log.info("history already seeded, skipping")
+            return 0
     rng = random.Random(seed)
     companies = reference.companies()
     now = datetime.now(UTC)
@@ -75,7 +80,7 @@ def seed_history(factory: sessionmaker[Session], days: int = 7, per_day: int = 2
             name=c["name"], n=rng.randint(2, 18), big=rng.randint(2, 90) * 100
         )
         ts = now - timedelta(minutes=rng.randint(30, days * 24 * 60))
-        url = f"https://geotrade.local/sim/{uuid7()}"
+        url = f"{SIM_URL}{uuid7()}"
         rows.append(
             Article(
                 id=uuid7(),
