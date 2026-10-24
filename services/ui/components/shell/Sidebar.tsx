@@ -19,7 +19,7 @@ const active = (path: string, href: string) => (href === "/" ? path === "/" : pa
 export function Sidebar() {
   const path = usePathname();
   const { data: me } = useMe();
-  const items = NAV.filter((n) => !("private" in n) || Boolean(me));
+  const items = NAV.filter((n) => ("operator" in n ? me?.role === "operator" : !("private" in n) || Boolean(me)));
   return (
     <>
       <nav aria-label="Main" className="sticky top-0 hidden h-screen shrink-0 flex-col border-r border-line bg-surface md:flex md:w-16 lg:w-52">
