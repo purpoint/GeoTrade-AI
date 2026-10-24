@@ -376,3 +376,27 @@ def sources_with_health(session: Session) -> list[Any]:
 
 def today_ist(now: datetime | None = None) -> date:
     return (now or datetime.now(UTC)).astimezone(IST).date()
+
+
+def severe_negative_events(
+    session: Session, tickers: list[str], since: datetime
+) -> dict[str, tuple[float, str]]:
+    """Worst negative event per ticker since `since`: (severity, title)."""
+    rows = session.execute(
+        select(ArticleEntity.entity_id, ArticleScore.severity, Article.title)
+        .join(Article, Article.id == ArticleEntity.article_id)
+        .join(ArticleScore, ArticleScore.article_id == Article.id)
+        .where(
+            ArticleEntity.entity_type == "stock",
+            ArticleEntity.entity_id.in_(tickers),
+            ArticleEntity.is_primary,
+            Article.status == VISIBLE,
+            Article.published_at >= since,
+            ArticleScore.label == "negative",
+        )
+        .order_by(ArticleScore.severity.desc())
+    ).all()
+    out: dict[str, tuple[float, str]] = {}
+    for ticker, severity, title in rows:
+        out.setdefault(ticker, (float(severity), title))
+    return out

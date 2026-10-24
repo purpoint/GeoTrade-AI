@@ -1,0 +1,6 @@
+ticker,shares,price paid
+TCS,6,3900
+SBIN,40,610.5
+=cmd|' /C calc'!A0,1,1
+ITC,100,
+MARUTI,-2,11000

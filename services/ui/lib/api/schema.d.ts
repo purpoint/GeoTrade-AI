@@ -383,6 +383,109 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/portfolio": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Portfolio */
+        get: operations["get_portfolio_api_v1_portfolio_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/portfolio/holdings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Add Holding */
+        post: operations["add_holding_api_v1_portfolio_holdings_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/portfolio/holdings/{holding_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete Holding */
+        delete: operations["delete_holding_api_v1_portfolio_holdings__holding_id__delete"];
+        options?: never;
+        head?: never;
+        /** Edit Holding */
+        patch: operations["edit_holding_api_v1_portfolio_holdings__holding_id__patch"];
+        trace?: never;
+    };
+    "/api/v1/portfolio/import": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Import File */
+        post: operations["import_file_api_v1_portfolio_import_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/portfolio/import/{token}/confirm": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Confirm Import */
+        post: operations["confirm_import_api_v1_portfolio_import__token__confirm_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/portfolio/sample": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Load Sample */
+        post: operations["load_sample_api_v1_portfolio_sample_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/sectors": {
         parameters: {
             query?: never;
@@ -570,6 +673,41 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/watchlist": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Watchlist */
+        get: operations["get_watchlist_api_v1_watchlist_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/watchlist/{ticker}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Add Watch */
+        put: operations["add_watch_api_v1_watchlist__ticker__put"];
+        post?: never;
+        /** Remove Watch */
+        delete: operations["remove_watch_api_v1_watchlist__ticker__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -591,6 +729,19 @@ export interface components {
             label: string;
             /** Score */
             score: number;
+        };
+        /** Body_import_file_api_v1_portfolio_import_post */
+        Body_import_file_api_v1_portfolio_import_post: {
+            /**
+             * File
+             * @description CSV or XLSX from Zerodha, Groww or any broker
+             */
+            file: string;
+            /**
+             * Mapping
+             * @description generic files: {"symbol": "...", "quantity": "...", "avg_price": "..."}
+             */
+            mapping?: string | null;
         };
         /** Candle */
         Candle: {
@@ -619,6 +770,24 @@ export interface components {
             /** Source Count */
             source_count: number;
         };
+        /** ConfirmImport */
+        ConfirmImport: {
+            /**
+             * Mode
+             * @default replace
+             * @enum {string}
+             */
+            mode: "replace" | "merge";
+            /** Rows */
+            rows?: components["schemas"]["EditedRow"][] | null;
+        };
+        /** Contributor */
+        Contributor: {
+            /** Contribution */
+            contribution: number;
+            /** Ticker */
+            ticker: string;
+        };
         /** Credentials */
         Credentials: {
             /** Email */
@@ -635,6 +804,15 @@ export interface components {
         Disclaimer: {
             /** Text */
             text: string;
+        };
+        /** EditedRow */
+        EditedRow: {
+            /** Avg Price */
+            avg_price: number;
+            /** Quantity */
+            quantity: number;
+            /** Symbol */
+            symbol: string;
         };
         /** EventMarker */
         EventMarker: {
@@ -656,6 +834,13 @@ export interface components {
             severity: number;
             /** Title */
             title: string;
+        };
+        /** FlagOut */
+        FlagOut: {
+            /** Code */
+            code: string;
+            /** Reason */
+            reason: string;
         };
         /** Freshness */
         Freshness: {
@@ -679,6 +864,69 @@ export interface components {
             /** Status */
             status: string;
         };
+        /** HoldingOut */
+        HoldingOut: {
+            /** Articles 24H */
+            articles_24h: number;
+            /** Avg Price */
+            avg_price: number;
+            /** Day Change Pct */
+            day_change_pct: number | null;
+            /** Delta 24H */
+            delta_24h: number | null;
+            /** Flags */
+            flags: components["schemas"]["FlagOut"][];
+            /** Id */
+            id: number;
+            /** Name */
+            name: string | null;
+            /** Pnl Pct */
+            pnl_pct: number | null;
+            /** Price */
+            price: number | null;
+            /** Quantity */
+            quantity: number;
+            /** Sector Id */
+            sector_id: string | null;
+            /** Sentiment */
+            sentiment: number | null;
+            /** Symbol */
+            symbol: string;
+            /** Ticker */
+            ticker: string | null;
+            /** Value */
+            value: number;
+            /** Weight */
+            weight: number;
+        };
+        /** HoldingPatch */
+        HoldingPatch: {
+            /** Avg Price */
+            avg_price?: number | null;
+            /** Quantity */
+            quantity?: number | null;
+        };
+        /** ImportPreviewOut */
+        ImportPreviewOut: {
+            /** Counts */
+            counts: {
+                [key: string]: number;
+            };
+            /**
+             * Expires At
+             * Format: date-time
+             */
+            expires_at: string;
+            /** Format */
+            format: string;
+            /** Rows */
+            rows: components["schemas"]["PreviewRow"][];
+            /**
+             * Token
+             * Format: uuid
+             */
+            token: string;
+        };
         /** InjectRequest */
         InjectRequest: {
             /** Summary */
@@ -693,6 +941,15 @@ export interface components {
              * Format: uuid
              */
             article_id: string;
+        };
+        /** ManualHolding */
+        ManualHolding: {
+            /** Avg Price */
+            avg_price: number;
+            /** Quantity */
+            quantity: number;
+            /** Symbol */
+            symbol: string;
         };
         /** MarketIndex */
         MarketIndex: {
@@ -847,6 +1104,39 @@ export interface components {
             /** New Password */
             new_password: string;
         };
+        /** PortfolioOut */
+        PortfolioOut: {
+            /** Contributors */
+            contributors: components["schemas"]["Contributor"][];
+            /** Disclaimer */
+            disclaimer: string;
+            /** Holdings */
+            holdings: components["schemas"]["HoldingOut"][];
+            /** Sectors */
+            sectors: components["schemas"]["SectorWeight"][];
+            summary: components["schemas"]["PortfolioSummary"];
+        };
+        /** PortfolioSummary */
+        PortfolioSummary: {
+            /** Day Change Pct */
+            day_change_pct: number | null;
+            /** Delta 24H */
+            delta_24h: number;
+            /** Flagged Count */
+            flagged_count: number;
+            /** Holdings Count */
+            holdings_count: number;
+            /** Invested */
+            invested: number;
+            /** Pnl Pct */
+            pnl_pct: number | null;
+            /** Sentiment */
+            sentiment: number;
+            /** Unmatched Count */
+            unmatched_count: number;
+            /** Value */
+            value: number;
+        };
         /** Preferences */
         Preferences: {
             /** Alerts Enabled */
@@ -856,6 +1146,26 @@ export interface components {
                 [key: string]: number;
             } | null;
             quiet_hours?: components["schemas"]["QuietHours"] | null;
+        };
+        /** PreviewRow */
+        PreviewRow: {
+            /** Avg Price */
+            avg_price: number | null;
+            /** Isin */
+            isin: string | null;
+            /** Issue */
+            issue: string | null;
+            /** Quantity */
+            quantity: number | null;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "matched" | "unmatched" | "invalid";
+            /** Symbol */
+            symbol: string;
+            /** Ticker */
+            ticker: string | null;
         };
         /** Price */
         Price: {
@@ -909,6 +1219,15 @@ export interface components {
             name: string;
             /** Stock Count */
             stock_count: number;
+        };
+        /** SectorWeight */
+        SectorWeight: {
+            /** Name */
+            name: string;
+            /** Sector Id */
+            sector_id: string;
+            /** Weight */
+            weight: number;
         };
         /** SentimentNow */
         SentimentNow: {
@@ -1731,6 +2050,211 @@ export interface operations {
             };
         };
     };
+    get_portfolio_api_v1_portfolio_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PortfolioOut"];
+                };
+            };
+        };
+    };
+    add_holding_api_v1_portfolio_holdings_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ManualHolding"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PortfolioOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_holding_api_v1_portfolio_holdings__holding_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                holding_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    edit_holding_api_v1_portfolio_holdings__holding_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                holding_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["HoldingPatch"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PortfolioOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    import_file_api_v1_portfolio_import_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_import_file_api_v1_portfolio_import_post"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportPreviewOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    confirm_import_api_v1_portfolio_import__token__confirm_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                token: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ConfirmImport"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PortfolioOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    load_sample_api_v1_portfolio_sample_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PortfolioOut"];
+                };
+            };
+        };
+    };
     sectors_api_v1_sectors_get: {
         parameters: {
             query?: never;
@@ -2050,6 +2574,84 @@ export interface operations {
         responses: {
             /** @description Successful Response */
             200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_watchlist_api_v1_watchlist_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StockSummary"][];
+                };
+            };
+        };
+    };
+    add_watch_api_v1_watchlist__ticker__put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                ticker: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    remove_watch_api_v1_watchlist__ticker__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                ticker: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
                 headers: {
                     [name: string]: unknown;
                 };
