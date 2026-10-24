@@ -1,0 +1,69 @@
+[project]
+name = "geotrade-ai-backend"
+version = "0.1.0"
+description = "GeoTrade-AI backend: FastAPI api and pipeline worker (one image, two roles)"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.32",
+    "sqlalchemy>=2.0.36",
+    "psycopg[binary]>=3.2",
+    "alembic>=1.14",
+    "pydantic-settings>=2.6",
+    "httpx>=0.28",
+    "feedparser>=6.0.11",
+    "rapidfuzz>=3.10",
+    "pyahocorasick>=2.1",
+    "apscheduler>=3.10,<4",
+    "yfinance>=0.2.50",
+    "prometheus-client>=0.21",
+]
+
+[project.scripts]
+backend = "geotrade_ai.cli:main"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3",
+    "hypothesis>=6.120",
+    "ruff>=0.8",
+    "mypy>=1.13",
+    "import-linter>=2.1",
+    "pre-commit>=4.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/geotrade_ai"]
+
+[tool.ruff]
+line-length = 110
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM"]
+
+[tool.mypy]
+python_version = "3.11"
+ignore_missing_imports = true
+plugins = ["pydantic.mypy"]
+
+[[tool.mypy.overrides]]
+module = ["geotrade_ai.core.*", "geotrade_ai.repos.*"]
+strict = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.importlinter]
+root_package = "geotrade_ai"
+
+[[tool.importlinter.contracts]]
+name = "api never imports worker"
+type = "forbidden"
+source_modules = ["geotrade_ai.api"]
+forbidden_modules = ["geotrade_ai.worker"]
