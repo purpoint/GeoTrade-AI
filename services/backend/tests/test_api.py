@@ -75,7 +75,12 @@ def test_news_filters_pagination_and_etag(client: TestClient) -> None:
 
 
 def test_sources_and_metrics(client: TestClient) -> None:
-    assert {s["id"] for s in client.get("/api/v1/sources").json()} == {"et", "mint", "business_standard", "moneycontrol"}
+    assert {s["id"] for s in client.get("/api/v1/sources").json()} == {
+        "et",
+        "mint",
+        "business_standard",
+        "moneycontrol",
+    }
     assert b"pipeline_stage_seconds" in client.get("/metrics").content
 
 
@@ -86,7 +91,9 @@ def test_demo_inject_and_trace(client: TestClient) -> None:
     assert r.status_code == 201
     article_id = r.json()["article_id"]
     pipeline.run_all(get_sessionmaker())
-    trace = client.get(f"/api/v1/admin/demo/trace/{article_id}", headers={"X-Operator-Token": "op-secret"}).json()
+    trace = client.get(
+        f"/api/v1/admin/demo/trace/{article_id}", headers={"X-Operator-Token": "op-secret"}
+    ).json()
     assert trace["status"] == "aggregated"
     assert [e["stage"] for e in trace["events"]] == ["dedupe", "link", "score", "aggregate"]
     assert trace["article"]["tickers"][0]["ticker"] == "KOTAKBANK"

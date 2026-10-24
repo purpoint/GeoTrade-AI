@@ -61,6 +61,17 @@ def cmd_prices(args: argparse.Namespace) -> None:
         prices.sync(session, "1d", args.period)
 
 
+def cmd_evaluate(args: argparse.Namespace) -> None:
+    from geotrade_ai.eval.golden import evaluate
+
+    r = evaluate(args.golden)
+    print(f"report: {r['path']}")
+    print(f"linking  P={r['linking']['precision']} R={r['linking']['recall']} F1={r['linking']['f1']}")
+    for model, m in r["sentiment"].items():
+        print(f"{model:20s} accuracy={m['accuracy']} macro_f1={m['macro_f1']}")
+    print(f"events   accuracy={r['events']['accuracy']}")
+
+
 def cmd_openapi(args: argparse.Namespace) -> None:
     from geotrade_ai.api.app import create_app
 
@@ -99,6 +110,10 @@ def main(argv: list[str] | None = None) -> None:
     p.add_argument("--period", default="3mo")
     p.add_argument("--export", action="store_true")
     p.set_defaults(fn=cmd_prices)
+
+    p = sub.add_parser("evaluate", help="score the golden set and write a JSON report")
+    p.add_argument("--golden", default="golden-v0")
+    p.set_defaults(fn=cmd_evaluate)
 
     p = sub.add_parser("openapi", help="export the OpenAPI document")
     p.add_argument("--out", default="-")
