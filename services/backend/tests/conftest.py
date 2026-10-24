@@ -43,7 +43,18 @@ def db_url() -> Iterator[str]:
     db.get_engine().dispose()
 
 
+MUTABLE_TABLES = (
+    "articles, story_clusters, article_entities, article_scores, pipeline_events, dead_letters, "
+    "llm_cache, llm_usage, price_candles, sentiment_buckets, sector_sentiment_buckets, "
+    "market_sentiment_buckets"
+)
+
+
 @pytest.fixture
 def session(db_url: str) -> Iterator[Session]:
+    """A session on a database whose news and market tables start empty."""
     with db.get_sessionmaker()() as s:
+        s.execute(text(f"TRUNCATE {MUTABLE_TABLES} CASCADE"))
+        s.execute(text("UPDATE source_health SET consecutive_failures = 0, circuit_open_until = NULL"))
+        s.commit()
         yield s
