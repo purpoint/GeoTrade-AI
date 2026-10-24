@@ -19,6 +19,7 @@ from geotrade_ai.models import (
     Article,
     ArticleEntity,
     ArticleScore,
+    CoverageSpike,
     Holding,
     Portfolio,
     User,
@@ -143,6 +144,41 @@ def on_articles(session: Session, articles: list[Article], now: datetime | None 
                     "title": f"{ticker}: {score.event_type.replace('_', ' ')} news, negative tone",
                     "body": article.title, "article_ids": [article.id],
                     "dedupe_key": f"severe_event:{ticker}:{article.cluster_id or article.id}",
+                },
+                now,
+            )  # fmt: skip
+            created += alert is not None
+    return created
+
+
+# ---------- coverage spikes (optional rule, off by default) ----------
+
+
+def on_spikes(session: Session, spikes: list[CoverageSpike], now: datetime) -> int:
+    if not spikes:
+        return 0
+    rules = {r.user_id: r for r in repo.enabled_rules(session, "coverage_spike")}
+    if not rules:
+        return 0
+    users = {u.id: u for u in session.scalars(select(User).where(User.id.in_(list(rules))))}
+    created = 0
+    for spike in spikes:
+        holders = audience(session, {spike.ticker}, include_watchlist=False)
+        for uid in audience(session, {spike.ticker}, include_watchlist=True):
+            rule = rules.get(uid)
+            if rule is None or uid not in users:
+                continue
+            if rule.params.get("scope", "holdings") == "holdings" and uid not in holders:
+                continue
+            alert = emit(
+                session, users[uid], rule,
+                {
+                    "kind": "coverage_spike", "ticker": spike.ticker,
+                    "severity": min(spike.z_score / 10, 1.0),
+                    "title": f"{spike.ticker}: unusually heavy news coverage",
+                    "body": f"{spike.n_stories} stories in 24h against a usual {spike.baseline_mean:.1f} "
+                            f"a day ({spike.z_score:.1f} standard deviations above normal).",
+                    "dedupe_key": f"coverage_spike:{spike.ticker}:{session_date(now).isoformat()}",
                 },
                 now,
             )  # fmt: skip

@@ -3,6 +3,8 @@
 import re
 from dataclasses import dataclass
 
+from geotrade_ai.credibility import hedge_score
+
 # (event_type, base severity, pattern) in priority order
 RULES: list[tuple[str, float, re.Pattern[str]]] = [
     (e, s, re.compile(p, re.I))
@@ -27,11 +29,6 @@ RULES: list[tuple[str, float, re.Pattern[str]]] = [
                             r"expansion)\b"),
     ]
 ]  # fmt: skip
-HEDGES = re.compile(
-    r"\b(may|might|likely|reportedly|sources say|said to|considering|plans to|could|mulls|eyes|in talks|"
-    r"rumou?r|speculation)\b|\?$",
-    re.I,
-)
 HEDGE_FACTOR = 0.6
 _PERCENT = re.compile(r"(\d+(?:\.\d+)?)\s?(?:%|per ?cent)")
 
@@ -54,7 +51,7 @@ def classify(title: str, summary: str = "") -> Event:
             if pattern.search(summary or ""):
                 event_type, severity = name, base * 0.8
                 break
-    hedged = bool(HEDGES.search(title.strip()))
+    hedged = hedge_score(title) > 0
     if hedged:
         severity *= HEDGE_FACTOR
     percents = [float(p) for p in _PERCENT.findall(title)]

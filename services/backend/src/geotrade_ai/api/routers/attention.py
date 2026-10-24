@@ -76,6 +76,7 @@ def attention(
     since = now - WINDOWS[window]
     severity = read.max_severity(db, tickers, since)
     week = read.article_counts(db, now - timedelta(days=7))
+    spikes = read.active_spikes(db, now)
     names = {c["ticker"]: c["name"] for c in reference.companies()}
     stories: dict[str, list[tuple[float, object]]] = {t: [] for t in tickers}
     for ticker, article, score in read.stock_articles(db, tickers, since):
@@ -92,6 +93,7 @@ def attention(
                 weight=h.weight if h else 0.0, index=sig.index, delta_24h=sig.delta_24h,
                 max_severity=severity.get(t, 0.0), articles_24h=sig.articles_24h,
                 avg_daily_articles_7d=week.get(t, 0) / 7,
+                spike_z=spikes[t].z_score if t in spikes else 0.0,
             )
         )  # fmt: skip
         ranked = [a for _, a in sorted(stories[t], key=lambda x: -x[0])][:per_group]

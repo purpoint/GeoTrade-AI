@@ -4,6 +4,7 @@ from datetime import datetime
 
 from sqlalchemy.orm import Session
 
+from geotrade_ai import credibility as cred
 from geotrade_ai.api import schemas as s
 from geotrade_ai.models import Article, Company
 from geotrade_ai.repos import read
@@ -43,9 +44,21 @@ def _news_fields(a: Article, x: read.ArticleExtras) -> dict[str, object]:
             size=x.cluster.article_count if x.cluster else 1,
             source_count=x.cluster.source_count if x.cluster else 1,
         ),
+        "credibility": _credibility(sc.hedge_score, x.cluster.source_count if x.cluster else 1)
+        if sc
+        else None,
         "model_version": sc.model_version_id if sc else None,
         "is_simulated": a.is_simulated,
     }
+
+
+def _credibility(hedge: float, sources: int) -> s.Credibility:
+    """Live: the cluster may have gained sources since the story was scored."""
+    return s.Credibility(
+        score=cred.credibility(sources, hedge),
+        hedge_score=hedge,
+        unconfirmed=cred.unconfirmed(sources, hedge),
+    )
 
 
 def news_detail(session: Session, a: Article) -> s.NewsDetail:

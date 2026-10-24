@@ -486,6 +486,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/market/spikes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Spikes
+         * @description Stocks with unusually heavy news coverage in the last 24 hours, strongest first.
+         */
+        get: operations["spikes_api_v1_market_spikes_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/market/ticker-tape": {
         parameters: {
             query?: never;
@@ -1202,6 +1222,15 @@ export interface components {
             /** Password */
             password: string;
         };
+        /** Credibility */
+        Credibility: {
+            /** Hedge Score */
+            hedge_score: number;
+            /** Score */
+            score: number;
+            /** Unconfirmed */
+            unconfirmed: boolean;
+        };
         /** DeadLetterOut */
         DeadLetterOut: {
             /**
@@ -1465,6 +1494,7 @@ export interface components {
         /** NewsDetail */
         NewsDetail: {
             cluster: components["schemas"]["ClusterRef"];
+            credibility: components["schemas"]["Credibility"] | null;
             event: components["schemas"]["ArticleEvent"] | null;
             /** Explanation */
             explanation: string | null;
@@ -1516,6 +1546,7 @@ export interface components {
         /** NewsItem */
         NewsItem: {
             cluster: components["schemas"]["ClusterRef"];
+            credibility: components["schemas"]["Credibility"] | null;
             event: components["schemas"]["ArticleEvent"] | null;
             /**
              * Id
@@ -1862,10 +1893,27 @@ export interface components {
             /** Url */
             url: string;
         };
+        /** Spike */
+        Spike: {
+            /** Baseline Mean */
+            baseline_mean: number;
+            /**
+             * Detected At
+             * Format: date-time
+             */
+            detected_at: string;
+            /** N Stories */
+            n_stories: number;
+            /** Ticker */
+            ticker: string;
+            /** Z Score */
+            z_score: number;
+        };
         /** StockDetail */
         StockDetail: {
             /** Aliases */
             aliases: string[];
+            coverage_spike?: components["schemas"]["Spike"] | null;
             /** Group Name */
             group_name: string | null;
             /** Market Cap Cr */
@@ -2257,7 +2305,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                kind: "negative_shift" | "severe_event" | "concentration";
+                kind: "negative_shift" | "severe_event" | "concentration" | "coverage_spike";
             };
             cookie?: never;
         };
@@ -2745,6 +2793,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    spikes_api_v1_market_spikes_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Spike"][];
                 };
             };
         };

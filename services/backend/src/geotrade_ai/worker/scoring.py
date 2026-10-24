@@ -7,14 +7,16 @@ from sqlalchemy import select
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
 
+from geotrade_ai import credibility as cred
 from geotrade_ai import reference
 from geotrade_ai.core.config import get_settings
 from geotrade_ai.core.metrics import LLM_FALLBACKS
-from geotrade_ai.models import Article, ArticleEntity, ArticleScore
+from geotrade_ai.llm import LlmUnavailable
+from geotrade_ai.models import Article, ArticleEntity, ArticleScore, StoryCluster
 from geotrade_ai.worker.nlp import events, keyword
 from geotrade_ai.worker.nlp.keyword import Sentiment
 from geotrade_ai.worker.nlp.llm import MODEL_ID as LLM_MODEL_ID
-from geotrade_ai.worker.nlp.llm import LlmUnavailable, QwenScorer, get_qwen_scorer
+from geotrade_ai.worker.nlp.llm import QwenScorer, get_qwen_scorer
 
 log = logging.getLogger(__name__)
 
@@ -80,8 +82,19 @@ def score_articles(session: Session, articles: list[Article], scorer: QwenScorer
     tickers = primary_tickers(session, [a.id for a in articles])
     llm = _llm_scores(session, scorer, articles, tickers)
     llm_expected = scorer is not None
+    cluster_ids = [a.cluster_id for a in articles if a.cluster_id]
+    sources = dict(
+        session.execute(
+            select(StoryCluster.id, StoryCluster.source_count).where(StoryCluster.id.in_(cluster_ids))
+        ).all()
+    )
     for article, llm_sentiment in zip(articles, llm, strict=True):
         ev = events.classify(article.title, article.summary or "")
+        hedge = cred.hedge_score(article.title)
+        n_sources = sources.get(article.cluster_id, 1) if article.cluster_id else 1
+        credibility = cred.credibility(n_sources, hedge)
+        if credibility < cred.LOW:
+            ev = events.Event(ev.event_type, round(ev.severity * cred.SEVERITY_DISCOUNT, 3), ev.hedged)
         hint = llm_sentiment.event_hint if llm_sentiment else None
         if ev.event_type == "other" and hint and hint != "other":
             ev = events.Event(hint, ev.severity, ev.hedged)
@@ -109,6 +122,8 @@ def score_articles(session: Session, articles: list[Article], scorer: QwenScorer
             "explanation": explain(sentiment, ev, tickers.get(str(article.id), []), model_id),
             "explanation_source": "template",
             "is_fallback": fallback,
+            "hedge_score": hedge,
+            "credibility": credibility,
         }
         stmt = insert(ArticleScore).values(row)
         session.execute(

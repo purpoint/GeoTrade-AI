@@ -16,7 +16,9 @@ DEFAULT_RULES: dict[str, dict[str, Any]] = {
     "severe_event": {"min_severity": 0.7, "scope": "holdings"},
     "negative_shift": {"threshold": 15, "scope": "holdings"},
     "concentration": {"stock": 0.25, "sector": 0.40},
+    "coverage_spike": {"scope": "holdings"},
 }
+OFF_BY_DEFAULT = {"coverage_spike"}
 THROTTLE_PER_HOUR = 2
 
 
@@ -24,14 +26,19 @@ def ensure_default_rules(session: Session, user_id: uuid.UUID) -> None:
     for kind, params in DEFAULT_RULES.items():
         session.execute(
             insert(AlertRule)
-            .values(id=uuid7(), user_id=user_id, kind=kind, params=params, enabled=True)
+            .values(id=uuid7(), user_id=user_id, kind=kind, params=params, enabled=kind not in OFF_BY_DEFAULT)
             .on_conflict_do_nothing(index_elements=["user_id", "kind"], index_where=text("kind <> 'custom'"))
         )
 
 
 def rules(session: Session, user_id: uuid.UUID) -> list[AlertRule]:
+    """Built-in rules (one per kind); plain-English rules are listed by custom_rules."""
     return list(
-        session.scalars(select(AlertRule).where(AlertRule.user_id == user_id).order_by(AlertRule.kind))
+        session.scalars(
+            select(AlertRule)
+            .where(AlertRule.user_id == user_id, AlertRule.kind != "custom")
+            .order_by(AlertRule.kind)
+        )
     )
 
 

@@ -24,6 +24,7 @@ class Inputs:
     max_severity: float  # 0..1 over the window
     articles_24h: int
     avg_daily_articles_7d: float
+    spike_z: float = 0.0  # coverage spike z-score in the last 24h, 0 when none
 
 
 def components(x: Inputs) -> dict[str, float]:
@@ -33,7 +34,8 @@ def components(x: Inputs) -> dict[str, float]:
         "shift": round(min(abs(x.delta_24h) / 30, 1.0), 3),
         "negativity": round(min(max(-x.index, 0) / 60, 1.0), 3),
         "severity": round(min(max(x.max_severity, 0.0), 1.0), 3),
-        "volume": round(min(max(volume_ratio - 1, 0) / 2, 1.0), 3),  # 3x the usual daily count saturates
+        # 3x the usual daily count saturates; a flagged spike (z > 3) counts at least as much as its z / 6
+        "volume": round(max(min(max(volume_ratio - 1, 0) / 2, 1.0), min(x.spike_z / 6, 1.0)), 3),
     }
 
 

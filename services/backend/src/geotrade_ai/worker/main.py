@@ -13,7 +13,7 @@ from geotrade_ai.market_calendar import is_market_open, is_trading_day
 from geotrade_ai.normalize import IST
 from geotrade_ai.repos import co_mentions as co_mentions_repo
 from geotrade_ai.repos import stats
-from geotrade_ai.worker import alerts, jobs, pipeline, prices
+from geotrade_ai.worker import alerts, jobs, pipeline, prices, spikes
 from geotrade_ai.worker.http import Fetcher
 from geotrade_ai.worker.ingest import poll_due_sources
 
@@ -66,6 +66,10 @@ def main() -> None:
         with factory() as session:
             co_mentions_repo.refresh(session)
 
+    def detect_spikes() -> None:
+        with factory() as session:
+            spikes.detect(session)
+
     def rescore() -> None:
         with factory() as session:
             jobs.rescore_fallbacks(session)
@@ -86,6 +90,7 @@ def main() -> None:
     sched.add_job(refresh_views, "interval", minutes=5, jitter=20, id="refresh_views")
     sched.add_job(retention, "cron", hour=3, minute=15, id="retention")
     sched.add_job(housekeeping, "interval", minutes=10, jitter=30, id="housekeeping")
+    sched.add_job(detect_spikes, "interval", minutes=15, jitter=30, id="coverage_spikes")
     sched.add_job(alert_sweep, "interval", seconds=60, jitter=5, id="alert_sweep")
     if s.enable_prices:  # fill candles on start so charts are not empty
         sched.add_job(sync_eod, id="sync_prices_startup")

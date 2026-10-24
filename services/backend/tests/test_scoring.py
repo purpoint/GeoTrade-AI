@@ -7,11 +7,12 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from geotrade_ai.core.config import get_settings
+from geotrade_ai.llm import Budget, GroqClient, LlmUnavailable
 from geotrade_ai.models import ArticleScore, LlmCache, LlmUsage
 from geotrade_ai.repos.reference import seed_reference
 from geotrade_ai.worker import pipeline
 from geotrade_ai.worker.nlp import events, keyword
-from geotrade_ai.worker.nlp.llm import Budget, GroqClient, LlmUnavailable, QwenScorer
+from geotrade_ai.worker.nlp.llm import QwenScorer
 from geotrade_ai.worker.scoring import score_articles
 from tests.test_pipeline import add, drain
 

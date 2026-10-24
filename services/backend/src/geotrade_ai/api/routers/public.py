@@ -10,7 +10,7 @@ from geotrade_ai.api import schemas as s
 from geotrade_ai.api.deps import DbSession
 from geotrade_ai.api.views import StockContext, news_detail, news_items, sector_summaries, weighted
 from geotrade_ai.core.errors import ApiError, not_found
-from geotrade_ai.models import Article, Company, Sector
+from geotrade_ai.models import Article, Company, CoverageSpike, Sector
 from geotrade_ai.repos import read
 
 router = APIRouter()
@@ -118,7 +118,24 @@ def stock(db: DbSession, ticker: str) -> s.StockDetail:
         group_name=c.group_name,
         market_cap_cr=float(c.market_cap_cr),
         aliases=read.aliases(db, c.ticker),
+        coverage_spike=_spike(read.active_spikes(db, _now()).get(c.ticker)),
     )
+
+
+def _spike(r: CoverageSpike | None) -> s.Spike | None:
+    if r is None:
+        return None
+    return s.Spike(
+        ticker=r.ticker, detected_at=r.bucket_start, z_score=r.z_score,
+        n_stories=r.n_stories, baseline_mean=r.baseline_mean,
+    )  # fmt: skip
+
+
+@router.get("/market/spikes", response_model=list[s.Spike], tags=["market"])
+def spikes(db: DbSession) -> list[s.Spike]:
+    """Stocks with unusually heavy news coverage in the last 24 hours, strongest first."""
+    found = [_spike(r) for r in read.active_spikes(db, _now()).values()]
+    return sorted((x for x in found if x), key=lambda x: -x.z_score)
 
 
 @router.get("/stocks/{ticker}/sentiment", response_model=list[s.SeriesPoint], tags=["stocks"])

@@ -499,6 +499,29 @@
         "title": "Credentials",
         "type": "object"
       },
+      "Credibility": {
+        "properties": {
+          "hedge_score": {
+            "title": "Hedge Score",
+            "type": "number"
+          },
+          "score": {
+            "title": "Score",
+            "type": "number"
+          },
+          "unconfirmed": {
+            "title": "Unconfirmed",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "score",
+          "hedge_score",
+          "unconfirmed"
+        ],
+        "title": "Credibility",
+        "type": "object"
+      },
       "DeadLetterOut": {
         "properties": {
           "article_id": {
@@ -1197,6 +1220,16 @@
           "cluster": {
             "$ref": "#/components/schemas/ClusterRef"
           },
+          "credibility": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Credibility"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "event": {
             "anyOf": [
               {
@@ -1363,6 +1396,7 @@
           "sentiment",
           "event",
           "cluster",
+          "credibility",
           "model_version",
           "is_simulated",
           "explanation",
@@ -1380,6 +1414,16 @@
         "properties": {
           "cluster": {
             "$ref": "#/components/schemas/ClusterRef"
+          },
+          "credibility": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Credibility"
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "event": {
             "anyOf": [
@@ -1480,6 +1524,7 @@
           "sentiment",
           "event",
           "cluster",
+          "credibility",
           "model_version",
           "is_simulated"
         ],
@@ -2475,6 +2520,40 @@
         "title": "SourceStatus",
         "type": "object"
       },
+      "Spike": {
+        "properties": {
+          "baseline_mean": {
+            "title": "Baseline Mean",
+            "type": "number"
+          },
+          "detected_at": {
+            "format": "date-time",
+            "title": "Detected At",
+            "type": "string"
+          },
+          "n_stories": {
+            "title": "N Stories",
+            "type": "integer"
+          },
+          "ticker": {
+            "title": "Ticker",
+            "type": "string"
+          },
+          "z_score": {
+            "title": "Z Score",
+            "type": "number"
+          }
+        },
+        "required": [
+          "ticker",
+          "detected_at",
+          "z_score",
+          "n_stories",
+          "baseline_mean"
+        ],
+        "title": "Spike",
+        "type": "object"
+      },
       "StockDetail": {
         "properties": {
           "aliases": {
@@ -2483,6 +2562,16 @@
             },
             "title": "Aliases",
             "type": "array"
+          },
+          "coverage_spike": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Spike"
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "group_name": {
             "anyOf": [
@@ -3299,7 +3388,8 @@
               "enum": [
                 "negative_shift",
                 "severe_event",
-                "concentration"
+                "concentration",
+                "coverage_spike"
               ],
               "title": "Kind",
               "type": "string"
@@ -3976,6 +4066,32 @@
           }
         },
         "summary": "Market Series",
+        "tags": [
+          "market"
+        ]
+      }
+    },
+    "/api/v1/market/spikes": {
+      "get": {
+        "description": "Stocks with unusually heavy news coverage in the last 24 hours, strongest first.",
+        "operationId": "spikes_api_v1_market_spikes_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/Spike"
+                  },
+                  "title": "Response Spikes Api V1 Market Spikes Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Spikes",
         "tags": [
           "market"
         ]

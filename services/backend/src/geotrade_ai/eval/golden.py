@@ -149,7 +149,8 @@ def label_items(items: list[tuple[str, str | None]]) -> list[str] | None:
     import time
 
     from geotrade_ai.core.db import get_sessionmaker
-    from geotrade_ai.worker.nlp.llm import LlmRateLimited, LlmUnavailable, get_qwen_scorer
+    from geotrade_ai.llm import LlmRateLimited, LlmUnavailable
+    from geotrade_ai.worker.nlp.llm import get_qwen_scorer
 
     scorer = get_qwen_scorer()
     if scorer is None:

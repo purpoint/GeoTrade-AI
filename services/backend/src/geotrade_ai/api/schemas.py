@@ -34,10 +34,19 @@ class StockSummary(BaseModel):
     sentiment: SentimentNow
 
 
+class Spike(BaseModel):
+    ticker: str
+    detected_at: datetime
+    z_score: float
+    n_stories: int
+    baseline_mean: float
+
+
 class StockDetail(StockSummary):
     group_name: str | None
     market_cap_cr: float
     aliases: list[str]
+    coverage_spike: Spike | None = None
 
 
 class SeriesPoint(BaseModel):
@@ -77,6 +86,12 @@ class ArticleEvent(BaseModel):
     hedged: bool
 
 
+class Credibility(BaseModel):
+    score: float
+    hedge_score: float
+    unconfirmed: bool  # single source and hedged: shown as a "single source, unconfirmed" chip
+
+
 class ClusterRef(BaseModel):
     id: UUID | None
     size: int
@@ -96,6 +111,7 @@ class NewsItem(BaseModel):
     sentiment: ArticleSentiment | None
     event: ArticleEvent | None
     cluster: ClusterRef
+    credibility: Credibility | None
     model_version: str | None
     is_simulated: bool
 

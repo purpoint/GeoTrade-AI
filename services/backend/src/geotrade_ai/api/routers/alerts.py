@@ -13,7 +13,7 @@ from geotrade_ai.models import Alert, AlertRule
 from geotrade_ai.repos import alerts as repo
 
 router = APIRouter(tags=["alerts"])
-Kind = Literal["negative_shift", "severe_event", "concentration"]
+Kind = Literal["negative_shift", "severe_event", "concentration", "coverage_spike"]
 
 
 class AlertOut(BaseModel):
@@ -66,6 +66,7 @@ ALLOWED = {
     "severe_event": {"min_severity", "scope"},
     "negative_shift": {"threshold", "scope"},
     "concentration": {"stock", "sector"},
+    "coverage_spike": {"scope"},
 }
 
 

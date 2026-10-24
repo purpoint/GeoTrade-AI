@@ -18,6 +18,7 @@ from geotrade_ai.models import (
     ArticleScore,
     Company,
     CompanyAlias,
+    CoverageSpike,
     PipelineEvent,
     Sector,
     Source,
@@ -464,4 +465,17 @@ def co_mentions_for(session: Session, tickers: list[str]) -> list[tuple[str, str
             out.append((a, b, float(rate), int(n)))
         if b in tickers:
             out.append((b, a, float(rate), int(n)))
+    return out
+
+
+def active_spikes(session: Session, now: datetime, hours: int = 24) -> dict[str, CoverageSpike]:
+    """Latest coverage spike per stock flagged within `hours`."""
+    rows = session.scalars(
+        select(CoverageSpike)
+        .where(CoverageSpike.bucket_start > now - timedelta(hours=hours))
+        .order_by(CoverageSpike.bucket_start.desc())
+    )
+    out: dict[str, CoverageSpike] = {}
+    for r in rows:
+        out.setdefault(r.ticker, r)
     return out

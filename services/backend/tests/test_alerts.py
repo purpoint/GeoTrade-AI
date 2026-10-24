@@ -69,7 +69,12 @@ def test_default_rules_created_at_signup(setup: Session) -> None:
         "severe_event",
         "negative_shift",
         "concentration",
+        "coverage_spike",
     }
+    spike_rule = setup.scalar(
+        select(AlertRule).where(AlertRule.user_id == u.id, AlertRule.kind == "coverage_spike")
+    )
+    assert spike_rule is not None and not spike_rule.enabled  # optional: off until the user turns it on
 
 
 def test_severe_event_reaches_holders_only_and_dedupes(setup: Session) -> None:
