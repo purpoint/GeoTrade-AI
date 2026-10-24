@@ -10,6 +10,7 @@ from datetime import UTC, datetime, timedelta
 from sqlalchemy import delete, func, select
 from sqlalchemy.orm import Session, sessionmaker
 
+from geotrade_ai import llm
 from geotrade_ai.core.logging import article_id_var, stage_var
 from geotrade_ai.core.metrics import DEAD_LETTERS, PIPELINE_BACKLOG, STAGE_ARTICLES, STAGE_SECONDS
 from geotrade_ai.models import (
@@ -19,6 +20,7 @@ from geotrade_ai.models import (
     DeadLetter,
     PipelineEvent,
 )
+from geotrade_ai.worker import llm_link
 from geotrade_ai.worker import relevance as rel
 from geotrade_ai.worker.aggregate import aggregate_batch
 from geotrade_ai.worker.dedupe import dedupe_one
@@ -51,6 +53,9 @@ def link_one(session: Session, article: Article) -> str:
         return "dropped"
     result = get_linker().link(article.title, article.summary or "")
     article.relevance = rel.relevance(article.title, article.summary or "", result)
+    if llm.enabled() and llm_link.unsure(result, article.relevance):
+        llm_link.apply(result, llm_link.pick(session, article.title, result))
+        article.relevance = rel.relevance(article.title, article.summary or "", result)
     article.link_trace = {"matches": result.trace, "market": result.market}
     session.execute(delete(ArticleEntity).where(ArticleEntity.article_id == article.id))
     rows = [

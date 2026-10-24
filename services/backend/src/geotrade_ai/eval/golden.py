@@ -55,13 +55,22 @@ def classification(gold: list[str], pred: list[str], labels: tuple[str, ...] = L
     }
 
 
-def linking(rows: list[dict[str, Any]]) -> dict[str, Any]:
+def linking(rows: list[dict[str, Any]], with_llm: bool = False) -> dict[str, Any]:
+    """with_llm: the P3-BE-07 fallback runs where the rule linker is unsure (must not reduce precision)."""
+    from geotrade_ai.core.db import get_sessionmaker
+    from geotrade_ai.worker import llm_link, relevance
+
     linker = get_linker()
     tp = fp = fn = 0
     errors = []
     for r in rows:
         gold = set(r["tickers"])
-        pred = set(linker.link(r["headline"]).primary_tickers)
+        result = linker.link(r["headline"])
+        if with_llm and llm_link.unsure(result, relevance.relevance(r["headline"], "", result)):
+            with get_sessionmaker()() as session:
+                llm_link.apply(result, llm_link.pick(session, r["headline"], result))
+                session.commit()
+        pred = set(result.primary_tickers)
         tp += len(gold & pred)
         fp += len(pred - gold)
         fn += len(gold - pred)
@@ -229,6 +238,10 @@ def evaluate(name: str = "golden-v1", out_dir: Path | None = None, save: bool = 
         "label_distribution": dict(Counter(gold)),
         "errors": {"keyword-v1": errors_sample(rows, kw)},
     }
+    from geotrade_ai import llm
+
+    if llm.enabled():
+        report["linking_llm_fallback"] = linking(rows, with_llm=True)
     qwen = qwen_labels(rows)
     if qwen is not None:
         report["sentiment"][LLM_MODEL_ID] = classification(gold, qwen)

@@ -109,6 +109,34 @@ def cmd_backfill(args: argparse.Namespace) -> None:
     print(json.dumps(backfill(get_sessionmaker(), args.days)))
 
 
+def cmd_why_sheet(args: argparse.Namespace) -> None:
+    """50-item human rating sheet for the 'why this matters' sentences (P3-BE-06)."""
+    import csv
+
+    from sqlalchemy import select
+
+    from geotrade_ai.core.db import get_sessionmaker
+    from geotrade_ai.models import Article, ArticleScore
+
+    out = Path(args.out)
+    with get_sessionmaker()() as session, out.open("w", newline="") as f:
+        w = csv.writer(f)
+        w.writerow(
+            ["article_id", "headline", "why_this_matters", "template", "clear_1to5", "faithful_1to5", "notes"]
+        )
+        rows = session.execute(
+            select(Article, ArticleScore)
+            .join(ArticleScore, ArticleScore.article_id == Article.id)
+            .where(ArticleScore.explanation_source == "llm")
+            .order_by(Article.published_at.desc())
+            .limit(args.n)
+        ).all()
+        for a, sc in rows:
+            why, _, template = sc.explanation.partition("\n\n")
+            w.writerow([a.id, a.title, why, template, "", "", ""])
+    print(f"{len(rows)} rows written to {out}")
+
+
 def cmd_openapi(args: argparse.Namespace) -> None:
     from geotrade_ai.api.app import create_app
 
@@ -161,6 +189,11 @@ def main(argv: list[str] | None = None) -> None:
 
     p = sub.add_parser("backtest", help="news signal vs next-session return; saved for the evaluation page")
     p.set_defaults(fn=cmd_backtest)
+
+    p = sub.add_parser("why-sheet", help="CSV of recent 'why this matters' sentences for human rating")
+    p.add_argument("--out", default="why-this-matters-rating.csv")
+    p.add_argument("-n", type=int, default=50)
+    p.set_defaults(fn=cmd_why_sheet)
 
     p = sub.add_parser("openapi", help="export the OpenAPI document")
     p.add_argument("--out", default="-")

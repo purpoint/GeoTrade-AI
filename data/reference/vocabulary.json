@@ -1,0 +1,22 @@
+{
+  "_comment": "Words the product never uses (plan 2.2). Change only with a reviewed commit. Matched case-insensitively on word boundaries by the narrative, 'why this matters' and rule validators.",
+  "banned": [
+    "buy",
+    "buying",
+    "sell",
+    "selling",
+    "target price",
+    "price target",
+    "will rise",
+    "will fall",
+    "guaranteed",
+    "guarantee",
+    "recommend",
+    "recommended",
+    "recommendation",
+    "should invest",
+    "must invest",
+    "sure shot",
+    "multibagger"
+  ]
+}
